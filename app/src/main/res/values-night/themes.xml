@@ -1,7 +1,15 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Prm392androidappfrontend" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<resources>
+    <style name="Base.Theme.MyApplication" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorOnSurface">@color/text_primary_dark</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary_dark</item>
+        <item name="colorOutlineVariant">@color/divider_dark</item>
+
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="radiusCard">@dimen/card_corner_radius</item>
     </style>
+
+    <style name="Theme.MyApplication" parent="Base.Theme.MyApplication"/>
 </resources>

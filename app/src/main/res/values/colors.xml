@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="primaryColor">#6200EE</color>
+    <color name="text_tertiary">#757575</color>
+    <color name="icon_border">#CCCCCC</color>
+    <color name="gray">#808080</color>
+    
+    <!-- Light Theme Colors -->
+    <color name="background_light">#FAFAFA</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="text_primary_light">#212121</color>
+    <color name="text_secondary_light">#757575</color>
+    <color name="divider_light">#E0E0E0</color>
+    
+    <!-- Dark Theme Colors -->
+    <color name="background_dark">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B3B3B3</color>
+    <color name="divider_dark">#2C2C2C</color>
+    
+    <!-- Accent Colors -->
+    <color name="accent_blue">#2196F3</color>
+    <color name="accent_orange">#FF9800</color>
+    
+    <!-- Add other colors as needed -->
 </resources>
