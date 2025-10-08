@@ -1,9 +1,21 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Prm392androidappfrontend" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources>
+    <!-- Base app theme (Light) -->
+    <style name="Base.Theme.MyApplication" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Brand -->
+        <item name="colorPrimary">@color/primaryColor</item>
+
+        <!-- Map các token bề mặt/ chữ -->
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorOnSurface">@color/text_primary_light</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary_light</item>
+        <item name="colorOutlineVariant">@color/divider_light</item>
+
+        <!-- Nền cửa sổ -->
+        <item name="android:windowBackground">?attr/colorSurface</item>
+
+        <!-- Ví dụ: bo góc đọc từ dimens -->
+        <item name="radiusCard">@dimen/card_corner_radius</item>
     </style>
 
-    <style name="Theme.Prm392androidappfrontend" parent="Base.Theme.Prm392androidappfrontend" />
+    <style name="Theme.MyApplication" parent="Base.Theme.MyApplication"/>
 </resources>

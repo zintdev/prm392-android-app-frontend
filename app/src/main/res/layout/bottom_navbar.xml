@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottom_navbar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/navbar_height"
+    android:background="@android:color/white"
+    android:elevation="8dp"
+    android:orientation="horizontal">
+
+    <!-- Home -->
+    <include
+        android:id="@+id/nav_home"
+        layout="@layout/navbar_item"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <!-- Favorites -->
+    <include
+        android:id="@+id/nav_favorites"
+        layout="@layout/navbar_item"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <!-- Search -->
+    <include
+        android:id="@+id/nav_search"
+        layout="@layout/navbar_item"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <!-- Stats -->
+    <include
+        android:id="@+id/nav_stats"
+        layout="@layout/navbar_item"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <!-- Profile -->
+    <include
+        android:id="@+id/nav_profile"
+        layout="@layout/navbar_item"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+</LinearLayout>

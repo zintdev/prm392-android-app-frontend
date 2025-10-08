@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">prm392-android-app-frontend</string>
+    <string name="app_name">My Application</string>
+    <string name="blog_detail_title">Blog Detail</string>
+    <string name="toggle_dark_mode">Toggle Dark Mode</string>
+    <string name="author_icon_desc">Author Icon</string>
+    <string name="blog_image_desc">Blog Image</string>
+    <string name="content_header">Content</string>
+    <string name="author_prefix">By: </string>
+
+    <!-- Navbar Labels -->
+    <string name="nav_home">Home</string>
+    <string name="nav_blogs">Blogs</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_profile">Profile</string>
 </resources>
