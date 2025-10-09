@@ -31,7 +31,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.);
+        setContentView(R.layout.activity_maps);
 
         btnDirections = findViewById(R.id.btnDirections);
         btnDirections.setOnClickListener(v -> openDirectionsInGoogleMaps(STORE_LAT, STORE_LNG, STORE_NAME));
