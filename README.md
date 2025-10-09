@@ -1,6 +1,6 @@
 # PRM392 Android – Chuẩn kiến trúc & quy ước coding (README)
 
-> **Ngữ cảnh**: Android (Java, minSdk 21), Gradle Groovy DSL. Kiến trúc MVVM + Repository 1 tầng *data*. Giao tiếp Backend Spring Boot qua Retrofit, JWT lưu bằng `SessionManager`.
+>  Android (Java, minSdk 21), Gradle Groovy DSL. Kiến trúc MVVM + Repository 1 tầng *data*. Giao tiếp Backend Spring Boot qua Retrofit, JWT lưu bằng `SessionManager`.
 
 ---
 
@@ -91,3 +91,39 @@ Activity/Fragment (UI + nhận event)
 5. UI nhận `Success` → `adapter.submitList(list)`.
 
 ---
+
+## 👥 Working Rules (Team Workflow)
+
+### 1. Branching
+- `main` → code ổn định (chỉ merge khi review xong).
+- - `develop` → nhánh tổng hợp code nhóm.  
+- `feature/<tên-chức-năng>` → mỗi thành viên code trên nhánh riêng.  
+
+### 2. Commit Convention
+- `feat:` – thêm tính năng mới.  
+- `fix:` – sửa bug.  
+- `docs:` – cập nhật tài liệu/README.  
+- `refactor:` – chỉnh code không đổi chức năng.  
+- `test:` – thêm hoặc sửa test.  
+
+### 3. Quy trình làm việc
+1. **Pull code mới nhất** từ `develop` trước khi code:  
+   ```bash
+   git checkout develop
+   git pull origin develop
+2. **Tạo nhánh mới kèm tên feat** và check out:
+   git checkout -b feat/aut
+3. **Commit và push**
+   git add .
+   git commit -m "feat(auth): register & login with bcrypt and jwt"
+   git push origin feat/auth
+4. **Tạo Pull Request từ feat/.. -> develop**
+5. **Review code nếu ổn thì merge**
+6. **Sau khi release, mearge develop -> main**
+
+📌 Notes
+
+Mọi thành viên không push trực tiếp vào main.
+
+Nếu gặp vấn đề môi trường → tham khảo [ChatGPT Setup Guide] hoặc trao đổi trong nhóm.
+
