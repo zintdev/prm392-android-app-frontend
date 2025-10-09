@@ -50,7 +50,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(store, 15f));
     }
 
-    /** dùng Google Maps URLs – tự lấy vị trí hiện tại của user */
+    /**
+     * dùng Google Maps URLs – tự lấy vị trí hiện tại của user
+     */
     private void openDirectionsInGoogleMaps(double lat, double lng, String label) {
         // URL chuẩn từ Google (tự lấy current location làm origin)
         String url = "https://www.google.com/maps/dir/?api=1"
@@ -70,3 +72,4 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(browserIntent);
         }
     }
+}
