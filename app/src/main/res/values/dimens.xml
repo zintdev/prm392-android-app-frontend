@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Padding and Margins -->
+    <dimen name="standard_padding">16dp</dimen>
+    <dimen name="large_padding">20dp</dimen>
+    <dimen name="small_padding">8dp</dimen>
+    <dimen name="extra_small_padding">4dp</dimen>
+    
+    <!-- Card Properties -->
+    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    
+    <!-- Text Sizes -->
+    <dimen name="text_size_large">28sp</dimen>
+    <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    
+    <!-- Image Sizes -->
+    <dimen name="blog_image_height">250dp</dimen>
+    <dimen name="icon_size_small">16dp</dimen>
+    <dimen name="icon_size_normal">24dp</dimen>
+    
+    <!-- FAB -->
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_elevation">8dp</dimen>
+    
+    <!-- Navbar -->
+    <dimen name="navbar_height">60dp</dimen>
+    <dimen name="navbar_icon_size">24dp</dimen>
+    <dimen name="navbar_text_size">12sp</dimen>
+    <dimen name="navbar_item_padding">8dp</dimen>
+</resources>
