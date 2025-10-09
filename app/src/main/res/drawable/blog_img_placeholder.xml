@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    
+    <!-- Background -->
+    <path
+        android:pathData="M0,0h200v200h-200z"
+        android:fillColor="@color/divider_light"/>
+    
+    <!-- Blog icon in center -->
+    <group
+        android:translateX="100"
+        android:translateY="100">
+        
+        <!-- Document icon -->
+        <path
+            android:pathData="M-20,-25h30v50h-30z"
+            android:fillColor="@color/text_secondary_light"
+            android:fillAlpha="0.3"/>
+        
+        <!-- Lines on document -->
+        <path
+            android:pathData="M-15,-15h20M-15,-5h20M-15,5h15M-15,15h10"
+            android:strokeColor="@color/text_secondary_light"
+            android:strokeWidth="2"
+            android:strokeAlpha="0.5"/>
+    </group>
+    
+</vector>
