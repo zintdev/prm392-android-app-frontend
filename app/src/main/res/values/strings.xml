@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">My Application</string>
     <string name="blog_detail_title">Blog Detail</string>
     <string name="toggle_dark_mode">Toggle Dark Mode</string>
     <string name="author_icon_desc">Author Icon</string>
@@ -13,4 +12,15 @@
     <string name="nav_search">Search</string>
     <string name="nav_stats">Stats</string>
     <string name="nav_profile">Profile</string>
+
+    <!-- login -->
+    <string name="app_name">乃木坂４６</string>
+    <string name="Login">Login</string>
+    <string name="cd_logo_desc">Nogizaka46 logo</string>
+    <string name="hint_email">Username or Email</string>
+    <string name="hint_password">Password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="action_login">Login</string>
+    <string name="no_account_sign_up">Don’t have an account? Sign up</string>
+    <string name="avatar_description">avatar</string>
 </resources>

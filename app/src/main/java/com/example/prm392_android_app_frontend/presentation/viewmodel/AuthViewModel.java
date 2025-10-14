@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.prm392_android_app_frontend.data.repository.AuthRepository;
-import com.example.prm392_android_app_frontend.data.dto.LoginResponse;
+import com.example.prm392_android_app_frontend.data.dto.login.LoginResponse;
 import com.example.prm392_android_app_frontend.core.util.Resource;
 
 public class AuthViewModel extends ViewModel {

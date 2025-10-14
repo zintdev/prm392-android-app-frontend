@@ -1,84 +1,105 @@
 package com.example.prm392_android_app_frontend.presentation.activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 
 import com.example.prm392_android_app_frontend.R;
-import com.example.prm392_android_app_frontend.presentation.component.NavbarManager;
-import com.example.prm392_android_app_frontend.presentation.fragment.BlogListFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.AccountFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.BlogFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.CartFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.HomeFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.NotificationFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.SettingFragment;
+import com.example.prm392_android_app_frontend.storage.TokenStore;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.appbar.MaterialToolbar;
 
-public class MainActivity extends AppCompatActivity implements NavbarManager.OnNavItemClickListener {
+public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
-    private NavbarManager navbarManager;
+    private BottomNavigationView nav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        setContentView(R.layout.activity_main_page);
 
-        // Initialize navbar
-        navbarManager = new NavbarManager(findViewById(R.id.main), this);
-
-        // Add a button to navigate to the blog list
-        Button blogListButton = findViewById(R.id.blog_list_button);
-        if (blogListButton != null) {
-            blogListButton.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, BlogListFragment.class);
-                startActivity(intent);
+        nav = findViewById(R.id.bottomNav);
+        MaterialToolbar toolbar = (MaterialToolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_open_map) {
+                startActivity(new Intent(this, MapsActivity.class));
+                return true;
+            }
+            return false;
             });
-        } else {
-            Log.e(TAG, "Blog list button not found in layout");
         }
+
+        if (savedInstanceState == null) {
+            switchFragment(new HomeFragment());
+            nav.setSelectedItemId(R.id.nav_home);
+        }
+
+        nav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                switchFragment(new HomeFragment());
+                return true;
+
+            } else if (id == R.id.nav_blog) {
+                switchFragment(new BlogFragment());
+                return true;
+
+            } else if (id == R.id.nav_cart) {
+                switchFragment(new CartFragment());
+                return true;
+
+            } else if (id == R.id.nav_notification) {
+                switchFragment(new NotificationFragment());
+                return true;
+
+            } else if (id == R.id.nav_setting) {
+                switchFragment(new SettingFragment());
+                return true;
+
+            } else if (id == R.id.nav_account) {
+                if (TokenStore.isLoggedIn(this)) {
+                    switchFragment(new AccountFragment());
+                } else {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Yêu cầu đăng nhập")
+                            .setMessage("Bạn cần đăng nhập để sử dụng tính năng này.")
+                            .setPositiveButton("Đăng nhập", (d, w) -> startActivity(new Intent(this, LoginActivity.class)))
+                            .setNegativeButton("Hủy", null)
+                            .show();
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }
+
+    private void switchFragment(@NonNull Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .commit();
     }
 
     @Override
-    public void onNavItemClick(int itemId) {
-        String itemName = getNavItemName(itemId);
-
-        if (itemId == R.id.nav_home) {
-            // Already on home, maybe refresh or scroll to top
-            Toast.makeText(this, "Home selected", Toast.LENGTH_SHORT).show();
-        } else if (itemId == R.id.nav_blogs) {
-            // Navigate to blogs
-            Intent intent = new Intent(MainActivity.this, BlogListFragment.class);
-            startActivity(intent);
-            Toast.makeText(this, "Blogs selected", Toast.LENGTH_SHORT).show();
-        } else if (itemId == R.id.nav_search) {
-            // Navigate to search (you can create SearchActivity later)
-            Toast.makeText(this, "Search selected", Toast.LENGTH_SHORT).show();
-        } else if (itemId == R.id.nav_stats) {
-            // Navigate to stats (you can create StatsActivity later)
-            Toast.makeText(this, "Stats selected", Toast.LENGTH_SHORT).show();
-        } else if (itemId == R.id.nav_profile) {
-            // Navigate to profile (you can create ProfileActivity later)
-            Toast.makeText(this, "Profile selected", Toast.LENGTH_SHORT).show();
+    protected void onResume() {
+        super.onResume();
+        int nextTab = getIntent().getIntExtra("select_tab", -1);
+        if (nextTab != -1) {
+            nav.setSelectedItemId(nextTab);
+            getIntent().removeExtra("select_tab");
         }
-
-        Log.d(TAG, "Navigation item clicked: " + itemName);
-    }
-
-    private String getNavItemName(int itemId) {
-        if (itemId == R.id.nav_home) return "Home";
-        else if (itemId == R.id.nav_blogs) return "Blogs";
-        else if (itemId == R.id.nav_search) return "Search";
-        else if (itemId == R.id.nav_stats) return "Stats";
-        else if (itemId == R.id.nav_profile) return "Profile";
-        else return "Unknown";
     }
 }
