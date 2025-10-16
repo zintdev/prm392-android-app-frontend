@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,15 +42,11 @@ public class AccountFragment extends Fragment {
         rowLogout = v.findViewById(R.id.rowLogout);
         String username = TokenStore.getUsername(requireContext());
         txtName.setText(username);
-        // Load info từ TokenStore (đã lưu khi login)
-//        txtName.setText(TokenStore.getUserName(requireContext(), "Khách"));
-//        txtFPoint.setText(String.valueOf(TokenStore.getUserFPoint(requireContext(), 0)));
-//        txtFreeship.setText(TokenStore.getUserFreeship(requireContext(), "0 lần"));
-        ((TextView) rowProfile.findViewById(R.id.title)).setText("Hồ sơ cá nhân");
-        ((ImageView) rowProfile.findViewById(R.id.icon)).setImageResource(R.drawable.ic_person);
+            ((TextView) rowProfile.findViewById(R.id.title)).setText("Hồ sơ cá nhân");
+            ((ImageView) rowProfile.findViewById(R.id.icon)).setImageResource(R.drawable.ic_person);
 
-        ((TextView) rowLogout.findViewById(R.id.title)).setText("Đăng xuất");
-        ((ImageView) rowLogout.findViewById(R.id.icon)).setImageResource(R.drawable.ic_nogi_logo);
+            ((TextView) rowLogout.findViewById(R.id.title)).setText("Đăng xuất");
+            ((ImageView) rowLogout.findViewById(R.id.icon)).setImageResource(R.drawable.ic_logout);
 
         // Click: mở trang cập nhật hồ sơ
         rowProfile.setOnClickListener(v12 -> {
@@ -67,18 +64,17 @@ public class AccountFragment extends Fragment {
         rowLogout.setOnClickListener(v1 -> {
             TokenStore.clear(requireContext());
             Snackbar.make(v1, "Đã đăng xuất", Snackbar.LENGTH_SHORT).show();
-            // (Tuỳ bạn) điều hướng về Login hoặc Home
             startActivity(new Intent(requireContext(), LoginActivity.class));
             requireActivity().finish();
         });
 
-        v.findViewById(R.id.btnOrderWaitingPay).setOnClickListener(x ->
-                Snackbar.make(x, "Chờ thanh toán", Snackbar.LENGTH_SHORT).show());
-        v.findViewById(R.id.btnOrderProcessing).setOnClickListener(x ->
-                Snackbar.make(x, "Đang xử lý", Snackbar.LENGTH_SHORT).show());
-        v.findViewById(R.id.btnOrderShipping).setOnClickListener(x ->
-                Snackbar.make(x, "Đang giao hàng", Snackbar.LENGTH_SHORT).show());
-        v.findViewById(R.id.btnOrderCompleted).setOnClickListener(x ->
-                Snackbar.make(x, "Hoàn tất", Snackbar.LENGTH_SHORT).show());
+//        v.findViewById(R.id.btnOrderWaitingPay).setOnClickListener(x ->
+//                Snackbar.make(x, "Chờ thanh toán", Snackbar.LENGTH_SHORT).show());
+//        v.findViewById(R.id.btnOrderProcessing).setOnClickListener(x ->
+//                Snackbar.make(x, "Đang xử lý", Snackbar.LENGTH_SHORT).show());
+////        v.findViewById(R.id.btnOrderShipping).setOnClickListener(x ->
+////                Snackbar.make(x, "Đang giao hàng", Snackbar.LENGTH_SHORT).show());
+//        v.findViewById(R.id.btnOrderCompleted).setOnClickListener(x ->
+//                Snackbar.make(x, "Hoàn tất", Snackbar.LENGTH_SHORT).show());
     }
 }

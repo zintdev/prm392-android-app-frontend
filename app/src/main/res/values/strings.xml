@@ -8,19 +8,22 @@
 
     <!-- Navbar Labels -->
     <string name="nav_home">Home</string>
-    <string name="nav_blogs">Blogs</string>
-    <string name="nav_search">Search</string>
+    <string name="nav_blogs">Blog</string>
+    <string name="nav_search">Tìm kiếm</string>
     <string name="nav_stats">Stats</string>
-    <string name="nav_profile">Profile</string>
+    <string name="nav_profile">Tài khoản</string>
 
     <!-- login -->
     <string name="app_name">乃木坂４６</string>
-    <string name="Login">Login</string>
+    <string name="Login">Đăng nhập</string>
     <string name="cd_logo_desc">Nogizaka46 logo</string>
-    <string name="hint_email">Username or Email</string>
-    <string name="hint_password">Password</string>
-    <string name="forgot_password">Forgot password?</string>
-    <string name="action_login">Login</string>
-    <string name="no_account_sign_up">Don’t have an account? Sign up</string>
+    <string name="hint_email">Username hoặc Email</string>
+    <string name="hint_password">Mật khẩu</string>
+    <string name="forgot_password">Quên Mật Khẩu?</string>
+    <string name="action_login">Đăng nhập</string>
+    <string name="no_account_sign_up">Không có tài khoản?Đăng kí ngay</string>
     <string name="avatar_description">avatar</string>
+    <string name="register">Đăng kí</string>
+    <string name="backToHome">Quay lại trang chủ</string>
+    <string name="backToLogin">Quay lại đăng nhập"</string>
 </resources>
