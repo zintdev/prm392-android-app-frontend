@@ -23,4 +23,15 @@
     <string name="action_login">Login</string>
     <string name="no_account_sign_up">Don’t have an account? Sign up</string>
     <string name="avatar_description">avatar</string>
+
+    <string name="store_list_title">Danh sách cửa hàng</string>
+    <string name="store_list_count_default">0 kết quả</string>
+    <string name="hint_radius_km">Bán kính (km)</string>
+    <string name="hint_product_id_pickup">Product ID (Pickup)</string>
+    <string name="apply">Áp dụng</string>
+    <string name="all">Tất cả</string>
+    <string name="pickup">Pickup</string>
+    <string name="go_to_my_location">Về vị trí của tôi</string>
+    <string name="refresh_stores">Tải lại cửa hàng</string>
+    <string name="loading">Đang tải...</string>
 </resources>
