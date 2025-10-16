@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.prm392_android_app_frontend.data.dto.LoginRequest;
-import com.example.prm392_android_app_frontend.data.dto.LoginResponse;
+import com.example.prm392_android_app_frontend.data.dto.login.LoginRequest;
+import com.example.prm392_android_app_frontend.data.dto.login.LoginResponse;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
 import com.example.prm392_android_app_frontend.data.remote.api.AuthApi;
 import com.example.prm392_android_app_frontend.core.util.Resource;
@@ -32,12 +32,13 @@ public class AuthRepository {
                 if (resp.isSuccessful() && resp.body() != null) {
                     live.postValue(Resource.success(resp.body()));
                 } else {
-                    String msg = "Login failed (" + resp.code() + ")";
+                    String msg = "Đăng nhập thất bại (HTTP " + resp.code() + ")";
                     live.postValue(Resource.error(msg, null));
                 }
             }
             @Override public void onFailure(@NonNull Call<LoginResponse> call, @NonNull Throwable t) {
-                live.postValue(Resource.error(t.getMessage(), null));
+                String msg = (t.getMessage() == null) ? "Không thể kết nối máy chủ" : t.getMessage();
+                live.postValue(Resource.error(msg, null));
             }
         });
 

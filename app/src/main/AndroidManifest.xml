@@ -17,9 +17,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
-        <!-- Đặt LoginActivity là launcher -->
+        <!-- Launcher: mở MainActivity với BottomNavigation trước -->
         <activity
-            android:name=".presentation.activity.MapsActivity"
+            android:name=".presentation.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -27,9 +27,21 @@
             </intent-filter>
         </activity>
 
+        <!-- ggmap -->
         <activity
-            android:name=".presentation.activity.MainActivity"
+            android:name=".presentation.activity.MapsActivity"
             android:exported="true"/>
+
+        <!-- login&regis -->
+        <activity
+            android:name=".presentation.activity.LoginActivity"
+            android:exported="true"
+            android:label="Login" />
+
+        <activity
+            android:name=".presentation.activity.RegisterActivity"
+            android:exported="true"
+            android:label="Register" />
 
 
         <!-- KHÔNG khai báo fragment ở đây -->
