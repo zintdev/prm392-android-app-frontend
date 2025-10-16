@@ -15,7 +15,7 @@ public interface AuthApi {
     @Headers({
             "Content-Type: application/json"
     })
-    @POST("auth/login")
+    @POST("api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest body);
 
     @Headers({
