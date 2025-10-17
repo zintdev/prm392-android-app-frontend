@@ -16,9 +16,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.prm392_android_app_frontend.R;
+import com.example.prm392_android_app_frontend.data.dto.store.StoreNearbyDto;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
 import com.example.prm392_android_app_frontend.data.remote.api.StoreApi;
+import com.example.prm392_android_app_frontend.data.repository.StoreRepository;
 import com.example.prm392_android_app_frontend.presentation.adapter.StoreAdapter;
+import com.example.prm392_android_app_frontend.presentation.viewmodel.StoreViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -46,7 +49,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private StoreAdapter storeAdapter;
 
-    private StoreApi.StoreNearbyDto selectedStore;
+    private StoreNearbyDto selectedStore;
+
+    private StoreViewModel viewModel;
 
     private final StoreApi storeApi = ApiClient.get().create(StoreApi.class);
 
@@ -86,6 +91,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         mapFragment.getMapAsync(this);
 
+        viewModel = new androidx.lifecycle.ViewModelProvider(this).get(StoreViewModel.class);
+        viewModel.nearby.observe(this, res -> {
+            if (res == null) return;
+            if (res.isLoading()) {
+                showLoading(true, getString(R.string.loading));
+            } else if (res.isError()) {
+                showLoading(false, null);
+                android.widget.Toast.makeText(this,
+                        res.getMessage() != null ? res.getMessage() : "Có lỗi xảy ra",
+                        android.widget.Toast.LENGTH_SHORT).show();
+            } else if (res.isSuccess()) {
+                showLoading(false, null);
+                List<StoreNearbyDto> list = res.getData();
+                storeAdapter.submit(list);
+                renderMarkers(list);
+                View tv = bottomSheet != null ? bottomSheet.findViewById(R.id.txtCount) : null;
+                if (tv instanceof android.widget.TextView)
+                    ((android.widget.TextView) tv).setText((list != null ? list.size() : 0) + " kết quả");
+                if (bottomBehavior != null)
+                    bottomBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+            }
+        });
+
         // Nút Áp dụng trong bottom sheet (nếu có)
         View btnApply = bottomSheet != null ? bottomSheet.findViewById(R.id.btnApply) : null;
         if (btnApply != null) {
@@ -120,7 +148,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 if (myLat != null && myLng != null) {
-                    loadNearby(myLat, myLng, radius, 50, productId, isPickup ? Boolean.TRUE : null);
+                    triggerLoadNearby(myLat, myLng, radius, 50, productId, isPickup ? Boolean.TRUE : null);
                 } else {
                     Toast.makeText(this, "Chưa có vị trí của bạn. Nhấn icon định vị trước.", Toast.LENGTH_SHORT).show();
                 }
@@ -132,7 +160,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (fabMy != null) fabMy.setOnClickListener(v -> moveToMyLocation());
         View fabRef = findViewById(R.id.fabRefresh);
         if (fabRef != null) fabRef.setOnClickListener(v -> {
-            if (myLat != null && myLng != null) loadNearby(myLat, myLng, 20.0, 50, null, null);
+            if (myLat != null && myLng != null) triggerLoadNearby(myLat, myLng, 20.0, 50, null, null);
         });
         // ===== BottomSheet Behavior: bật kéo thả & callback log =====
         bottomBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -202,7 +230,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 
-
     }
 
     @Override
@@ -224,8 +251,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             marker.showInfoWindow();
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 16f));
             Object tag = marker.getTag();
-            if (tag instanceof StoreApi.StoreNearbyDto) {
-                selectedStore = (StoreApi.StoreNearbyDto) tag;
+            if (tag instanceof StoreNearbyDto) {
+                selectedStore = (StoreNearbyDto) tag;
                 View fabGo2 = findViewById(R.id.fabGo);
                 if (fabGo2 != null) fabGo2.setVisibility(View.VISIBLE);
             }
@@ -235,8 +262,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // InfoWindow click: chỉ nhắc bấm GO
         mMap.setOnInfoWindowClickListener(marker -> {
             Object tag = marker.getTag();
-            if (tag instanceof StoreApi.StoreNearbyDto) {
-                selectedStore = (StoreApi.StoreNearbyDto) tag;
+            if (tag instanceof StoreNearbyDto) {
+                selectedStore = (StoreNearbyDto) tag;
                 Toast.makeText(this, "Nhấn GO để mở chỉ đường.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -264,7 +291,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 myLat = loc.getLatitude();
                 myLng = loc.getLongitude();
                 moveCamera(new LatLng(myLat, myLng), 14f);
-                loadNearby(myLat, myLng, 20.0, 50, null, null);
+                triggerLoadNearby(myLat, myLng, 20.0, 50, null, null);
             } else {
                 Toast.makeText(this, "Không lấy được vị trí. Bật GPS rồi thử.", Toast.LENGTH_LONG).show();
             }
@@ -292,59 +319,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void loadNearby(double lat, double lng, Double radiusKm, Integer limit,
-                            Integer productId, Boolean inStockOnly) {
-        showLoading(true, getString(R.string.loading));
-        storeApi.getNearby(lat, lng, radiusKm, limit, productId, inStockOnly)
-                .enqueue(new Callback<List<StoreApi.StoreNearbyDto>>() {
-                    @Override public void onResponse(Call<List<StoreApi.StoreNearbyDto>> call,
-                                                     Response<List<StoreApi.StoreNearbyDto>> resp) {
-                        showLoading(false, null);
-                        if (!resp.isSuccessful() || resp.body() == null) {
-                            Toast.makeText(MapsActivity.this, "HTTP " + resp.code(), Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        List<StoreApi.StoreNearbyDto> list = new java.util.ArrayList<>(resp.body());
-
-                        // 1) Lọc theo bán kính nếu người dùng nhập (km)
-                        if (radiusKm != null) {
-                            double r = radiusKm; // km
-                            java.util.Iterator<StoreApi.StoreNearbyDto> it = list.iterator();
-                            while (it.hasNext()) {
-                                if (it.next().distanceKm > r) it.remove();
-                            }
-                        }
-
-                        // 2) Sort theo khoảng cách tăng dần (phòng khi backend không sort)
-                        java.util.Collections.sort(list, new java.util.Comparator<StoreApi.StoreNearbyDto>() {
-                            @Override public int compare(StoreApi.StoreNearbyDto a, StoreApi.StoreNearbyDto b) {
-                                return Double.compare(a.distanceKm, b.distanceKm);
-                            }
-                        });
-
-                        // 3) Đổ vào danh sách + cập nhật map + đếm
-                        storeAdapter.submit(list);
-                        renderMarkers(list);
-                        View tv = bottomSheet != null ? bottomSheet.findViewById(R.id.txtCount) : null;
-                        if (tv instanceof android.widget.TextView)
-                            ((android.widget.TextView) tv).setText(list.size() + " kết quả");
-
-                        if (bottomBehavior != null)
-                            bottomBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
-                    }
-
-
-                    @Override
-                    public void onFailure(Call<List<StoreApi.StoreNearbyDto>> call, Throwable t) {
-                        showLoading(false, null);
-                        Log.e(TAG, "API nearby failed", t);
-                        Toast.makeText(MapsActivity.this, "API lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private void triggerLoadNearby(double lat, double lng, Double radiusKm, Integer limit,
+                                   Integer productId, Boolean inStockOnly) {
+        viewModel.loadNearby(lat, lng, radiusKm, limit, productId, inStockOnly);
     }
 
-    private void renderMarkers(List<StoreApi.StoreNearbyDto> stores) {
+    private void renderMarkers(List<StoreNearbyDto> stores) {
         if (mMap == null || stores == null) return;
         mMap.clear();
 
@@ -362,7 +342,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             hasAny = true;
         }
 
-        for (StoreApi.StoreNearbyDto s : stores) {
+        for (StoreNearbyDto s : stores) {
             LatLng p = new LatLng(s.latitude, s.longitude);
             String title = (s.name != null && !s.name.isEmpty()) ? s.name : s.address;
             String snippet = String.format("~%.2f km%s",

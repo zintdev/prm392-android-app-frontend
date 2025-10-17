@@ -7,6 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.prm392_android_app_frontend.R;
+import com.example.prm392_android_app_frontend.data.dto.store.StoreNearbyDto;
 import com.example.prm392_android_app_frontend.data.remote.api.StoreApi;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +15,14 @@ import java.util.Locale;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.VH> {
 
-    public interface OnItemClick { void onClick(StoreApi.StoreNearbyDto item); }
+    public interface OnItemClick { void onClick(StoreNearbyDto item); }
 
-    private final List<StoreApi.StoreNearbyDto> items = new ArrayList<>();
+    private final List<StoreNearbyDto> items = new ArrayList<>();
     private final OnItemClick listener;
 
     public StoreAdapter(OnItemClick listener) { this.listener = listener; }
 
-    public void submit(List<StoreApi.StoreNearbyDto> data){
+    public void submit(List<StoreNearbyDto> data){
         items.clear();
         if (data != null) items.addAll(data);
         notifyDataSetChanged();
@@ -33,7 +34,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.VH> {
     }
 
     @Override public void onBindViewHolder(@NonNull VH h, int position) {
-        StoreApi.StoreNearbyDto it = items.get(position);
+        StoreNearbyDto it = items.get(position);
         h.txtName.setText(it.name != null && !it.name.isEmpty() ? it.name : it.address);
         h.txtAddress.setText(it.address);
         h.txtDistance.setText(String.format(Locale.getDefault(), "%.2f km", it.distanceKm));
