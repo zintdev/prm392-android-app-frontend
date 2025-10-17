@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.prm392_android_app_frontend.data.dto.login.LoginRequest;
-import com.example.prm392_android_app_frontend.data.dto.login.LoginResponse;
+import com.example.prm392_android_app_frontend.data.dto.LoginRequest;
+import com.example.prm392_android_app_frontend.data.dto.LoginResponse;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
 import com.example.prm392_android_app_frontend.data.remote.api.AuthApi;
 import com.example.prm392_android_app_frontend.core.util.Resource;

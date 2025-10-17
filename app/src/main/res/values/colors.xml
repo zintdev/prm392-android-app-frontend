@@ -24,13 +24,4 @@
     <color name="accent_orange">#FF9800</color>
     
     <!-- Add other colors as needed -->
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="nogi_purple_900">#3A0CA3</color>
-    <color name="nogi_purple_700">#560BAD</color>
-    <color name="nogi_purple_600">#6F2DBD</color>
-    <color name="nogi_purple_200">#CDB4DB</color>
-    <color name="nogi_purple_100">#EADAF6</color>
-    <color name="nogi_purple_50">#F6F0FF</color>
-    <color name="nogi_main">#53278a</color>
 </resources>
