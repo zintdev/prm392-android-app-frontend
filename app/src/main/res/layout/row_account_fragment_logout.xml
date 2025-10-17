@@ -7,7 +7,11 @@
     android:paddingHorizontal="12dp"
     android:foreground="?attr/selectableItemBackground">
 
-
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@drawable/ic_nogi_logo"/>
 
     <TextView
         android:id="@+id/title"
@@ -19,7 +23,6 @@
         android:textSize="15sp"/>
 
     <ImageView
-        android:id="@+id/icon"
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:src="@drawable/ic_logout"/>

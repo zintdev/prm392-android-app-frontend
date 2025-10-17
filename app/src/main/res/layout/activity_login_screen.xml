@@ -8,22 +8,7 @@
     android:background="@drawable/bg_login"
     android:fitsSystemWindows="true">
 
-    <!-- Nút quay lại góc trái trên -->
-    <ImageButton
-        android:id="@+id/btnBackToMain"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/backToHome"
-        app:srcCompat="@drawable/ic_arrow_left"
-    app:tint="@android:color/white"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
-
-
-    <!-- Hộp form trắng -->
+    <!-- Hộp form trắng (dùng LinearLayout + shape nền, không dùng MaterialCardView) -->
     <LinearLayout
         android:id="@+id/formBox"
         android:layout_width="0dp"
@@ -35,7 +20,7 @@
         android:orientation="vertical"
         android:background="@drawable/bg_form"
         android:elevation="6dp"
-        app:layout_constraintTop_toBottomOf="@id/btnBackToMain"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -43,13 +28,12 @@
         <!-- Logo -->
         <ImageView
             android:id="@+id/imgLogo"
-            android:layout_width="184dp"
+            android:layout_width="136dp"
             android:layout_height="70dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
             android:contentDescription="@string/cd_logo_desc"
-            android:rotationX="-4"
-            android:src="@drawable/ic_store_logo" />
+            android:src="@drawable/nogizaka46_logo" />
 
         <!-- Tiêu đề -->
         <TextView
@@ -74,16 +58,14 @@
             android:imeOptions="actionNext"
             android:padding="12dp"
             android:background="@android:drawable/edit_text" />
-
-        <!-- Progress khi gọi API -->
         <ProgressBar
             android:id="@+id/progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
             android:visibility="gone"
-            android:indeterminate="true" />
+            android:layout_marginTop="16dp"
+            android:indeterminate="true"
+            android:layout_gravity="center" />
 
         <!-- Password -->
         <EditText
@@ -96,6 +78,14 @@
             android:imeOptions="actionDone"
             android:padding="12dp"
             android:background="@android:drawable/edit_text" />
+
+        <!-- (Tuỳ chọn) Hiện mật khẩu -->
+<!--        <CheckBox-->
+<!--            android:id="@+id/cbShowPassword"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="6dp"-->
+<!--            android:text="@string/forgot_password" />-->
 
         <!-- Quên mật khẩu -->
         <TextView
@@ -127,7 +117,8 @@
             android:gravity="center"
             android:text="@string/no_account_sign_up"
             android:textColor="@color/nogi_purple_700" />
-
     </LinearLayout>
+
+    <!-- Các icon trang trí (giữ nguyên, dùng android:src) -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

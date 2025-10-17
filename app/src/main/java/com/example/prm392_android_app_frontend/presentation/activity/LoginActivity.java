@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -31,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText edtEmailOrUsername;
     private EditText edtPassword;
     private Button btnLogin;
-    private ImageButton btnBackToMain;
     private ProgressBar progress;
 
     private AuthApi api;
@@ -45,20 +43,12 @@ public class LoginActivity extends AppCompatActivity {
         edtEmailOrUsername = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
-        btnBackToMain = findViewById(R.id.btnBackToMain);
         progress = findViewById(R.id.progress);
 
         retrofitNoAuth = ApiClient.get();
         api = retrofitNoAuth.create(AuthApi.class);
 
         btnLogin.setOnClickListener(v -> doLogin());
-        findViewById(R.id.tvSignUp).setOnClickListener(v -> {
-            startActivity(new Intent(this, RegisterActivity.class));
-        });
-        btnBackToMain.setOnClickListener(v -> {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        });
     }
 
     private void doLogin() {
@@ -78,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         api.login(new LoginRequest(usernameOrEmail, pass)).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> resp) {
-                setLoading(false); //
+                setLoading(false); // 👈 tắt loading khi có phản hồi
 
                 if (resp.isSuccessful()) {
                     LoginResponse body = resp.body();
@@ -137,6 +127,8 @@ public class LoginActivity extends AppCompatActivity {
         }
         toast(message);
     }
+
+    // ✅ Hàm tiện ích bật/tắt loading + khóa nút
     private void setLoading(boolean isLoading) {
         if (progress != null) {
             progress.setVisibility(isLoading ? View.VISIBLE : View.GONE);

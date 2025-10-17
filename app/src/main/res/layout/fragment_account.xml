@@ -16,7 +16,7 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="659dp"
         android:layout_marginTop="10dp"
         android:fillViewport="true"
         android:padding="12dp">
@@ -176,6 +176,15 @@
 
                     <ImageButton
                         android:id="@+id/btnOrderProcessing"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_nogi_logo" />
+
+                    <ImageButton
+                        android:id="@+id/btnOrderShipping"
                         style="@style/Widget.Material3.Button.IconButton"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"

@@ -38,11 +38,6 @@
             android:exported="true"
             android:label="Login" />
 
-        <activity
-            android:name=".presentation.activity.RegisterActivity"
-            android:exported="true"
-            android:label="Register" />
-
 
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
