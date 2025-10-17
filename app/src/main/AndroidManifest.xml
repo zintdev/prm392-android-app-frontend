@@ -42,7 +42,9 @@
             android:name=".presentation.activity.RegisterActivity"
             android:exported="true"
             android:label="Register" />
-
+        <activity
+            android:name=".presentation.activity.ProductDetailActivity"
+            android:exported="false" />
 
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
