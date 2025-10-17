@@ -19,7 +19,6 @@ import com.example.prm392_android_app_frontend.data.remote.ErrorUtils;
 import com.example.prm392_android_app_frontend.data.dto.ApiError;
 import com.example.prm392_android_app_frontend.data.dto.login.LoginRequest;
 import com.example.prm392_android_app_frontend.data.dto.login.LoginResponse;
-import com.example.prm392_android_app_frontend.presentation.viewmodel.AuthViewModel;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 
 import retrofit2.Call;

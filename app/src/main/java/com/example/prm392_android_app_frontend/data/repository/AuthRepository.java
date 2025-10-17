@@ -32,13 +32,12 @@ public class AuthRepository {
                 if (resp.isSuccessful() && resp.body() != null) {
                     live.postValue(Resource.success(resp.body()));
                 } else {
-                    String msg = "Đăng nhập thất bại (HTTP " + resp.code() + ")";
+                    String msg = "Login failed (" + resp.code() + ")";
                     live.postValue(Resource.error(msg, null));
                 }
             }
             @Override public void onFailure(@NonNull Call<LoginResponse> call, @NonNull Throwable t) {
-                String msg = (t.getMessage() == null) ? "Không thể kết nối máy chủ" : t.getMessage();
-                live.postValue(Resource.error(msg, null));
+                live.postValue(Resource.error(t.getMessage(), null));
             }
         });
 
