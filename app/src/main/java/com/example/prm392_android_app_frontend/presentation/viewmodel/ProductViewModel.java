@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
-import com.example.prm392_android_app_frontend.data.remote.api.ApiService;
+import com.example.prm392_android_app_frontend.data.remote.api.ShopService;
 import com.example.prm392_android_app_frontend.data.repository.ProductRepository;
 
 import java.util.List;
@@ -34,10 +34,10 @@ public class ProductViewModel extends AndroidViewModel {
         super(application);
         // Các API để lấy thông tin sản phẩm thường không yêu cầu xác thực,
         // vì vậy chúng ta dùng client thông thường: ApiClient.get()
-        ApiService apiService = ApiClient.get().create(ApiService.class);
+        ShopService shopService = ApiClient.get().create(ShopService.class);
 
         // Khởi tạo Repository với ApiService tương ứng
-        this.productRepository = new ProductRepository(apiService);
+        this.productRepository = new ProductRepository(shopService);
     }
 
     // --- Getters để UI có thể observe một cách an toàn ---

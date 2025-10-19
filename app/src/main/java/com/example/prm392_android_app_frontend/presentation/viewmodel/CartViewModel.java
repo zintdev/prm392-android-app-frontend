@@ -1,40 +1,35 @@
 package com.example.prm392_android_app_frontend.presentation.viewmodel;
 
-// === SỬA Ở ĐÂY: Dùng AndroidViewModel để có thể truy cập Application Context ===
 import android.app.Application;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
+import com.example.prm392_android_app_frontend.data.dto.UpdateCartItemRequest;
 import com.example.prm392_android_app_frontend.data.dto.CartDto;
-import com.example.prm392_android_app_frontend.data.remote.api.ApiClient; // <<<< Dùng ApiClient
-import com.example.prm392_android_app_frontend.data.remote.api.ApiService;
 import com.example.prm392_android_app_frontend.data.repository.CartRepository;
+import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
+import com.example.prm392_android_app_frontend.data.remote.api.ShopService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-// === SỬA Ở ĐÂY: Kế thừa từ AndroidViewModel ===
-public class CartViewModel extends androidx.lifecycle.AndroidViewModel {
+public class CartViewModel extends AndroidViewModel {
 
     private final CartRepository cartRepository;
+
     private final MutableLiveData<CartDto> cartLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
-    // === SỬA Ở ĐÂY: Constructor của AndroidViewModel ===
     public CartViewModel(@NonNull Application application) {
         super(application);
-
-        // Lấy ApiService từ client CÓ XÁC THỰC
-        // Dùng application context để an toàn
-        ApiService authApiService = ApiClient.getAuthClient(application.getApplicationContext())
-                .create(ApiService.class);
-
-        // Khởi tạo CartRepository với ApiService có xác thực
-        this.cartRepository = new CartRepository(authApiService);
+        ShopService shopService = ApiClient.getAuthClient(application).create(ShopService.class);
+        this.cartRepository = new CartRepository(shopService);
     }
 
+    // --- Getters cho LiveData ---
     public LiveData<CartDto> getCartLiveData() {
         return cartLiveData;
     }
@@ -43,40 +38,73 @@ public class CartViewModel extends androidx.lifecycle.AndroidViewModel {
         return errorMessage;
     }
 
-    public void addProductToCart(int productId, int quantity) {
-        // BÂY GIỜ KHÔNG CẦN TRUYỀN TOKEN NỮA
-        cartRepository.addToCart(productId, quantity, new Callback<CartDto>() {
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    // --- Các phương thức hành động ---
+
+    public void fetchCart() {
+        isLoading.postValue(true);
+        cartRepository.getCart(new Callback<CartDto>() {
             @Override
-            public void onResponse(Call<CartDto> call, Response<CartDto> response) {
-                if (response.isSuccessful() && response.body() != null) {
+            public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
+                if (response.isSuccessful()) {
                     cartLiveData.postValue(response.body());
                 } else {
-                    errorMessage.postValue("Failed to add product. Error code: " + response.code());
+                    errorMessage.postValue("Lỗi tải giỏ hàng: " + response.code());
                 }
+                isLoading.postValue(false);
             }
 
             @Override
-            public void onFailure(Call<CartDto> call, Throwable t) {
-                errorMessage.postValue("Network error: " + t.getMessage());
+            public void onFailure(@NonNull Call<CartDto> call, @NonNull Throwable t) {
+                errorMessage.postValue("Lỗi mạng: " + t.getMessage());
+                isLoading.postValue(false);
             }
         });
     }
 
-    public void fetchCart() {
-        // BÂY GIỜ KHÔNG CẦN TRUYỀN TOKEN NỮA
-        cartRepository.getCart(new Callback<CartDto>() {
+    public void removeItemFromCart(int productId) {
+        isLoading.postValue(true);
+        cartRepository.removeItemFromCart(productId, new Callback<CartDto>() {
             @Override
-            public void onResponse(Call<CartDto> call, Response<CartDto> response) {
+            public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     cartLiveData.postValue(response.body());
                 } else {
-                    errorMessage.postValue("Failed to fetch cart. Error code: " + response.code());
+                    errorMessage.postValue("Lỗi xóa sản phẩm. Mã: " + response.code());
                 }
+                isLoading.postValue(false);
             }
 
             @Override
-            public void onFailure(Call<CartDto> call, Throwable t) {
-                errorMessage.postValue("Network error: " + t.getMessage());
+            public void onFailure(@NonNull Call<CartDto> call, @NonNull Throwable t) {
+                errorMessage.postValue("Lỗi mạng khi xóa sản phẩm: " + t.getMessage());
+                isLoading.postValue(false);
+            }
+        });
+    }
+
+
+    public void updateItemQuantity(int productId, int newQuantity) {
+        isLoading.postValue(true);
+        // Gọi đúng phương thức updateItemQuantity từ repository
+        cartRepository.updateItemQuantity(productId, newQuantity, new Callback<CartDto>() {
+            @Override
+            public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    cartLiveData.postValue(response.body()); // Cập nhật lại giỏ hàng
+                } else {
+                    errorMessage.postValue("Lỗi cập nhật số lượng. Mã: " + response.code());
+                }
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CartDto> call, @NonNull Throwable t) {
+                errorMessage.postValue("Lỗi mạng: " + t.getMessage());
+                isLoading.postValue(false);
             }
         });
     }
