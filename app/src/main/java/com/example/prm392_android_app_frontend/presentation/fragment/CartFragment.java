@@ -164,7 +164,7 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
     @Override
     public void onDecreaseQuantity(CartItemDto item) {
         // TODO: Gọi ViewModel để giảm số lượng trên server
-        // Ví dụ: cartViewModel.updateItemQuantity(item.getProductId(), item.getQuantity() - 1);
+        // Ví dụ: cartViewModel.updateItemQuantity(item.getProductId(),  item.getQuantity() - 1);
         Toast.makeText(getContext(), "Giảm số lượng cho: " + item.getProductName(), Toast.LENGTH_SHORT).show();
     }
 

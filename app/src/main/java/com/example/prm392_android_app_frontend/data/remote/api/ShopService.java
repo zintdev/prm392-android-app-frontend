@@ -13,7 +13,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.DELETE;
-import retrofit2.http.PUT;
+import retrofit2.http.PATCH;
 
 
 
@@ -31,11 +31,9 @@ public interface ShopService {
     @POST("cart/items")
     Call<CartDto> addToCart(@Body AddToCartRequestDto requestBody);
 
-    @DELETE("cart/items/{productId}")
-    Call<CartDto> removeItemFromCart(@Path("productId") int productId);
+//    @DELETE("cart/items/{productId}")
+//    Call<CartDto> removeItemFromCart(@Path("productId") int productId);
 
-    @PUT("cart/items/{productId}")
+    @PATCH("cart/items/{productId}")
     Call<CartDto> updateItemQuantity(@Path("productId") int productId, @Body UpdateCartItemRequest body);
-
-
 }
