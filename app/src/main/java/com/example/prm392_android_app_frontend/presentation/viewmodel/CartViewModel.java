@@ -11,6 +11,7 @@ import com.example.prm392_android_app_frontend.data.repository.CartRepository;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
 import com.example.prm392_android_app_frontend.data.remote.api.ShopService;
 
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,6 +82,28 @@ public class CartViewModel extends AndroidViewModel {
             @Override
             public void onFailure(@NonNull Call<CartDto> call, @NonNull Throwable t) {
                 errorMessage.postValue("Lỗi mạng khi xóa sản phẩm: " + t.getMessage());
+                isLoading.postValue(false);
+            }
+        });
+    }
+    public void addProductToCart(int productId, int quantity) {
+        isLoading.postValue(true);
+        cartRepository.addProductToCart(productId, quantity, new Callback<CartDto>() {
+            @Override
+            public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Cập nhật giỏ hàng với dữ liệu mới nhận về
+                    // Hoặc có thể tạo một LiveData riêng để báo thành công
+                    cartLiveData.postValue(response.body());
+                } else {
+                    errorMessage.postValue("Lỗi thêm vào giỏ hàng. Mã: " + response.code());
+                }
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CartDto> call, @NonNull Throwable t) {
+                errorMessage.postValue("Lỗi mạng: " + t.getMessage());
                 isLoading.postValue(false);
             }
         });

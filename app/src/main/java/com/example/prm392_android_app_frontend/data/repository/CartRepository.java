@@ -32,7 +32,13 @@ public class CartRepository {
     }
     public void removeItemFromCart(int productId, Callback<CartDto> callback) {
         shopService.removeItemFromCart(productId).enqueue(callback);
+
     }
+    public void addProductToCart(int productId, int quantity, Callback<CartDto> callback) {
+        AddToCartRequestDto requestBody = new AddToCartRequestDto(productId, quantity);
+        shopService.addToCart(requestBody).enqueue(callback);
+    }
+
 
 
     public void getCart(Callback<CartDto> callback) {
