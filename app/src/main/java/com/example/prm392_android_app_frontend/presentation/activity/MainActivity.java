@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prm392_android_app_frontend.R;
+import com.example.prm392_android_app_frontend.presentation.component.NavbarManager;
 import com.example.prm392_android_app_frontend.presentation.fragment.user.AccountFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.user.BlogFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.user.CartFragment;

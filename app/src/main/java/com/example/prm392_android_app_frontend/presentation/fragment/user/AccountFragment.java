@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.prm392_android_app_frontend.R;
+import com.example.prm392_android_app_frontend.presentation.activity.MainActivity;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.example.prm392_android_app_frontend.presentation.activity.LoginActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.ProfileActivity;
@@ -63,7 +64,7 @@ public class AccountFragment extends Fragment {
         rowLogout.setOnClickListener(v1 -> {
             TokenStore.clear(requireContext());
             Snackbar.make(v1, "Đã đăng xuất", Snackbar.LENGTH_SHORT).show();
-            startActivity(new Intent(requireContext(), LoginActivity.class));
+            startActivity(new Intent(requireContext(), MainActivity.class));
             requireActivity().finish();
         });
 

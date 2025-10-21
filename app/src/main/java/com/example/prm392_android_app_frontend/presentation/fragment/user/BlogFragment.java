@@ -14,6 +14,6 @@ import com.example.prm392_android_app_frontend.R;
 public class BlogFragment extends Fragment {
     @Nullable
     @Override public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_blog, container, false);
+        return inflater.inflate(R.layout.fragment_blog_list, container, false);
     }
 }
