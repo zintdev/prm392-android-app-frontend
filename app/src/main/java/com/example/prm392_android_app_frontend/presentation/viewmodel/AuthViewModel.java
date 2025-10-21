@@ -18,7 +18,7 @@ public class AuthViewModel extends ViewModel {
     }
 
     public void login(String usernameOrEmail, String password) {
-        // thêm nguồn tạm thời và remove khi không còn LOADING để tránh leak
+
         LiveData<Resource<LoginResponse>> src = repo.login(usernameOrEmail, password);
         loginState.addSource(src, res -> {
             loginState.setValue(res);

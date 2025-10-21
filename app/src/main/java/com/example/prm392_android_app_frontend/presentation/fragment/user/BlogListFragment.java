@@ -1,4 +1,4 @@
-package com.example.prm392_android_app_frontend.presentation.fragment;
+package com.example.prm392_android_app_frontend.presentation.fragment.user;
 
 import android.content.Intent;
 import android.os.Bundle;

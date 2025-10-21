@@ -26,4 +26,16 @@
     <string name="register">Đăng kí</string>
     <string name="backToHome">Quay lại trang chủ</string>
     <string name="backToLogin">Quay lại đăng nhập"</string>
+        <!-- Your other strings are here -->
+
+        <!-- Add the missing strings below -->
+        <string name="store_list_title">Store List</string>
+        <string name="go_to_my_location">Go to My Location</string>
+        <string name="refresh_stores">Refresh Stores</string>
+        <string name="loading">Loading…</string>
+        <string name="store_list_count_default">0 Stores</string>
+        <string name="all">All</string>
+        <!-- Phần này của th nào làm cái trnag include_store_filter thì sửa vào đây nha-->
+        <string name="apply">Apply??</string>
+        <string name="pickup">pickup??</string>
 </resources>
