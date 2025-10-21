@@ -48,13 +48,18 @@
             android:name=".presentation.activity.RegisterActivity"
             android:exported="true"
             android:label="Register" />
+
         <activity android:name=".presentation.activity.AdminMainActivity"
             android:exported="true"
             android:label="Admin" />
+
         <activity android:name=".presentation.activity.MainActivity"
             android:exported="true"
             android:label="User" />
-
+            
+        <activity
+            android:name=".presentation.activity.ProductDetailActivity"
+            android:exported="false" />
 
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
