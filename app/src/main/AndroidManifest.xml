@@ -25,7 +25,7 @@
 
         <!-- Launcher: mở MainActivity với BottomNavigation trước -->
         <activity
-            android:name=".presentation.activity.SplashActivity"
+            android:name=".presentation.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -53,7 +53,7 @@
             android:exported="true"
             android:label="Admin" />
 
-        <activity android:name=".presentation.activity.MainActivity"
+        <activity android:name=".presentation.activity.SplashActivity"
             android:exported="true"
             android:label="User" />
             
