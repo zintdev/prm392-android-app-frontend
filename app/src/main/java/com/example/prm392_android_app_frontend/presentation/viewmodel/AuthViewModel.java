@@ -12,7 +12,6 @@ public class AuthViewModel extends ViewModel {
 
     private final AuthRepository repo = new AuthRepository();
     private final MediatorLiveData<Resource<LoginResponse>> loginState = new MediatorLiveData<>();
-
     public LiveData<Resource<LoginResponse>> getLoginState() {
         return loginState;
     }
