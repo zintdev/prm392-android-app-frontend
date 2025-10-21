@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.prm392_android_app_frontend.data.dto.CartDto;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient; // <<<< Dùng ApiClient
-import com.example.prm392_android_app_frontend.data.remote.api.ApiService;
+import com.example.prm392_android_app_frontend.data.remote.api.ShopApi;
 import com.example.prm392_android_app_frontend.data.repository.CartRepository;
 
 import retrofit2.Call;
@@ -28,11 +28,11 @@ public class CartViewModel extends androidx.lifecycle.AndroidViewModel {
 
         // Lấy ApiService từ client CÓ XÁC THỰC
         // Dùng application context để an toàn
-        ApiService authApiService = ApiClient.getAuthClient(application.getApplicationContext())
-                .create(ApiService.class);
+        ShopApi authShopApi = ApiClient.getAuthClient(application.getApplicationContext())
+                .create(ShopApi.class);
 
         // Khởi tạo CartRepository với ApiService có xác thực
-        this.cartRepository = new CartRepository(authApiService);
+        this.cartRepository = new CartRepository(authShopApi);
     }
 
     public LiveData<CartDto> getCartLiveData() {

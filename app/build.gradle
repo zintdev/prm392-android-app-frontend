@@ -61,6 +61,7 @@ dependencies {
     // Lifecycle (ViewModel + LiveData) nếu bạn dùng code MVVM mình đã đưa
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.6'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.8.6'
+
 }
 
 
