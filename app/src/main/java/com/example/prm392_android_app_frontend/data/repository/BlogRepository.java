@@ -77,6 +77,8 @@ public class BlogRepository {
                 if (jsonObject.has("data")) {
                     dataArray = jsonObject.getJSONArray("data");
                 } else {
+                    // If there's no "data" field, try using the whole object as an array
+                    // or look for other potential field names
                     Log.w(TAG, "No 'data' field found in JSON response");
                     // Try common alternatives
                     if (jsonObject.has("items")) {

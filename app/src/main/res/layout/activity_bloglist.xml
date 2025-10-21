@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Navbar/Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:title="Blog List"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/ic_menu"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/navbar_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Bottom Navigation Bar -->
+    <LinearLayout
+        android:id="@+id/navbar_container"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/navbar_height"
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Home -->
+        <LinearLayout
+            android:id="@+id/nav_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/navbar_item_padding"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:id="@+id/nav_home_icon"
+                android:layout_width="@dimen/navbar_icon_size"
+                android:layout_height="@dimen/navbar_icon_size"
+                android:layout_marginBottom="2dp"
+                android:src="@drawable/ic_home"
+                android:duplicateParentState="true"
+                android:contentDescription="@string/nav_home"
+                app:tint="@color/nav_item_tint" />
+
+            <TextView
+                android:id="@+id/nav_home_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_home"
+                android:textSize="@dimen/navbar_text_size"
+                android:textColor="@color/nav_item_tint"
+                android:fontFamily="sans-serif-medium"
+                android:duplicateParentState="true"/>
+        </LinearLayout>
+
+
+        <!-- Blogs -->
+        <LinearLayout
+            android:id="@+id/nav_blogs"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/nav_bg_item"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/navbar_item_padding"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:id="@+id/nav_blogs_icon"
+                android:layout_width="@dimen/navbar_icon_size"
+                android:layout_height="@dimen/navbar_icon_size"
+                android:layout_marginBottom="2dp"
+                android:src="@drawable/ic_blog"
+                android:duplicateParentState="true"
+                android:contentDescription="@string/nav_blogs"
+                app:tint="@color/nav_item_tint" />
+
+            <TextView
+                android:id="@+id/nav_blogs_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_blogs"
+                android:textColor="@color/nav_item_tint"
+                android:textSize="@dimen/navbar_text_size"
+                android:fontFamily="sans-serif-medium" />
+
+        </LinearLayout>
+
+        <!-- Search -->
+        <LinearLayout
+            android:id="@+id/nav_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/nav_bg_item"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/navbar_item_padding"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:id="@+id/nav_search_icon"
+                android:layout_width="@dimen/navbar_icon_size"
+                android:layout_height="@dimen/navbar_icon_size"
+                android:layout_marginBottom="2dp"
+                android:src="@drawable/ic_search"
+                android:contentDescription="@string/nav_search"
+                app:tint="@color/nav_item_tint"/>
+
+            <TextView
+                android:id="@+id/nav_search_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_search"
+                android:textColor="@color/nav_item_tint"
+                android:textSize="@dimen/navbar_text_size"
+                android:fontFamily="sans-serif-medium" />
+
+        </LinearLayout>
+
+        <!-- Stats -->
+        <LinearLayout
+            android:id="@+id/nav_stats"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/nav_bg_item"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/navbar_item_padding"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:id="@+id/nav_stats_icon"
+                android:layout_width="@dimen/navbar_icon_size"
+                android:layout_height="@dimen/navbar_icon_size"
+                android:layout_marginBottom="2dp"
+                android:src="@drawable/ic_stats"
+                android:contentDescription="@string/nav_stats"
+                app:tint="@color/nav_item_tint"/>
+
+            <TextView
+                android:id="@+id/nav_stats_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_stats"
+                android:textColor="@color/nav_item_tint"
+                android:textSize="@dimen/navbar_text_size"
+                android:fontFamily="sans-serif-medium" />
+
+        </LinearLayout>
+
+        <!-- Profile -->
+        <LinearLayout
+            android:id="@+id/nav_profile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/nav_bg_item"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/navbar_item_padding"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:id="@+id/nav_profile_icon"
+                android:layout_width="@dimen/navbar_icon_size"
+                android:layout_height="@dimen/navbar_icon_size"
+                android:layout_marginBottom="2dp"
+                android:src="@drawable/ic_profile"
+                android:contentDescription="@string/nav_profile"
+                app:tint="@color/nav_item_tint"/>
+
+            <TextView
+                android:id="@+id/nav_profile_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_profile"
+                android:textColor="@color/nav_item_tint"
+                android:textSize="@dimen/navbar_text_size"
+                android:fontFamily="sans-serif-medium" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
