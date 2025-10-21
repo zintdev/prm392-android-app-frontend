@@ -181,7 +181,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:src="@drawable/ic_nogi_logo" />
+                        android:src="@drawable/ic_truck_delivery" />
 
                     <ImageButton
                         android:id="@+id/btnOrderCompleted"
