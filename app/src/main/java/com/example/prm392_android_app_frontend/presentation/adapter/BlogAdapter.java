@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.prm392_android_app_frontend.R;
-import com.example.prm392_android_app_frontend.data.dto.BlogDto;
+import com.example.prm392_android_app_frontend.presentation.fragment.user.BlogDetailFragment;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.prm392_android_app_frontend.presentation.fragment;
+package com.example.prm392_android_app_frontend.presentation.fragment.user;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
