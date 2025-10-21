@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-        // Observe state từ ViewModel
+
         viewModel.getLoginState().observe(this, res -> {
             if (res == null) return;
             switch (res.getStatus()) {
@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void doLogin() {
-        if (isSubmitting) return; // tránh bấm liên tục
+        if (isSubmitting) return;
 
         String usernameOrEmail = edtEmailOrUsername.getText().toString().trim();
         String pass = edtPassword.getText().toString();
@@ -96,7 +96,6 @@ public class LoginActivity extends AppCompatActivity {
         isSubmitting = true;
         setLoading(true);
 
-        // ✅ Gọi ViewModel (thay cho api.login(...))
         viewModel.login(usernameOrEmail, pass);
     }
 
@@ -120,8 +119,8 @@ public class LoginActivity extends AppCompatActivity {
                 user.getEmail(),
                 user.getRole()
         );
+        toast("Đăng nhập thành công");
 
-        // Điều hướng về Main
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(i);
         finish();

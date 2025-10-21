@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Enter Your Name">
+            android:hint="Nhập tên của bạn">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextUsername"
@@ -65,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Enter Your Email">
+            android:hint="Nhập email của bạn">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextEmail"
@@ -81,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Enter Your Phone">
+            android:hint="Nhập số điện thoại">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextPhone"
@@ -97,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Enter Your Password"
+            android:hint="Nhập mật khẩu"
             app:endIconMode="password_toggle">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -113,7 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="16dp"
-            android:text="Register"
+            android:text="Đăng Ký"
             android:textAllCaps="false"
             android:backgroundTint="@color/nogi_purple_600"
             android:foreground="?attr/selectableItemBackground" />
@@ -123,7 +123,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="12dp"
-            android:text="Back to Login"
+            android:text="Trở về trang đăng nhập"
             android:textAllCaps="false"
             android:backgroundTint="@color/nogi_purple_900"
             android:foreground="?attr/selectableItemBackground" />

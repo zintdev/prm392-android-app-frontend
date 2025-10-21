@@ -17,7 +17,7 @@
     <string name="app_name">乃木坂４６</string>
     <string name="Login">Đăng nhập</string>
     <string name="cd_logo_desc">Nogizaka46 logo</string>
-    <string name="hint_email">Username hoặc Email</string>
+    <string name="hint_email">Tên tài khoản hoặc Email</string>
     <string name="hint_password">Mật khẩu</string>
     <string name="forgot_password">Quên Mật Khẩu?</string>
     <string name="action_login">Đăng nhập</string>

@@ -1,7 +1,5 @@
 package com.example.prm392_android_app_frontend.presentation.adapter;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,62 +11,59 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.prm392_android_app_frontend.data.dto.BlogDto;
 import com.example.prm392_android_app_frontend.R;
-import com.example.prm392_android_app_frontend.presentation.fragment.BlogDetailFragment;
+import com.example.prm392_android_app_frontend.data.dto.BlogDto;
 
 import java.util.List;
 
 public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.BlogViewHolder> {
 
-    private List<BlogDto> blogDtos;
+    public interface OnItemClick { void onClick(BlogDto item); }
 
-    public BlogAdapter(List<BlogDto> blogDtos) {
+    private List<BlogDto> blogDtos;
+    private final OnItemClick onItemClick;
+
+    public BlogAdapter(List<BlogDto> blogDtos, OnItemClick onItemClick) {
         this.blogDtos = blogDtos;
+        this.onItemClick = onItemClick;
     }
 
     @NonNull
     @Override
     public BlogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.blog_item, parent, false);
-        return new BlogViewHolder(view);
+        return new BlogViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull BlogViewHolder holder, int position) {
         BlogDto item = blogDtos.get(position);
-        holder.titleText.setText(item.getTitle());
-        holder.dateText.setText(item.getDate());
-        holder.authorText.setText(item.getAuthor());
+        holder.title.setText(item.getTitle());
+        holder.author.setText(item.getAuthor());
+        holder.date.setText(item.getDate());
 
-        // Load blog image using Glide
-        String imageUrl = item.getImageUrl();
-        if (imageUrl != null && !imageUrl.isEmpty()) {
+        // Load ảnh bằng Glide
+        if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
             Glide.with(holder.itemView.getContext())
-                    .load(imageUrl)
+                    .load(item.getImageUrl())
                     .apply(new RequestOptions()
                             .placeholder(R.drawable.blog_placeholder)
                             .error(R.drawable.blog_placeholder)
                             .centerCrop())
-                    .into(holder.blogImage);
+                    .into(holder.image);
         } else {
-            // Set default placeholder image
-            holder.blogImage.setImageResource(R.drawable.blog_placeholder);
+            holder.image.setImageResource(R.drawable.blog_placeholder);
         }
 
-        // Set click listener to navigate to blog detail
         holder.itemView.setOnClickListener(v -> {
-            Context context = v.getContext();
-            Intent intent = new Intent(context, BlogDetailFragment.class);
-            intent.putExtra(BlogDetailFragment.EXTRA_BLOG_ITEM, item);
-            context.startActivity(intent);
+            if (onItemClick != null) onItemClick.onClick(item);
         });
     }
 
     @Override
     public int getItemCount() {
-        return blogDtos.size();
+        return blogDtos != null ? blogDtos.size() : 0;
     }
 
     public void updateData(List<BlogDto> newBlogDtos) {
@@ -76,18 +71,16 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.BlogViewHolder
         notifyDataSetChanged();
     }
 
-    public static class BlogViewHolder extends RecyclerView.ViewHolder {
-        TextView titleText;
-        TextView dateText;
-        TextView authorText;
-        ImageView blogImage;
+    static class BlogViewHolder extends RecyclerView.ViewHolder {
+        TextView title, author, date;
+        ImageView image;
 
-        public BlogViewHolder(@NonNull View itemView) {
+        BlogViewHolder(@NonNull View itemView) {
             super(itemView);
-            titleText = itemView.findViewById(R.id.title_text);
-            dateText = itemView.findViewById(R.id.date_text);
-            authorText = itemView.findViewById(R.id.author_text);
-            blogImage = itemView.findViewById(R.id.blog_image);
+            title = itemView.findViewById(R.id.title_text);
+            author = itemView.findViewById(R.id.author_text);
+            date = itemView.findViewById(R.id.date_text);
+            image = itemView.findViewById(R.id.blog_image);
         }
     }
 }

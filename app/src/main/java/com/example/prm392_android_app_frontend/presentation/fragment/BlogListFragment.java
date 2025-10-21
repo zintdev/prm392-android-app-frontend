@@ -1,102 +1,126 @@
-package com.example.prm392_android_app_frontend.presentation.fragment;
+    package com.example.prm392_android_app_frontend.presentation.fragment;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
+    import android.os.Bundle;
+    import android.view.LayoutInflater;
+    import android.view.View;
+    import android.view.ViewGroup;
+    import android.widget.ProgressBar;
+    import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+    import androidx.annotation.NonNull;
+    import androidx.annotation.Nullable;
+    import androidx.fragment.app.Fragment;
+    import androidx.lifecycle.ViewModelProvider;
+    import androidx.recyclerview.widget.LinearLayoutManager;
+    import androidx.recyclerview.widget.RecyclerView;
+    import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.prm392_android_app_frontend.presentation.adapter.BlogAdapter;
-import com.example.prm392_android_app_frontend.presentation.component.NavbarManager;
-import com.example.prm392_android_app_frontend.presentation.activity.MainActivity;
-import com.example.prm392_android_app_frontend.data.dto.BlogDto;
-import com.example.prm392_android_app_frontend.data.repository.BlogRepository;
-import com.example.prm392_android_app_frontend.R;
+    import com.example.prm392_android_app_frontend.R;
+    import com.example.prm392_android_app_frontend.core.util.Resource;
+    import com.example.prm392_android_app_frontend.data.dto.BlogDto;
+    import com.example.prm392_android_app_frontend.presentation.adapter.BlogAdapter;
+    import com.example.prm392_android_app_frontend.presentation.viewmodel.BlogViewModel;
 
-import java.util.List;
+    import java.util.ArrayList;
+    import java.util.List;
 
-public class BlogListFragment extends AppCompatActivity implements BlogRepository.BlogDataListener, NavbarManager.OnNavItemClickListener {
+    public class BlogListFragment extends Fragment {
 
-    private static final String TAG = "BlogListActivity";
-    private RecyclerView recyclerView;
-    private BlogAdapter adapter;
-    private NavbarManager navbarManager;
+        private SwipeRefreshLayout swipe;
+        private RecyclerView rv;
+        private ProgressBar progress;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bloglist);
+        private final List<BlogDto> data = new ArrayList<>();
+        private BlogAdapter adapter;
+        private BlogViewModel viewModel;
 
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        
-        // Add smooth scrolling and performance optimizations
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemViewCacheSize(20);
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater,
+                                 @Nullable ViewGroup container,
+                                 @Nullable Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_blog_list, container, false);
+        }
 
-        // Initialize navbar - pass the root view so NavbarManager can find navbar items
-        navbarManager = new NavbarManager(findViewById(android.R.id.content), this);
-        // Set blogs as selected since we're in BlogListActivity
-        navbarManager.setSelectedItem(R.id.nav_blogs);
+        @Override
+        public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(v, savedInstanceState);
 
-        // Fetch blog data
-        BlogRepository blogRepository = new BlogRepository();
-        blogRepository.fetchData(this);
-    }
+            swipe = v.findViewById(R.id.swipe);
+            rv = v.findViewById(R.id.rvBlogs);
+            progress = v.findViewById(R.id.progress);
 
-    @Override
-    public void onBlogDataFetched(List<BlogDto> blogDtos) {
-        Log.d(TAG, "Blog data fetched successfully, size: " + blogDtos.size());
-        if (adapter == null) {
-            adapter = new BlogAdapter(blogDtos);
-            recyclerView.setAdapter(adapter);
-        } else {
-            adapter.updateData(blogDtos);
+            rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+            adapter = new BlogAdapter(data, item -> {
+
+                Fragment detail = BlogDetailFragment.newInstance(item);
+
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(
+                                R.anim.slide_in_right,
+                                R.anim.slide_out_left,
+                                R.anim.slide_in_left,
+                                R.anim.slide_out_right
+                        )
+                        .replace(R.id.fragment_container, detail)
+                        .addToBackStack("blog_detail")
+                        .commit();
+            });
+
+
+
+            rv.setAdapter(adapter);
+
+            viewModel = new ViewModelProvider(this).get(BlogViewModel.class);
+            observeViewModel();
+
+            swipe.setOnRefreshListener(() -> viewModel.fetchBlogs());
+
+            showLoading(true);
+            viewModel.fetchBlogs();
+        }
+
+        private void observeViewModel() {
+            viewModel.getBlogsState().observe(getViewLifecycleOwner(), res -> {
+                if (res == null) return;
+
+                switch (res.getStatus()) {
+                    case LOADING:
+                        showLoading(true);
+                        break;
+                    case SUCCESS:
+                        showLoading(false);
+                        swipe.setRefreshing(false);
+                        List<BlogDto> items = res.getData();
+                        data.clear();
+                        if (items != null) data.addAll(items);
+                        adapter.notifyDataSetChanged();
+                        break;
+                    case ERROR:
+                        showLoading(false);
+                        swipe.setRefreshing(false);
+                        Toast.makeText(requireContext(),
+                                res.getMessage() != null ? res.getMessage() : "Lỗi tải blog",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            });
+        }
+
+        private void showLoading(boolean isLoading) {
+            if (progress != null)
+                progress.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            if (rv != null) rv.setAdapter(null);
+            swipe = null;
+            rv = null;
+            progress = null;
+            adapter = null;
         }
     }
-
-    @Override
-    public void onError(String errorMessage) {
-        Log.e(TAG, "Error fetching blog data: " + errorMessage);
-        // You might want to show an error message to the user
-    }
-
-    @Override
-    public void onNavItemClick(int itemId) {
-        String itemName = getNavItemName(itemId);
-        
-        if (itemId == R.id.nav_home) {
-            // Navigate to home
-            Intent intent = new Intent(BlogListFragment.this, MainActivity.class);
-            startActivity(intent);
-            finish(); // Close current activity
-        } else if (itemId == R.id.nav_blogs) {
-            // Already on blogs, maybe refresh or scroll to top
-            Toast.makeText(this, "Already on Blogs", Toast.LENGTH_SHORT).show();
-            recyclerView.smoothScrollToPosition(0);
-        } else if (itemId == R.id.nav_search) {
-            // Navigate to search (you can create SearchActivity later)
-            Toast.makeText(this, "Search selected", Toast.LENGTH_SHORT).show();
-        } else if (itemId == R.id.nav_stats) {
-            // Navigate to stats (you can create StatsActivity later)
-            Toast.makeText(this, "Stats selected", Toast.LENGTH_SHORT).show();
-        } else if (itemId == R.id.nav_profile) {
-            // Navigate to profile (you can create ProfileActivity later)
-            Toast.makeText(this, "Profile selected", Toast.LENGTH_SHORT).show();
-        }
-        
-        Log.d(TAG, "Navigation item clicked: " + itemName);
-    }
-    
-    private String getNavItemName(int itemId) {
-        if (itemId == R.id.nav_home) return "Home";
-        else if (itemId == R.id.nav_blogs) return "Blogs";
-        else if (itemId == R.id.nav_search) return "Search";
-        else if (itemId == R.id.nav_stats) return "Stats";
-        else if (itemId == R.id.nav_profile) return "Profile";
-        else return "Unknown";
-    }
-}
