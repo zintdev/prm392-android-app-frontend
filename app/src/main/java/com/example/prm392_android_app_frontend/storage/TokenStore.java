@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class TokenStore {
+
     private static final String PREF = "auth_pref";
     private static final String KEY_TOKEN = "token";
     private static final String KEY_USER_ID = "id";
@@ -11,11 +12,16 @@ public class TokenStore {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_ROLE = "role";
 
+    // ==============================================================
+    // ⚙️ Cấu hình SharedPreferences
+    // ==============================================================
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
     }
 
-    // ✅ Lưu thông tin khi login thành công
+    // ==============================================================
+    // 💾 Lưu thông tin sau khi đăng nhập thành công
+    // ==============================================================
     public static void saveLogin(Context context, String token, int id, String username, String email, String role) {
         SharedPreferences.Editor editor = getPrefs(context).edit();
         editor.putString(KEY_TOKEN, token);
@@ -26,17 +32,44 @@ public class TokenStore {
         editor.apply();
     }
 
-    // ✅ Kiểm tra trạng thái đăng nhập
+    // Dành cho trường hợp chỉ cần cập nhật token
+    public static void saveToken(Context context, String token) {
+        getPrefs(context).edit().putString(KEY_TOKEN, token).apply();
+    }
+
+    // Dành cho trường hợp chỉ cập nhật role
+    public static void saveRole(Context context, String role) {
+        getPrefs(context).edit().putString(KEY_ROLE, role).apply();
+    }
+
+    // ==============================================================
+    // 🔐 Kiểm tra trạng thái đăng nhập & phân quyền
+    // ==============================================================
     public static boolean isLoggedIn(Context context) {
         return getToken(context) != null;
     }
 
-    // ✅ Lấy token
+    public static boolean isAdmin(Context context) {
+        String r = getRole(context);
+        if (r == null) return false;
+        r = r.trim().toUpperCase();
+        return r.equals("ADMIN") || r.equals("ROLE_ADMIN") || r.equals("ADMINISTRATOR");
+    }
+
+    public static boolean isUser(Context context) {
+        String r = getRole(context);
+        if (r == null) return false;
+        r = r.trim().toUpperCase();
+        return r.equals("USER") || r.equals("CUSTOMER") || r.equals("ROLE_USER");
+    }
+
+    // ==============================================================
+    // 📥 Getter cho các trường
+    // ==============================================================
     public static String getToken(Context context) {
         return getPrefs(context).getString(KEY_TOKEN, null);
     }
 
-    // ✅ Lấy các thông tin user
     public static int getUserId(Context context) {
         return getPrefs(context).getInt(KEY_USER_ID, -1);
     }
@@ -50,10 +83,12 @@ public class TokenStore {
     }
 
     public static String getRole(Context context) {
-        return getPrefs(context).getString(KEY_ROLE, "");
+        return getPrefs(context).getString(KEY_ROLE, null);
     }
 
-    // ✅ Xóa toàn bộ khi logout
+    // ==============================================================
+    // 🚪 Đăng xuất – Xóa toàn bộ thông tin
+    // ==============================================================
     public static void clear(Context context) {
         getPrefs(context).edit().clear().apply();
     }
