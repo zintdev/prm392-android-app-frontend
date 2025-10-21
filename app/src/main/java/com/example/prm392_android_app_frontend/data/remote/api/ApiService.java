@@ -14,7 +14,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 
-public interface ShopApi {
+public interface ApiService {
 
 
 
@@ -27,11 +27,11 @@ public interface ShopApi {
     @GET("products/{id}")
     Call<ProductDto> getProductById(@Path("id") int id);
 
-    @GET("cart")
+    @GET("api/cart")
     Call<CartDto> getCart();
 
     // Bỏ @Header đi
-    @POST("cart/items")
+    @POST("api/cart/items")
     Call<CartDto> addToCart(@Body AddToCartRequestDto requestBody);
 
 }
