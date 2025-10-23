@@ -43,7 +43,6 @@ public class HomeFragment extends Fragment {
 
         // Bắt đầu quan sát dữ liệu
         observeViewModel();
-        productViewModel.fetchAllProducts();
     }
 
     private void observeViewModel() {

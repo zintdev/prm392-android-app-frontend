@@ -1,6 +1,5 @@
 package com.example.prm392_android_app_frontend.presentation.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,22 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.CartDto;
+import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.CartItemDto;
-import com.example.prm392_android_app_frontend.presentation.activity.CheckoutActivity;
 import com.example.prm392_android_app_frontend.presentation.adapter.CartAdapter;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.CartViewModel;
 import com.google.android.material.button.MaterialButton;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-
 
 public class CartFragment extends Fragment implements CartAdapter.OnCartItemActionListener {
 
@@ -38,25 +31,34 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
     private ProgressBar progressBar;
     private TextView textViewEmptyCart;
     private TextView textViewTotalPrice;
-    private View bottomBar;
+    private View bottomBar; // Thanh chứa tổng tiền và nút thanh toán
     private MaterialButton buttonCheckout;
-
-
-    private List<CartItemDto> currentCartItems = new ArrayList<>();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Gắn layout "fragment_cart.xml" vào Fragment này.
+        // Tuyệt đối không viết thêm logic nào sau lệnh return này.
         return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Khởi tạo các view từ layout
         initViews(view);
+
+        // Khởi tạo ViewModel
         cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+
+        // Thiết lập RecyclerView và Adapter
         setupRecyclerView();
+
+        // Bắt đầu lắng nghe dữ liệu từ ViewModel
         observeViewModel();
+
+        // Gửi yêu cầu để ViewModel tải dữ liệu giỏ hàng
         cartViewModel.fetchCart();
     }
 
@@ -68,106 +70,85 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
         bottomBar = view.findViewById(R.id.bottom_bar_cart);
         buttonCheckout = view.findViewById(R.id.button_checkout);
 
+        // Xử lý sự kiện khi người dùng nhấn nút "Thanh toán"
         buttonCheckout.setOnClickListener(v -> {
-            // Lọc ra danh sách các sản phẩm đã được chọn để gửi đi thanh toán
-            ArrayList<CartItemDto> selectedItems = new ArrayList<>();
-            for (CartItemDto item : currentCartItems) {
-                if (item.isSelected()) {
-                    selectedItems.add(item);
-                }
-            }
+            // Lấy giỏ hàng hiện tại từ LiveData để kiểm tra
+            CartDto currentCart = cartViewModel.getCartLiveData().getValue();
 
-            if (!selectedItems.isEmpty()) {
-                // TODO: Chuyển danh sách selectedItems sang CheckoutActivity
-                Toast.makeText(getContext(), "Thanh toán " + selectedItems.size() + " sản phẩm...", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getActivity(), CheckoutActivity.class);
-                // intent.putParcelableArrayListExtra("SELECTED_ITEMS", selectedItems); // Cần làm CartItemDto thành Parcelable
+
+            if (currentCart != null && currentCart.getItems() != null && !currentCart.getItems().isEmpty()) {
+                Toast.makeText(getContext(), "Chuyển đến màn hình thanh toán...", Toast.LENGTH_SHORT).show();
+                android.content.Intent intent = new android.content.Intent(getActivity(), com.example.prm392_android_app_frontend.presentation.activity.CheckoutActivity.class);
+
                 startActivity(intent);
             } else {
-                Toast.makeText(getContext(), "Vui lòng chọn ít nhất một sản phẩm để thanh toán!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Giỏ hàng của bạn đang trống!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+
     private void setupRecyclerView() {
+        // Khởi tạo Adapter và truyền "this" vào vì Fragment này đã implement OnCartItemActionListener
         cartAdapter = new CartAdapter(this);
-        recyclerViewCart.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewCart.setAdapter(cartAdapter);
     }
 
     private void observeViewModel() {
-        // Tách riêng observer cho isLoading để code gọn hơn
-        cartViewModel.getIsLoading().observe(getViewLifecycleOwner(), this::showLoading);
+        showLoading(true);
 
-
+        // Lắng nghe dữ liệu giỏ hàng trả về thành công
         cartViewModel.getCartLiveData().observe(getViewLifecycleOwner(), cartDto -> {
+            showLoading(false);
             if (cartDto != null && cartDto.getItems() != null && !cartDto.getItems().isEmpty()) {
+                // Có sản phẩm trong giỏ hàng, hiển thị các view cần thiết
                 textViewEmptyCart.setVisibility(View.GONE);
                 bottomBar.setVisibility(View.VISIBLE);
                 recyclerViewCart.setVisibility(View.VISIBLE);
 
-                // Cập nhật danh sách local và gửi cho adapter
-                currentCartItems = new ArrayList<>(cartDto.getItems());
-                cartAdapter.submitList(currentCartItems);
+                // Cập nhật danh sách sản phẩm cho Adapter
+                cartAdapter.submitList(cartDto.getItems());
 
-                // Tính toán lại tổng tiền ngay sau khi nhận dữ liệu
-                updateTotalPrice();
+
+                DecimalFormat formatter = new DecimalFormat("###,###,###");
+                String formattedPrice = formatter.format(cartDto.getGrandTotal());
+                // Sử dụng String.format để tạo chuỗi cuối cùng một cách an toàn, tránh cảnh báo màu vàng
+                textViewTotalPrice.setText(String.format("%sđ", formattedPrice));
+
             } else {
-                // Xử lý khi giỏ hàng trống
+                // Giỏ hàng trống hoặc có lỗi, hiển thị thông báo
                 textViewEmptyCart.setVisibility(View.VISIBLE);
                 bottomBar.setVisibility(View.GONE);
                 recyclerViewCart.setVisibility(View.GONE);
-                currentCartItems.clear();
-                cartAdapter.submitList(Collections.emptyList());
-                updateTotalPrice(); // Reset tổng tiền về 0
+                cartAdapter.submitList(Collections.emptyList()); // Xóa danh sách hiện tại trong adapter
             }
         });
 
+        // Lắng nghe các thông báo lỗi từ ViewModel
         cartViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            showLoading(false);
+            // Chỉ hiển thị Toast nếu có tin nhắn lỗi thực sự
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(getContext(), "Lỗi: " + error, Toast.LENGTH_LONG).show();
-                // Khi có lỗi cũng ẩn hết view và reset
+                // Đồng thời cập nhật UI để hiển thị trạng thái trống khi có lỗi
                 textViewEmptyCart.setVisibility(View.VISIBLE);
                 bottomBar.setVisibility(View.GONE);
                 recyclerViewCart.setVisibility(View.GONE);
-                currentCartItems.clear();
-                cartAdapter.submitList(Collections.emptyList());
-                updateTotalPrice();
             }
         });
     }
 
 
-    private void updateTotalPrice() {
-        long total = 0;
-        // Duyệt qua danh sách local và chỉ cộng tiền những item được chọn
-        for (CartItemDto item : currentCartItems) {
-            if (item.isSelected()) {
-                total += (long) item.getUnitPrice() * item.getQuantity();
-            }
-        }
-
-        if (total > 0) {
-            DecimalFormat formatter = new DecimalFormat("###,###,###");
-            String formattedPrice = formatter.format(total);
-            textViewTotalPrice.setText(String.format("%sđ", formattedPrice));
-            buttonCheckout.setEnabled(true); // Bật nút thanh toán
-            buttonCheckout.setAlpha(1.0f);
-        } else {
-            textViewTotalPrice.setText("0đ");
-            buttonCheckout.setEnabled(false); // Tắt nút thanh toán nếu không có gì được chọn
-            buttonCheckout.setAlpha(0.5f);
-        }
-    }
 
     private void showLoading(boolean isLoading) {
         if (isLoading) {
             progressBar.setVisibility(View.VISIBLE);
+            textViewEmptyCart.setVisibility(View.GONE);
             recyclerViewCart.setVisibility(View.GONE);
             bottomBar.setVisibility(View.GONE);
-            textViewEmptyCart.setVisibility(View.GONE);
         } else {
             progressBar.setVisibility(View.GONE);
+            // Các view khác sẽ được quản lý trong observeViewModel
         }
     }
 
@@ -175,32 +156,22 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
 
     @Override
     public void onIncreaseQuantity(CartItemDto item) {
-        cartViewModel.updateItemQuantity(item.getProductId(), item.getQuantity() + 1);
-        // Tổng tiền sẽ được cập nhật tự động khi LiveData trả về kết quả
+        // TODO: Gọi ViewModel để tăng số lượng trên server
+        // Ví dụ: cartViewModel.updateItemQuantity(item.getProductId(), item.getQuantity() + 1);
+        Toast.makeText(getContext(), "Tăng số lượng cho: " + item.getProductName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDecreaseQuantity(CartItemDto item) {
-        if (item.getQuantity() > 1) {
-            cartViewModel.updateItemQuantity(item.getProductId(), item.getQuantity() - 1);
-        }
+        // TODO: Gọi ViewModel để giảm số lượng trên server
+        // Ví dụ: cartViewModel.updateItemQuantity(item.getProductId(),  item.getQuantity() - 1);
+        Toast.makeText(getContext(), "Giảm số lượng cho: " + item.getProductName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRemoveItem(CartItemDto item) {
-        cartViewModel.removeItemFromCart(item.getProductId());
-    }
-
-
-    @Override
-    public void onItemSelectionChanged(CartItemDto item, boolean isSelected) {
-        // Cập nhật trạng thái 'selected' trong danh sách local
-        item.setSelected(isSelected);
-        // Tính toán lại tổng tiền ngay lập tức để người dùng thấy thay đổi
-        updateTotalPrice();
-
-        // (Nâng cao) Gửi trạng thái lên server để lưu lại lựa chọn của người dùng
-        // Nếu bạn có API, hãy thêm phương thức mới vào ViewModel và gọi nó ở đây
-        // cartViewModel.updateItemSelection(item.getProductId(), isSelected);
+        // TODO: Gọi ViewModel để xóa sản phẩm khỏi giỏ hàng trên server
+        // Ví dụ: cartViewModel.removeItemFromCart(item.getProductId());
+        Toast.makeText(getContext(), "Xóa: " + item.getProductName(), Toast.LENGTH_SHORT).show();
     }
 }

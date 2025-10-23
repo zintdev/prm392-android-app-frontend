@@ -15,7 +15,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="Giỏ hàng của bạn" />
 
-    <!-- View hiển thị khi giỏ hàng trống -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_cart"
         android:layout_width="0dp"
@@ -25,12 +24,11 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/bottom_bar_cart"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar_cart"
-        app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/item_cart" />
 
+    <!-- View hiển thị khi giỏ hàng trống -->
     <TextView
         android:id="@+id/text_view_empty_cart"
         android:layout_width="wrap_content"
