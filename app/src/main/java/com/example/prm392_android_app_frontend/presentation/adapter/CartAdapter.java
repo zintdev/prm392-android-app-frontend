@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,7 +27,9 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
         void onIncreaseQuantity(CartItemDto item);
         void onDecreaseQuantity(CartItemDto item);
         void onRemoveItem(CartItemDto item);
+        void onItemSelectionChanged(CartItemDto item, boolean isSelected);
     }
+
 
     public CartAdapter(@NonNull OnCartItemActionListener listener) {
         super(DIFF_CALLBACK);
@@ -48,6 +51,7 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
     @NonNull
     @Override
     public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cart, parent, false);
         return new CartViewHolder(view);
     }
@@ -60,6 +64,7 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
 
     static class CartViewHolder extends RecyclerView.ViewHolder {
         private final ImageView imageView;
+        private final CheckBox checkBox;
         private final TextView textViewName;
         private final TextView textViewPrice;
         private final TextView textViewQuantity;
@@ -69,6 +74,7 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
 
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
+            checkBox = itemView.findViewById(R.id.checkbox_cart_item);
             imageView = itemView.findViewById(R.id.image_view_cart_item);
             textViewName = itemView.findViewById(R.id.text_view_cart_item_name);
             textViewPrice = itemView.findViewById(R.id.text_view_cart_item_price);
@@ -85,7 +91,18 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
             DecimalFormat formatter = new DecimalFormat("###,###,###");
             // SỬA Ở ĐÂY: Dùng getUnitPrice() thay vì getPrice()
             textViewPrice.setText(formatter.format(item.getUnitPrice()) + "đ");
+            checkBox.setChecked(item.isSelected());
 
+            // Quan trọng: setOnCheckedChangeListener phải được đặt trước khi setChecked
+            // để tránh vòng lặp vô hạn. Hoặc tốt hơn, clear listener trước.
+            checkBox.setOnCheckedChangeListener(null);
+            checkBox.setChecked(item.isSelected());
+            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                // Chỉ gọi listener nếu trạng thái thực sự thay đổi
+                if (item.isSelected() != isChecked) {
+                    listener.onItemSelectionChanged(item, isChecked);
+                }
+            });
             Glide.with(itemView.getContext())
                     .load(item.getImageUrl())
                     .placeholder(R.drawable.ic_placeholder)
