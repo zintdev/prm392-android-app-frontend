@@ -1,96 +1,131 @@
 package com.example.prm392_android_app_frontend.presentation.component;
 
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.prm392_android_app_frontend.R;
+import com.example.prm392_android_app_frontend.presentation.activity.LoginActivity;
+import com.example.prm392_android_app_frontend.presentation.activity.MapsActivity;
+import com.example.prm392_android_app_frontend.presentation.fragment.user.AccountFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.user.BlogListFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.user.CartFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.user.HomeFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.user.NotificationFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.user.SettingFragment;
+import com.example.prm392_android_app_frontend.storage.TokenStore;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class NavbarManager {
-    
-    public interface OnNavItemClickListener {
-        void onNavItemClick(int itemId);
+
+    public static final String EXTRA_SELECT_TAB = "select_tab";
+
+    private final Activity activity;
+    private final FragmentManager fm;
+    private final @IdRes int containerId;
+    private final BottomNavigationView bottomNav;
+    private final MaterialToolbar toolbar;
+
+    public NavbarManager(Activity activity,
+                         FragmentManager fm,
+                         @IdRes int containerId,
+                         BottomNavigationView bottomNav,
+                         MaterialToolbar toolbar) {
+        this.activity = activity;
+        this.fm = fm;
+        this.containerId = containerId;
+        this.bottomNav = bottomNav;
+        this.toolbar = toolbar;
     }
-    
-    private LinearLayout navHome;
-    private LinearLayout navBlogs;
-    private LinearLayout navSearch;
-    private LinearLayout navStats;
-    private LinearLayout navProfile;
-    
-    private int currentSelectedItem = R.id.nav_home; // Default selection
-    private OnNavItemClickListener listener;
-    
-    public NavbarManager(View rootView, OnNavItemClickListener listener) {
-        this.listener = listener;
-        initViews(rootView);
-        setupClickListeners();
-        setSelectedItem(currentSelectedItem); // Set initial selection
-    }
-    
-    private void initViews(View rootView) {
-        navHome = rootView.findViewById(R.id.nav_home);
-        navBlogs = rootView.findViewById(R.id.nav_blogs);
-        navSearch = rootView.findViewById(R.id.nav_search);
-        navStats = rootView.findViewById(R.id.nav_stats);
-        navProfile = rootView.findViewById(R.id.nav_profile);
-    }
-    
-    private void setupClickListeners() {
-        navHome.setOnClickListener(v -> {
-            setSelectedItem(R.id.nav_home);
-            if (listener != null) listener.onNavItemClick(R.id.nav_home);
-        });
-        
-        navBlogs.setOnClickListener(v -> {
-            setSelectedItem(R.id.nav_blogs);
-            if (listener != null) listener.onNavItemClick(R.id.nav_blogs);
-        });
-        
-        navSearch.setOnClickListener(v -> {
-            setSelectedItem(R.id.nav_search);
-            if (listener != null) listener.onNavItemClick(R.id.nav_search);
-        });
-        
-        navStats.setOnClickListener(v -> {
-            setSelectedItem(R.id.nav_stats);
-            if (listener != null) listener.onNavItemClick(R.id.nav_stats);
-        });
-        
-        navProfile.setOnClickListener(v -> {
-            setSelectedItem(R.id.nav_profile);
-            if (listener != null) listener.onNavItemClick(R.id.nav_profile);
-        });
-    }
-    
-    public void setSelectedItem(int itemId) {
-        // Reset all items
-        resetAllItems();
-        
-        // Set selected state for the clicked item
-        currentSelectedItem = itemId;
-        
-        if (itemId == R.id.nav_home) {
-            navHome.setSelected(true);
-        } else if (itemId == R.id.nav_blogs) {
-            navBlogs.setSelected(true);
-        } else if (itemId == R.id.nav_search) {
-            navSearch.setSelected(true);
-        } else if (itemId == R.id.nav_stats) {
-            navStats.setSelected(true);
-        } else if (itemId == R.id.nav_profile) {
-            navProfile.setSelected(true);
+
+    /** Gọi trong onCreate() của MainActivity */
+    public void init(@Nullable Bundle savedInstanceState) {
+        setupToolbarMenu();
+        setupBottomNav();
+
+        if (savedInstanceState == null) {
+            // Mặc định mở Home
+            bottomNav.setSelectedItemId(R.id.nav_home);
+            switchFragment(new HomeFragment());
         }
     }
-    
-    private void resetAllItems() {
-        navHome.setSelected(false);
-        navBlogs.setSelected(false);
-        navSearch.setSelected(false);
-        navStats.setSelected(false);
-        navProfile.setSelected(false);
+
+    /** Gọi trong onResume() của MainActivity để xử lý chọn tab qua Intent */
+    public void handleSelectTabExtra(Intent intent) {
+        if (intent == null) return;
+        int nextTab = intent.getIntExtra(EXTRA_SELECT_TAB, -1);
+        if (nextTab != -1) {
+            bottomNav.setSelectedItemId(nextTab);
+            switchByMenuId(nextTab);
+            intent.removeExtra(EXTRA_SELECT_TAB);
+        }
     }
-    
-    public int getCurrentSelectedItem() {
-        return currentSelectedItem;
+
+    private void setupToolbarMenu() {
+        if (toolbar == null) return;
+        toolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClicked);
     }
+
+    private boolean onToolbarMenuItemClicked(MenuItem item) {
+        if (item.getItemId() == R.id.action_open_map) {
+            activity.startActivity(new Intent(activity, MapsActivity.class));
+            return true;
+        }
+        return false;
+    }
+
+    private void setupBottomNav() {
+        bottomNav.setOnItemSelectedListener(item -> {
+            boolean ok = switchByMenuId(item.getItemId());
+            // Nếu không ok (ví dụ yêu cầu đăng nhập), giữ nguyên tab cũ
+            return ok;
+        });
+    }
+
+    private boolean switchByMenuId(int id) {
+        if (id == R.id.nav_home)           return switchFragment(new HomeFragment());
+        else if (id == R.id.nav_blog)      return switchFragment(new BlogListFragment());
+        else if (id == R.id.nav_cart)      return switchFragment(new CartFragment());
+        else if (id == R.id.nav_notification) return switchFragment(new NotificationFragment());
+        else if (id == R.id.nav_setting)   return switchFragment(new SettingFragment());
+        else if (id == R.id.nav_account)   return handleAccountTab();
+        return false;
+    }
+
+    private boolean handleAccountTab() {
+        if (TokenStore.isLoggedIn(activity)) {
+            return switchFragment(new AccountFragment());
+        } else {
+            new AlertDialog.Builder(activity)
+                    .setTitle("Yêu cầu đăng nhập")
+                    .setMessage("Bạn cần đăng nhập để sử dụng tính năng này.")
+                    .setPositiveButton("Đăng nhập",
+                            (d, w) -> activity.startActivity(new Intent(activity, LoginActivity.class)))
+                    .setNegativeButton("Hủy", null)
+                    .show();
+            return false;
+        }
+    }
+
+    private boolean switchFragment(Fragment fragment) {
+        fm.beginTransaction()
+                .replace(containerId, fragment)
+                .commit();
+        return true;
+    }
+
+
+//    public void setBottomNavVisible(boolean visible) {
+//        bottomNav.setVisibility(visible ? View.VISIBLE : View.GONE);
+//    }
 }
