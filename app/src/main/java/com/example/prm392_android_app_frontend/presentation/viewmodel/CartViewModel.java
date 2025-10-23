@@ -5,11 +5,12 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
+import com.example.prm392_android_app_frontend.data.dto.UpdateCartItemRequest;
 import com.example.prm392_android_app_frontend.data.dto.CartDto;
-import com.example.prm392_android_app_frontend.data.remote.api.ShopApi;
 import com.example.prm392_android_app_frontend.data.repository.CartRepository;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
+import com.example.prm392_android_app_frontend.data.remote.api.ShopService;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,8 +26,8 @@ public class CartViewModel extends AndroidViewModel {
 
     public CartViewModel(@NonNull Application application) {
         super(application);
-        ShopApi shopApi = ApiClient.getAuthClient(application).create(ShopApi.class);
-        this.cartRepository = new CartRepository(shopApi);
+        ShopService shopService = ApiClient.getAuthClient(application).create(ShopService.class);
+        this.cartRepository = new CartRepository(shopService);
     }
 
     // --- Getters cho LiveData ---

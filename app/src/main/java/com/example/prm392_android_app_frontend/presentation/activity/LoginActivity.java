@@ -28,7 +28,8 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progress;
 
     private AuthViewModel viewModel;
-    private boolean isSubmitting = false;
+    private boolean isSubmitting = false; // chống double-click
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-
+        // Observe state từ ViewModel
         viewModel.getLoginState().observe(this, res -> {
             if (res == null) return;
             switch (res.getStatus()) {
@@ -75,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void doLogin() {
-        if (isSubmitting) return;
+        if (isSubmitting) return; // tránh bấm liên tục
 
         String usernameOrEmail = edtEmailOrUsername.getText().toString().trim();
         String pass = edtPassword.getText().toString();
@@ -95,43 +96,35 @@ public class LoginActivity extends AppCompatActivity {
         isSubmitting = true;
         setLoading(true);
 
+        // ✅ Gọi ViewModel (thay cho api.login(...))
         viewModel.login(usernameOrEmail, pass);
     }
 
-        private void onLoginSuccess(LoginResponse body) {
-            if (body == null || TextUtils.isEmpty(body.getToken())) {
-                toast("Thiếu token trong phản hồi.");
-                return;
-            }
-            LoginResponse.User user = body.getUser();
-            if (user == null) {
-                toast("Phản hồi không có thông tin người dùng.");
-                return;
-            }
-
-            TokenStore.saveLogin(
-                    this,
-                    body.getToken(),
-                    user.getId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getRole()
-            );
-            Intent i;
-            if(isAdmin(user.getRole())){
-                i = new Intent(this, AdminMainActivity.class);
-                }else{
-                i = new Intent(this, MainActivity.class);
-                }
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(i);
-            finish();
+    private void onLoginSuccess(LoginResponse body) {
+        if (body == null || TextUtils.isEmpty(body.getToken())) {
+            toast("Thiếu token trong phản hồi.");
+            return;
+        }
+        LoginResponse.User user = body.getUser();
+        if (user == null) {
+            toast("Phản hồi không có thông tin người dùng.");
+            return;
         }
 
-    private boolean isAdmin(String role) {
-        if (role == null) return false;
-        String r = role.trim().toUpperCase();
-        return r.equals("ADMIN");
+        // Lưu token + thông tin user
+        TokenStore.saveLogin(
+                this,
+                body.getToken(),
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole()
+        );
+
+        // Điều hướng về Main
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(i);
+        finish();
     }
 
     private void setLoading(boolean isLoading) {

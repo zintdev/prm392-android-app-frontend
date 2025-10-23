@@ -4,5 +4,5 @@
     android:padding="24dp">
     <TextView
         android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Chỗ này chỗ dashboard của admin " android:textSize="20sp"/>
+        android:text="Chỗ này chỗ blog " android:textSize="20sp"/>
 </FrameLayout>
