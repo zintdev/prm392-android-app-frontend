@@ -7,12 +7,23 @@ public class UpdateCartItemRequest {
     @SerializedName("quantity")
     private int quantity;
 
-    public UpdateCartItemRequest(int quantity) {
+    @SerializedName("selected")
+    private boolean selected;
+
+    public UpdateCartItemRequest(int quantity, boolean selected) {
         this.quantity = quantity;
+        this.selected = selected;
     }
 
-    // Bạn có thể thêm getter nếu cần, mặc dù không bắt buộc cho request body
+    public UpdateCartItemRequest(int quantity) {
+        this(quantity, false);
+    }
+
     public int getQuantity() {
         return quantity;
+    }
+
+    public boolean isSelected() {
+        return selected;
     }
 }

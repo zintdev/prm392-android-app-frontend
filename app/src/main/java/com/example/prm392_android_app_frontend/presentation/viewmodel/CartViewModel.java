@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.prm392_android_app_frontend.data.dto.CartDto;
+import com.example.prm392_android_app_frontend.data.dto.CartItemDto;
+import com.example.prm392_android_app_frontend.data.dto.UpdateCartItemRequest;
 import com.example.prm392_android_app_frontend.data.remote.api.CartApi;
 import com.example.prm392_android_app_frontend.data.repository.CartRepository;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
@@ -110,16 +112,55 @@ public class CartViewModel extends AndroidViewModel {
     }
 
 
-    public void updateItemQuantity(int CartItemId, int newQuantity) {
+    public void updateItemQuantity(int CartItemId, int quantityChange) {
         isLoading.postValue(true);
-        // Gọi đúng phương thức updateItemQuantity từ repository
-        cartRepository.updateItemQuantity(CartItemId, newQuantity, new Callback<CartDto>() {
+
+        // Lấy thông tin cart hiện tại để biết selected status
+        CartDto currentCart = cartLiveData.getValue();
+        boolean isSelected = false;
+        
+        // Kiểm tra xem item có đang được chọn không
+        if (currentCart != null && currentCart.getItems() != null) {
+            for (CartItemDto item : currentCart.getItems()) {
+                if (item.getCartItemId() == CartItemId) {
+                    isSelected = item.isSelected();
+                    break;
+                }
+            }
+        }
+
+        // Tạo request với cả selected status
+        UpdateCartItemRequest request = new UpdateCartItemRequest(quantityChange, isSelected);
+        
+        // Gọi repository để update
+        cartRepository.updateItemQuantity(CartItemId, request, new Callback<CartDto>() {
             @Override
             public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     cartLiveData.postValue(response.body()); // Cập nhật lại giỏ hàng
                 } else {
                     errorMessage.postValue("Lỗi cập nhật số lượng. Mã: " + response.code());
+                }
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CartDto> call, @NonNull Throwable t) {
+                errorMessage.postValue("Lỗi mạng: " + t.getMessage());
+                isLoading.postValue(false);
+            }
+        });
+    }
+
+    public void updateItemSelected(int CartItemId, boolean selected) {
+        isLoading.postValue(true);
+        cartRepository.updateItemSelected(CartItemId, selected, new Callback<CartDto>() {
+            @Override
+            public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    cartLiveData.postValue(response.body()); // Cập nhật lại giỏ hàng
+                } else {
+                    errorMessage.postValue("Lỗi cập nhật trạng thái chọn. Mã: " + response.code());
                 }
                 isLoading.postValue(false);
             }

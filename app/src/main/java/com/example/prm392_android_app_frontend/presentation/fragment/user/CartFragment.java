@@ -215,15 +215,45 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
 
     @Override
     public void onIncreaseQuantity(CartItemDto item) {
-        // Gửi request lên server để cập nhật số lượng
-        cartViewModel.updateItemQuantity(item.getCartItemId(),  1);
+        try {
+            // Gửi request lên server để cập nhật số lượng
+            cartViewModel.updateItemQuantity(item.getCartItemId(), 1);
+            
+            // Cập nhật UI local
+            item.setQuantity(item.getQuantity() + 1);
+            
+            // Cập nhật tổng tiền nếu item được chọn
+            if (cartAdapter.isItemChecked(item.getCartItemId())) {
+                updateTotalPrice();
+            }
+            
+            Toast.makeText(getContext(), "Tăng số lượng cho: " + item.getProductName(), Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            android.util.Log.e("CartFragment", "Error increasing quantity: " + e.getMessage());
+            Toast.makeText(getContext(), "Lỗi khi tăng số lượng", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void onDecreaseQuantity(CartItemDto item) {
         if (item.getQuantity() > 1) {
-            // Gửi request lên server để cập nhật số lượng
-            cartViewModel.updateItemQuantity(item.getCartItemId(),  - 1);
+            try {
+                // Gửi request lên server để cập nhật số lượng
+                cartViewModel.updateItemQuantity(item.getCartItemId(), -1);
+                
+                // Cập nhật UI local
+                item.setQuantity(item.getQuantity() - 1);
+                
+                // Cập nhật tổng tiền nếu item được chọn
+                if (cartAdapter.isItemChecked(item.getCartItemId())) {
+                    updateTotalPrice();
+                }
+                
+                Toast.makeText(getContext(), "Giảm số lượng cho: " + item.getProductName(), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                android.util.Log.e("CartFragment", "Error decreasing quantity: " + e.getMessage());
+                Toast.makeText(getContext(), "Lỗi khi giảm số lượng", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -256,5 +286,38 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
     @Override
     public void onItemCheckedChanged(CartItemDto item, boolean isChecked) {
         updateTotalPrice();
+    }
+
+    public CartViewModel getViewModel() {
+        return cartViewModel;
+    }
+
+    @Override
+    public void onQuantityChanged(CartItemDto item, int newQuantity) {
+        try {
+            // Lưu số lượng cũ
+            int oldQuantity = item.getQuantity();
+            
+            // Cập nhật số lượng mới
+            item.setQuantity(newQuantity);
+            
+            // Tính toán sự thay đổi số lượng
+            int change = newQuantity - oldQuantity;
+            
+            // Gửi request lên server
+            cartViewModel.updateItemQuantity(item.getCartItemId(), change);
+            
+            // Cập nhật total price nếu item đang được chọn
+            if (cartAdapter.isItemChecked(item.getCartItemId())) {
+                updateTotalPrice();
+            }
+            
+            String message = String.format("Đã cập nhật số lượng thành %d", newQuantity);
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            
+        } catch (Exception e) {
+            android.util.Log.e("CartFragment", "Error updating quantity: " + e.getMessage());
+            Toast.makeText(getContext(), "Lỗi cập nhật số lượng", Toast.LENGTH_SHORT).show();
+        }
     }
 }

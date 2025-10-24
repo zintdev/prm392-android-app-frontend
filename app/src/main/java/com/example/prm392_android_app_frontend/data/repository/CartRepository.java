@@ -45,10 +45,14 @@ public class CartRepository {
         // Thực hiện yêu cầu bất đồng bộ
         call.enqueue(callback);
     }
-    public void updateItemQuantity(int productId, int newQuantity, Callback<CartDto> callback) {
-        // Tạo một đối tượng request body để gửi đi
-        UpdateCartItemRequest requestBody = new UpdateCartItemRequest(newQuantity);
-        // Gọi phương thức từ CartApi
+    public void updateItemQuantity(int productId, UpdateCartItemRequest requestBody, Callback<CartDto> callback) {
+        // Gọi phương thức từ CartApi với request body đầy đủ
+        cartApi.updateItemQuantity(productId, requestBody).enqueue(callback);
+    }
+
+    public void updateItemSelected(int productId, boolean selected, Callback<CartDto> callback) {
+        // Giữ nguyên quantity khi chỉ cập nhật selected status
+        UpdateCartItemRequest requestBody = new UpdateCartItemRequest(0, selected);
         cartApi.updateItemQuantity(productId, requestBody).enqueue(callback);
     }
 

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.CartItemDto;
+import com.example.prm392_android_app_frontend.presentation.fragment.user.CartFragment;
 
 import java.text.DecimalFormat;
 
@@ -29,6 +30,7 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
         void onDecreaseQuantity(CartItemDto item);
         void onRemoveItem(CartItemDto item);
         void onItemCheckedChanged(CartItemDto item, boolean isChecked);
+        void onQuantityChanged(CartItemDto item, int newQuantity);
     }
 
     @Override
@@ -126,7 +128,7 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
         private final ImageView imageView;
         private final TextView textViewName;
         private final TextView textViewPrice;
-        private final TextView textViewQuantity;
+        private final android.widget.EditText textViewQuantity;
         private final ImageButton buttonIncrease;
         private final ImageButton buttonDecrease;
         private final ImageButton buttonRemove;
@@ -146,10 +148,35 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
 
         public void bind(final CartItemDto item, final OnCartItemActionListener listener) {
             textViewName.setText(item.getProductName());
+            
+            // Thiết lập EditText cho quantity
             textViewQuantity.setText(String.valueOf(item.getQuantity()));
+            textViewQuantity.setOnFocusChangeListener((v, hasFocus) -> {
+                if (!hasFocus) {
+                    try {
+                        String input = textViewQuantity.getText().toString();
+                        int newQuantity = Integer.parseInt(input);
+                        
+                        // Kiểm tra giới hạn số lượng
+                        if (newQuantity < 1) {
+                            newQuantity = 1;
+                            textViewQuantity.setText(String.valueOf(newQuantity));
+                        } else if (newQuantity > 999) {
+                            newQuantity = 999;
+                            textViewQuantity.setText(String.valueOf(newQuantity));
+                        }
+                        
+                        if (newQuantity != item.getQuantity()) {
+                            listener.onQuantityChanged(item, newQuantity);
+                        }
+                    } catch (NumberFormatException e) {
+                        // Nếu input không hợp lệ, reset về giá trị cũ
+                        textViewQuantity.setText(String.valueOf(item.getQuantity()));
+                    }
+                }
+            });
 
             DecimalFormat formatter = new DecimalFormat("###,###,###");
-            // SỬA Ở ĐÂY: Dùng getUnitPrice() thay vì getPrice()
             textViewPrice.setText(formatter.format(item.getUnitPrice()) + "đ");
 
             Glide.with(itemView.getContext())
@@ -188,7 +215,14 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
                 } else {
                     adapter.checkedItems.remove(item.getCartItemId());
                 }
-                item.setSelected(checked); // Cập nhật trạng thái selected của item
+                
+                // Cập nhật trạng thái selected local
+                item.setSelected(checked);
+                
+                // Gọi API để cập nhật selected status
+                ((CartFragment) listener).getViewModel().updateItemSelected(item.getCartItemId(), checked);
+                
+                // Cập nhật tổng tiền
                 listener.onItemCheckedChanged(item, checked);
             });
 
