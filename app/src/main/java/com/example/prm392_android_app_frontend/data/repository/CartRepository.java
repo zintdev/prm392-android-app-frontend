@@ -2,6 +2,7 @@ package com.example.prm392_android_app_frontend.data.repository;
 
 import com.example.prm392_android_app_frontend.data.dto.AddToCartRequestDto;
 import com.example.prm392_android_app_frontend.data.dto.CartDto;
+import com.example.prm392_android_app_frontend.data.dto.UpdateCartItemRequest;
 import com.example.prm392_android_app_frontend.data.remote.api.ShopService;
 import retrofit2.Call;
 import retrofit2.Callback;
