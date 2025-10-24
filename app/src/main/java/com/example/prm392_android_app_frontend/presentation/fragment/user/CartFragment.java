@@ -75,7 +75,22 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
 
         android.widget.CheckBox checkboxSelectAll = view.findViewById(R.id.checkbox_select_all);
         checkboxSelectAll.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            cartAdapter.setSelectAll(isChecked);
+            try {
+                // Hiển thị loading
+                showLoading(true);
+                
+                // Gọi API để select/deselect all items trên server
+                cartViewModel.selectAllItems(isChecked);
+                
+                // Cập nhật UI local
+                cartAdapter.setSelectAll(isChecked);
+                
+                // Hiển thị thông báo
+                String message = isChecked ? "Đã chọn tất cả sản phẩm" : "Đã bỏ chọn tất cả sản phẩm";
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Xử lý sự kiện khi người dùng nhấn nút "Thanh toán"

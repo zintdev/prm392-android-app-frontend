@@ -25,6 +25,9 @@ public interface CartApi {
     @PATCH("cart/items/{itemId}")
     Call<CartDto> updateItemQuantity(@Path("itemId") int itemId, @Body UpdateCartItemRequest body);
 
+    @PATCH("cart/items/select-all")
+    Call<CartDto> selectAllItems(@retrofit2.http.Query("selected") boolean selected);
+
     @DELETE("cart")
     Call<CartDto> deleteCart();
 }

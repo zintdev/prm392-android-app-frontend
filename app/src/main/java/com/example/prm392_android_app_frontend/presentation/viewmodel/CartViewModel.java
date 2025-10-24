@@ -160,4 +160,25 @@ public class CartViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public void selectAllItems(boolean selected) {
+        isLoading.postValue(true);
+        cartRepository.selectAllItems(selected, new Callback<CartDto>() {
+            @Override
+            public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    cartLiveData.postValue(response.body());
+                } else {
+                    errorMessage.postValue("Lỗi khi chọn tất cả sản phẩm. Mã: " + response.code());
+                }
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CartDto> call, @NonNull Throwable t) {
+                errorMessage.postValue("Lỗi mạng khi chọn tất cả sản phẩm: " + t.getMessage());
+                isLoading.postValue(false);
+            }
+        });
+    }
 }

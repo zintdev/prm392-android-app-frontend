@@ -56,5 +56,10 @@ public class CartRepository {
         // Gọi phương thức xóa toàn bộ giỏ hàng từ CartApi
         cartApi.deleteCart().enqueue(callback);
     }
+
+    public void selectAllItems(boolean selected, Callback<CartDto> callback) {
+        // Gọi phương thức select all từ CartApi với query parameter
+        cartApi.selectAllItems(selected).enqueue(callback);
+    }
 }
 
