@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.google.services)  // ← SỬA TÊN NÀY
 }
 
 android {
@@ -27,10 +28,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
 }
 
 dependencies {
-
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
@@ -40,7 +44,6 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation libs.navigation.runtime
-    implementation libs.firebase.auth
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
 
@@ -48,9 +51,8 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    // thay alias bằng chuỗi trực tiếp
+    // Google Play Services
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
-    // (nếu cần lấy vị trí)
     implementation 'com.google.android.gms:play-services-location:21.3.0'
     implementation 'com.google.android.material:material:1.12.0'
 
@@ -60,16 +62,20 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
     implementation 'com.google.code.gson:gson:2.11.0'
 
-    // Lifecycle (ViewModel + LiveData) nếu bạn dùng code MVVM mình đã đưa
+    // Lifecycle (ViewModel + LiveData)
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.6'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.8.6'
 
+    // Firebase - BOM
+    implementation platform('com.google.firebase:firebase-bom:33.5.1')
+    implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-messaging'
 }
 
-
 secrets {
-    // file chứa API key thật, KHÔNG commit
     propertiesFileName = "secrets.properties"
-    // file giá trị mặc định (placeholder), ĐƯỢC commit
     defaultPropertiesFileName = "local.defaults.properties"
 }
