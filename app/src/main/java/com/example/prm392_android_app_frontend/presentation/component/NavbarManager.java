@@ -97,7 +97,7 @@ public class NavbarManager {
         else if (id == R.id.nav_blog)      return switchFragment(new BlogListFragment());
         else if (id == R.id.nav_cart)      return switchFragment(new CartFragment());
         else if (id == R.id.nav_notification) return switchFragment(new NotificationFragment());
-        else if (id == R.id.nav_setting)   return switchFragment(new SettingFragment());
+//        else if (id == R.id.nav_setting)   return switchFragment(new SettingFragment());
         else if (id == R.id.nav_account)   return handleAccountTab();
         return false;
     }

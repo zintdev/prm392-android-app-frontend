@@ -9,7 +9,11 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
 import com.example.prm392_android_app_frontend.data.remote.api.ShopApi;
+import com.example.prm392_android_app_frontend.data.remote.api.ProductApi;
 import com.example.prm392_android_app_frontend.data.repository.ProductRepository;
+import com.example.prm392_android_app_frontend.core.util.FirebaseStorageUploader;
+
+import android.net.Uri;
 
 import java.util.List;
 
@@ -29,15 +33,17 @@ public class ProductViewModel extends AndroidViewModel {
 
     // LiveData để thông báo lỗi cho UI
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> imageUploadStatus = new MutableLiveData<>();
 
     public ProductViewModel(@NonNull Application application) {
         super(application);
         // Các API để lấy thông tin sản phẩm thường không yêu cầu xác thực,
         // vì vậy chúng ta dùng client thông thường: ApiClient.get()
         ShopApi shopService = ApiClient.get().create(ShopApi.class);
+        ProductApi productService = ApiClient.get().create(ProductApi.class);
 
         // Khởi tạo Repository với ApiService tương ứng
-        this.productRepository = new ProductRepository(shopService);
+        this.productRepository = new ProductRepository(shopService, productService);
     }
 
     // --- Getters để UI có thể observe một cách an toàn ---
@@ -53,6 +59,8 @@ public class ProductViewModel extends AndroidViewModel {
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }
+
+    public LiveData<Boolean> getImageUploadStatus() { return imageUploadStatus; }
 
 
     // --- Các phương thức để kích hoạt hành động từ UI ---
@@ -96,6 +104,110 @@ public class ProductViewModel extends AndroidViewModel {
 
             @Override
             public void onFailure(@NonNull Call<ProductDto> call, @NonNull Throwable t) {
+                errorMessage.postValue("Lỗi mạng: " + t.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Upload an image to Firebase Storage, then update product imageUrl via backend.
+     */
+    public void uploadProductImage(int productId, Uri imageUri) {
+        imageUploadStatus.postValue(true);
+        FirebaseStorageUploader.uploadImage(imageUri, new FirebaseStorageUploader.Callback() {
+            @Override public void onSuccess(String downloadUrl) {
+                ProductDto current = selectedProduct.getValue();
+                if (current == null) {
+                    current = new ProductDto();
+                }
+                current.setId(productId);
+                current.setImageUrl(downloadUrl);
+                // Optimistically update UI
+                selectedProduct.postValue(current);
+
+                productRepository.updateProduct(productId, current, new Callback<ProductDto>() {
+                    @Override public void onResponse(@NonNull Call<ProductDto> call, @NonNull Response<ProductDto> response) {
+                        imageUploadStatus.postValue(false);
+                        if (response.isSuccessful() && response.body() != null) {
+                            selectedProduct.postValue(response.body());
+                        } else {
+                            errorMessage.postValue("Cập nhật ảnh thất bại (HTTP " + response.code() + ")");
+                        }
+                    }
+                    @Override public void onFailure(@NonNull Call<ProductDto> call, @NonNull Throwable t) {
+                        imageUploadStatus.postValue(false);
+                        errorMessage.postValue("Lỗi mạng: " + t.getMessage());
+                    }
+                });
+            }
+            @Override public void onError(String message) {
+                imageUploadStatus.postValue(false);
+                errorMessage.postValue(message);
+            }
+        });
+    }
+
+    /**
+     * Tạo sản phẩm mới
+     */
+    public void createProduct(ProductDto product) {
+        productRepository.createProduct(product, new Callback<ProductDto>() {
+            @Override
+            public void onResponse(@NonNull Call<ProductDto> call, @NonNull Response<ProductDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Tải lại danh sách sản phẩm sau khi tạo thành công
+                    fetchAllProducts();
+                } else {
+                    errorMessage.postValue("Lỗi tạo sản phẩm. Mã lỗi: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ProductDto> call, @NonNull Throwable t) {
+                errorMessage.postValue("Lỗi mạng: " + t.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Cập nhật sản phẩm
+     */
+    public void updateProduct(int productId, ProductDto product) {
+        productRepository.updateProduct(productId, product, new Callback<ProductDto>() {
+            @Override
+            public void onResponse(@NonNull Call<ProductDto> call, @NonNull Response<ProductDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Tải lại danh sách sản phẩm sau khi cập nhật thành công
+                    fetchAllProducts();
+                } else {
+                    errorMessage.postValue("Lỗi cập nhật sản phẩm. Mã lỗi: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ProductDto> call, @NonNull Throwable t) {
+                errorMessage.postValue("Lỗi mạng: " + t.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Xóa sản phẩm
+     */
+    public void deleteProduct(int productId) {
+        productRepository.deleteProduct(productId, new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    // Tải lại danh sách sản phẩm sau khi xóa thành công
+                    fetchAllProducts();
+                } else {
+                    errorMessage.postValue("Lỗi xóa sản phẩm. Mã lỗi: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 errorMessage.postValue("Lỗi mạng: " + t.getMessage());
             }
         });

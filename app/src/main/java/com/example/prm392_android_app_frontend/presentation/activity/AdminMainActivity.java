@@ -12,11 +12,12 @@ import com.example.prm392_android_app_frontend.presentation.fragment.admin.Admin
 import com.example.prm392_android_app_frontend.presentation.fragment.admin.AdminOrdersFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.admin.AdminChatFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.admin.AdminSettingFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.admin.ProductManagementFragment;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AdminMainActivity extends AppCompatActivity {
+public class AdminMainActivity extends AppCompatActivity implements AdminDashboardFragment.AdminDashboardListener {
 
     private BottomNavigationView nav;
 
@@ -80,6 +81,14 @@ public class AdminMainActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentAdminContainer, fragment)
+                .commit();
+    }
+
+    @Override
+    public void navigateToProductManagement() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentAdminContainer, new ProductManagementFragment())
+                .addToBackStack(null) // Thêm vào back stack để người dùng có thể quay lại
                 .commit();
     }
 
