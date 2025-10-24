@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
+import com.example.prm392_android_app_frontend.presentation.activity.MainActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.ProductDetailActivity; // Import mới
+import com.example.prm392_android_app_frontend.presentation.component.NavbarManager;
 import com.example.prm392_android_app_frontend.utils.PriceFormatter;
 import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
@@ -89,10 +91,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             });
 
             buttonAddToCart.setOnClickListener(v -> {
-                // TODO: Implement add to cart functionality
-                android.widget.Toast.makeText(itemView.getContext(), 
+                Context context = itemView.getContext();
+                // TODO: Implement add to cart functionality here
+                android.widget.Toast.makeText(context, 
                     "Đã thêm " + product.getName() + " vào giỏ hàng", 
                     android.widget.Toast.LENGTH_SHORT).show();
+                
+                // Chuyển tới MainActivity với tab Cart được chọn
+                Intent intent = new Intent(context, MainActivity.class);
+                intent.putExtra(NavbarManager.EXTRA_SELECT_TAB, R.id.nav_cart);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                context.startActivity(intent);
             });
 
             buttonFavorite.setOnClickListener(v -> {

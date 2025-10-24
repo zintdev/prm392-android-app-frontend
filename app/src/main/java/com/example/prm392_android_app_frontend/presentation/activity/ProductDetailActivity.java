@@ -1,5 +1,6 @@
 package com.example.prm392_android_app_frontend.presentation.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
+import com.example.prm392_android_app_frontend.presentation.component.NavbarManager;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.CartViewModel;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.ProductViewModel;
 import com.example.prm392_android_app_frontend.utils.PriceFormatter;
@@ -104,9 +106,16 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         buttonCartIcon.setOnClickListener(v -> {
-            Toast.makeText(this, "Mở giỏ hàng", Toast.LENGTH_SHORT).show();
-            // Intent intent = new Intent(this, CartActivity.class);
-            // startActivity(intent);
+            // Chuyển tới MainActivity với tab Cart được chọn
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(NavbarManager.EXTRA_SELECT_TAB, R.id.nav_cart);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            
+            // Debug logging
+            android.util.Log.d("ProductDetail", "Chuyển tới Cart với ID: " + R.id.nav_cart);
+            
+            startActivity(intent);
+            finish(); // Đóng ProductDetailActivity
         });
     }
 

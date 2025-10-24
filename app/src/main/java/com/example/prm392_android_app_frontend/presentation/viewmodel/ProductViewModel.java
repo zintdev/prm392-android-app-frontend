@@ -81,7 +81,6 @@ public class ProductViewModel extends AndroidViewModel {
         });
     }
 
-    // --- 🔎 SEARCH: sửa duy nhất phần này để gọi đúng repository ---
     public void search(String name, ProductFilter filter) {
         productsState.postValue(Resource.loading());
 
