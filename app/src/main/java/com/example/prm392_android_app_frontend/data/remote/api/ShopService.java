@@ -3,6 +3,8 @@ import com.example.prm392_android_app_frontend.data.dto.AddToCartRequestDto;
 import com.example.prm392_android_app_frontend.data.dto.CartDto;
 import com.example.prm392_android_app_frontend.data.dto.UpdateCartItemRequest;
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
+//import com.example.prm392_android_app_frontend.data.dto.LoginRequest;
+//import com.example.prm392_android_app_frontend.data.dto.LoginResponse;
 
 import java.util.List;
 import retrofit2.Call;
@@ -15,7 +17,8 @@ import retrofit2.http.PATCH;
 
 
 
-public interface ShopApi {
+public interface ShopService {
+
 
     @GET("products")
     Call<List<ProductDto>> getAllProducts();

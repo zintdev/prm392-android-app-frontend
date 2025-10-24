@@ -17,24 +17,13 @@
     <string name="app_name">乃木坂４６</string>
     <string name="Login">Đăng nhập</string>
     <string name="cd_logo_desc">Nogizaka46 logo</string>
-    <string name="hint_email">Tên tài khoản hoặc Email</string>
+    <string name="hint_email">Username hoặc Email</string>
     <string name="hint_password">Mật khẩu</string>
     <string name="forgot_password">Quên Mật Khẩu?</string>
     <string name="action_login">Đăng nhập</string>
-    <string name="no_account_sign_up">Không có tài khoản? Đăng kí ngay</string>
+    <string name="no_account_sign_up">Không có tài khoản?Đăng kí ngay</string>
     <string name="avatar_description">avatar</string>
     <string name="register">Đăng kí</string>
     <string name="backToHome">Quay lại trang chủ</string>
     <string name="backToLogin">Quay lại đăng nhập"</string>
-
-    <string name="store_list_title">Danh sách cửa hàng</string>
-    <string name="store_list_count_default">0 kết quả</string>
-    <string name="hint_radius_km">Bán kính (km)</string>
-    <string name="hint_product_id_pickup">Product ID (Pickup)</string>
-    <string name="apply">Áp dụng</string>
-    <string name="all">Tất cả</string>
-    <string name="pickup">Pickup</string>
-    <string name="go_to_my_location">Về vị trí của tôi</string>
-    <string name="refresh_stores">Tải lại cửa hàng</string>
-    <string name="loading">Đang tải...</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.prm392_android_app_frontend.presentation.fragment.user;
+package com.example.prm392_android_app_frontend.presentation.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -43,7 +43,6 @@ public class HomeFragment extends Fragment {
 
         // Bắt đầu quan sát dữ liệu
         observeViewModel();
-        productViewModel.fetchAllProducts();
     }
 
     private void observeViewModel() {
