@@ -1,14 +1,18 @@
 package com.example.prm392_android_app_frontend.presentation.viewmodel;
 
 import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.prm392_android_app_frontend.core.util.Resource;
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
+import com.example.prm392_android_app_frontend.data.dto.ProductFilter;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
-import com.example.prm392_android_app_frontend.data.remote.api.ShopApi;
+import com.example.prm392_android_app_frontend.data.remote.api.ProductApi;
+// import com.example.prm392_android_app_frontend.data.remote.api.ShopApi; // ❌ bỏ nếu không dùng
 import com.example.prm392_android_app_frontend.data.repository.ProductRepository;
 
 import java.util.List;
@@ -21,46 +25,25 @@ public class ProductViewModel extends AndroidViewModel {
 
     private final ProductRepository productRepository;
 
-    // LiveData cho danh sách sản phẩm (dùng cho màn hình Home/Danh sách)
+    private final MutableLiveData<Resource<List<ProductDto>>> productsState = new MutableLiveData<>();
+    public LiveData<Resource<List<ProductDto>>> getProductsState() { return productsState; }
+
     private final MutableLiveData<List<ProductDto>> productList = new MutableLiveData<>();
-
-    // LiveData cho sản phẩm chi tiết đang được chọn
     private final MutableLiveData<ProductDto> selectedProduct = new MutableLiveData<>();
-
-    // LiveData để thông báo lỗi cho UI
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
     public ProductViewModel(@NonNull Application application) {
         super(application);
-        // Các API để lấy thông tin sản phẩm thường không yêu cầu xác thực,
-        // vì vậy chúng ta dùng client thông thường: ApiClient.get()
-        ShopApi shopService = ApiClient.get().create(ShopApi.class);
-
-        // Khởi tạo Repository với ApiService tương ứng
-        this.productRepository = new ProductRepository(shopService);
+        ProductApi productApi = ApiClient.get().create(ProductApi.class);
+        this.productRepository = new ProductRepository(productApi);
     }
 
-    // --- Getters để UI có thể observe một cách an toàn ---
+    // --- Getters để UI observe ---
+    public LiveData<List<ProductDto>> getProductList() { return productList; }
+    public LiveData<ProductDto> getSelectedProduct() { return selectedProduct; }
+    public LiveData<String> getErrorMessage() { return errorMessage; }
 
-    public LiveData<List<ProductDto>> getProductList() {
-        return productList;
-    }
-
-    public LiveData<ProductDto> getSelectedProduct() {
-        return selectedProduct;
-    }
-
-    public LiveData<String> getErrorMessage() {
-        return errorMessage;
-    }
-
-
-    // --- Các phương thức để kích hoạt hành động từ UI ---
-
-    /**
-     * Tải toàn bộ danh sách sản phẩm từ API.
-     * Kết quả sẽ được cập nhật vào `productList` LiveData.
-     */
+    // --- Danh sách tất cả sản phẩm ---
     public void fetchAllProducts() {
         productRepository.getAllProducts(new Callback<List<ProductDto>>() {
             @Override
@@ -79,10 +62,7 @@ public class ProductViewModel extends AndroidViewModel {
         });
     }
 
-    /**
-     * Tải chi tiết một sản phẩm theo ID.
-     * Kết quả sẽ được cập nhật vào `selectedProduct` LiveData.
-     */
+    // --- Lấy chi tiết theo id ---
     public void fetchProductById(int productId) {
         productRepository.getProductById(productId, new Callback<ProductDto>() {
             @Override
@@ -99,5 +79,57 @@ public class ProductViewModel extends AndroidViewModel {
                 errorMessage.postValue("Lỗi mạng: " + t.getMessage());
             }
         });
+    }
+
+    // --- 🔎 SEARCH: sửa duy nhất phần này để gọi đúng repository ---
+    public void search(String name, ProductFilter filter) {
+        productsState.postValue(Resource.loading());
+
+        // ✅ gọi đúng repository (thay vì repo.*)
+        productRepository.search(name, filter, new Callback<List<ProductDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<ProductDto>> call, @NonNull Response<List<ProductDto>> res) {
+                if (res.isSuccessful()) {
+                    List<ProductDto> products = res.body();
+                    
+
+                    if (products == null || products.isEmpty()) {
+                        productsState.postValue(Resource.error("Không có sản phẩm"));
+                    } else {
+                        productsState.postValue(Resource.success(products));
+                    }
+                } else {
+                    String errorMessage = getErrorMessageForStatusCode(res.code());
+                    productsState.postValue(Resource.error(errorMessage));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<ProductDto>> call, @NonNull Throwable t) {
+                String errorMessage = (t.getMessage() != null) ? t.getMessage() : "Lỗi kết nối mạng";
+                productsState.postValue(Resource.error(errorMessage));
+            }
+        });
+    }
+    private String getErrorMessageForStatusCode(int statusCode) {
+        switch (statusCode) {
+            case 404:
+                return "Không có sản phẩm";
+            case 400:
+                return "Yêu cầu không hợp lệ";
+            case 401:
+                return "Không có quyền truy cập";
+            case 403:
+                return "Truy cập bị từ chối";
+            case 500:
+                return "Lỗi máy chủ";
+            case 503:
+                return "Dịch vụ tạm thời không khả dụng";
+            default:
+                return "Lỗi tải dữ liệu (HTTP " + statusCode + ")";
+        }
+    }
+    public void searchByName(String name) {
+        search(name, null);
     }
 }

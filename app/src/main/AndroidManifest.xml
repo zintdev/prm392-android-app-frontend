@@ -60,6 +60,9 @@
         <activity
             android:name=".presentation.activity.ProductDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".presentation.activity.SearchProductActivity"
+            android:exported="false"/>
 
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
