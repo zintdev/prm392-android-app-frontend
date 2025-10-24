@@ -30,7 +30,7 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
     private RecyclerView recyclerViewCart;
     private CartAdapter cartAdapter;
     private ProgressBar progressBar;
-    private TextView textViewEmptyCart;
+    private View textViewEmptyCart; // Đổi từ TextView thành View vì layout dùng LinearLayout
     private TextView textViewTotalPrice;
     private View bottomBar; // Thanh chứa tổng tiền và nút thanh toán
     private MaterialButton buttonCheckout;
