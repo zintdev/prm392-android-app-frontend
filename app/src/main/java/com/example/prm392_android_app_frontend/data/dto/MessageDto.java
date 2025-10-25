@@ -30,42 +30,32 @@ public class MessageDto {
     // nó thường là một String ISO 8601 (ví dụ: "2025-10-24T10:30:00Z").
     // Nhận nó dưới dạng String là an toàn nhất trên Android.
     @SerializedName("createdAt")
-    private String createdAt;
+    private Long createdAt;
 
     @SerializedName("readAt")
-    private String readAt; // Có thể null
+    private Long readAt; // Có thể null
 
-    // Getters
-    public Integer getId() {
-        return id;
+    public MessageDto() {
     }
 
-    public Integer getConversationId() {
-        return conversationId;
-    }
+    public Integer getId() { return id; }
+    public Integer getConversationId() { return conversationId; }
+    public Integer getSenderId() { return senderId; }
+    public MessageType getMessageType() { return messageType; }
+    public String getContent() { return content; }
 
-    public Integer getSenderId() {
-        return senderId;
-    }
-
-    public MessageType getMessageType() {
-        return messageType;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getCreatedAt() {
+    // THAY ĐỔI: String -> Long
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public String getReadAt() {
+    // THAY ĐỔI: String -> Long
+    public Long getReadAt() {
         return readAt;
     }
 
     // Setters (Adapter cần)
-    public void setReadAt(String readAt) {
+    public void setReadAt(Long readAt) {
         this.readAt = readAt;
     }
 }
