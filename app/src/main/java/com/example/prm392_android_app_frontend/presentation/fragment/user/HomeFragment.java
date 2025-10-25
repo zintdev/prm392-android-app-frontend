@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_android_app_frontend.R;
@@ -20,6 +22,7 @@ import com.example.prm392_android_app_frontend.presentation.activity.SearchProdu
 import com.example.prm392_android_app_frontend.presentation.adapter.ProductAdapter;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.CartViewModel;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.ProductViewModel;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -34,10 +37,14 @@ public class HomeFragment extends Fragment {
     private ProductAdapter productAdapter;
     private ProgressBar progressBar;
     private View searchBar;
+    private MaterialButton buttonToggleLayout;
     
     // Filter chips
     private ChipGroup chipGroup;
     private Chip chipAll, chipNew, chipPromotion;
+    
+    // Layout mode: 0 = Grid 2 cột, 1 = List (horizontal), 2 = Grid 3 cột
+    private int currentLayoutMode = 0;
     
     // Data
     private List<ProductDto> allProducts = new ArrayList<>();
@@ -60,6 +67,7 @@ public class HomeFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView_products);
         searchBar = view.findViewById(R.id.searchBar);
+        buttonToggleLayout = view.findViewById(R.id.buttonToggleLayout);
         
         // Filter chips
         chipGroup = view.findViewById(R.id.chipGroup);
@@ -81,6 +89,9 @@ public class HomeFragment extends Fragment {
 
         // Setup filter chips
         setupFilterChips();
+        
+        // Setup toggle layout button
+        setupToggleLayoutButton();
 
         // ViewModel (dùng viewLifecycleOwner để observe đúng vòng đời)
         productViewModel = new ViewModelProvider(this).get(ProductViewModel.class);
@@ -142,6 +153,69 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private void setupToggleLayoutButton() {
+        if (buttonToggleLayout != null) {
+            buttonToggleLayout.setOnClickListener(v -> {
+                showLayoutModeMenu(v);
+            });
+        }
+    }
+    
+    private void showLayoutModeMenu(View anchor) {
+        PopupMenu popup = new PopupMenu(requireContext(), anchor);
+        
+        // Thêm các tùy chọn vào menu
+        popup.getMenu().add(0, 0, 0, "Lưới 2 cột");
+        popup.getMenu().add(0, 1, 1, "Danh sách ngang");
+        popup.getMenu().add(0, 2, 2, "Lưới 3 cột");
+        
+        // Đánh dấu item hiện tại
+        popup.getMenu().getItem(currentLayoutMode).setChecked(true);
+        
+        // Xử lý khi chọn
+        popup.setOnMenuItemClickListener(item -> {
+            int selectedMode = item.getItemId();
+            if (selectedMode != currentLayoutMode) {
+                currentLayoutMode = selectedMode;
+                toggleLayout();
+            }
+            return true;
+        });
+        
+        popup.show();
+    }
+
+    private void toggleLayout() {
+        switch (currentLayoutMode) {
+            case 0:
+                // Grid 2 cột (item_product)
+                recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+                productAdapter.setViewType(0);  // VIEW_TYPE_GRID_2
+                if (buttonToggleLayout != null) {
+                    buttonToggleLayout.setIcon(requireContext().getDrawable(android.R.drawable.ic_menu_sort_by_size));
+                }
+                break;
+            case 1:
+                // List (item_product_2)
+                recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                productAdapter.setViewType(1);  // VIEW_TYPE_LIST
+                if (buttonToggleLayout != null) {
+                    buttonToggleLayout.setIcon(requireContext().getDrawable(android.R.drawable.ic_menu_view));
+                }
+                break;
+            case 2:
+                // Grid 3 cột (item_product_3)
+                recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 3));
+                productAdapter.setViewType(2);  // VIEW_TYPE_GRID_3
+                if (buttonToggleLayout != null) {
+                    buttonToggleLayout.setIcon(requireContext().getDrawable(android.R.drawable.ic_dialog_dialer));
+                }
+                break;
+        }
+        
+        // Adapter sẽ tự động refresh khi setViewType() được gọi
+    }
+
     private void applyCurrentFilter() {
         filteredProducts.clear();
         
@@ -194,6 +268,7 @@ public class HomeFragment extends Fragment {
         productAdapter = null;
         progressBar = null;
         searchBar = null;
+        buttonToggleLayout = null;
         chipGroup = null;
         chipAll = null;
         chipNew = null;
