@@ -54,9 +54,22 @@ public class NavbarManager {
         setupBottomNav();
 
         if (savedInstanceState == null) {
-            // Mặc định mở Home
-            bottomNav.setSelectedItemId(R.id.nav_home);
-            switchFragment(new HomeFragment());
+            // Kiểm tra xem có intent extra để chọn tab không
+            Intent intent = activity.getIntent();
+            int selectTab = intent.getIntExtra(EXTRA_SELECT_TAB, -1);
+            android.util.Log.d("NavbarManager", "init - selectTab từ intent: " + selectTab);
+            if (selectTab != -1) {
+                // Có tab được chỉ định qua intent
+                bottomNav.setSelectedItemId(selectTab);
+                switchByMenuId(selectTab);
+                intent.removeExtra(EXTRA_SELECT_TAB);
+                android.util.Log.d("NavbarManager", "Đã chuyển tới tab trong init: " + selectTab);
+            } else {
+                // Mặc định mở Home
+                bottomNav.setSelectedItemId(R.id.nav_home);
+                switchFragment(new HomeFragment());
+                android.util.Log.d("NavbarManager", "Mặc định mở Home");
+            }
         }
     }
 
@@ -64,10 +77,12 @@ public class NavbarManager {
     public void handleSelectTabExtra(Intent intent) {
         if (intent == null) return;
         int nextTab = intent.getIntExtra(EXTRA_SELECT_TAB, -1);
+        android.util.Log.d("NavbarManager", "handleSelectTabExtra - nextTab: " + nextTab);
         if (nextTab != -1) {
             bottomNav.setSelectedItemId(nextTab);
             switchByMenuId(nextTab);
             intent.removeExtra(EXTRA_SELECT_TAB);
+            android.util.Log.d("NavbarManager", "Đã chuyển tới tab: " + nextTab);
         }
     }
 
@@ -95,11 +110,26 @@ public class NavbarManager {
     private boolean switchByMenuId(int id) {
         if (id == R.id.nav_home)           return switchFragment(new HomeFragment());
         else if (id == R.id.nav_blog)      return switchFragment(new BlogListFragment());
-        else if (id == R.id.nav_cart)      return switchFragment(new CartFragment());
+        else if (id == R.id.nav_cart)      return handleCartTab();
         else if (id == R.id.nav_notification) return switchFragment(new NotificationFragment());
         else if (id == R.id.nav_setting)   return switchFragment(new SettingFragment());
         else if (id == R.id.nav_account)   return handleAccountTab();
         return false;
+    }
+
+    private boolean handleCartTab() {
+        if (TokenStore.isLoggedIn(activity)) {
+            return switchFragment(new CartFragment());
+        } else {
+            new AlertDialog.Builder(activity)
+                    .setTitle("Yêu cầu đăng nhập")
+                    .setMessage("Bạn cần đăng nhập để sử dụng tính năng này.")
+                    .setPositiveButton("ĐĂNG NHẬP",
+                            (d, w) -> activity.startActivity(new Intent(activity, LoginActivity.class)))
+                    .setNegativeButton("HỦY", null)
+                    .show();
+            return false;
+        }
     }
 
     private boolean handleAccountTab() {

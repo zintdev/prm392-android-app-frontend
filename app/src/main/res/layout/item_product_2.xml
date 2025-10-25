@@ -14,12 +14,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
-        <!-- Product Image Container -->
+        <!-- Product Image Container (Left Side) -->
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_width="120dp"
+            android:layout_height="120dp">
 
             <ImageView
                 android:id="@+id/imageView_product"
@@ -32,10 +33,10 @@
             <!-- Favorite Button -->
             <ImageButton
                 android:id="@+id/button_favorite"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="top|start"
-                android:layout_margin="8dp"
+                android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Add to favorites"
                 android:scaleType="centerInside"
@@ -43,12 +44,13 @@
 
         </FrameLayout>
 
-        <!-- Product Info Section -->
+        <!-- Product Info Section (Middle) -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
 
             <!-- Product Name -->
             <TextView
@@ -56,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:text="CD Tiêu Đề Sản Phẩm"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                 android:textColor="?attr/colorOnSurface"
@@ -67,96 +69,77 @@
                 android:id="@+id/textView_artistName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="Tên nghệ sĩ"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textStyle="italic" />
 
-            <!-- Product Category -->
+            <!-- Publisher -->
             <TextView
-                android:id="@+id/textView_productCategory"
+                android:id="@+id/textView_publisher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Thể loại"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Nhà xuất bản"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
-            <!-- Rating -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+            <!-- Add to Cart Button (Bottom Left) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_addToCart"
+                android:layout_width="114dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Mua"
+                android:textAllCaps="false"
+                android:textSize="11sp"
+                app:cornerRadius="6dp"
+                app:icon="@drawable/ic_nav_cart"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                app:iconSize="16dp" />
 
+        </LinearLayout>
 
-
-
-            </LinearLayout>
+        <!-- Price and Action Buttons (Right Side) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
+            android:layout_marginStart="12dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
 
             <!-- Price Section -->
             <TextView
                 android:id="@+id/textView_productPrice"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginBottom="8dp"
+                android:minWidth="80dp"
                 android:text="159.000đ"
+                android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:textColor="?attr/colorPrimary"
+                android:textSize="15dp"
                 android:textStyle="bold" />
 
-            <!-- Stock Status -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:background="@drawable/circle_green"
-                    android:contentDescription="In stock" />
-
-                <TextView
-                    android:id="@+id/textView_stock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:text="Còn hàng"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                    android:textColor="@color/accent_blue" />
-
-            </LinearLayout>
-
-            <!-- Add to Cart Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_addToCart"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="12dp"
-                android:text="Thêm vào giỏ"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                app:cornerRadius="8dp"
-                app:icon="@drawable/ic_nav_cart" />
-
-            <!-- View Details Button -->
+            <!-- View Details Button (Bottom Right) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_view_details"
-                android:layout_width="match_parent"
-                android:layout_height="36dp"
-                android:layout_marginTop="8dp"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
                 android:text="Chi tiết"
                 android:textAllCaps="false"
-                app:cornerRadius="8dp"
+                android:textSize="11sp"
+                app:cornerRadius="6dp"
                 app:strokeColor="?attr/colorPrimary"
-                app:strokeWidth="1dp"
-                android:textColor="?attr/colorPrimary"
-                android:backgroundTint="@android:color/transparent" />
+                app:strokeWidth="1dp" />
 
         </LinearLayout>
 

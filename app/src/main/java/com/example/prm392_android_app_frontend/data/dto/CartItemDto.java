@@ -30,6 +30,13 @@ public class CartItemDto {
     private double taxRate;
 
     // --- Getters and Setters ---
+    public void setCartItemId(int cartItemId) { this.cartItemId = cartItemId; }
+    public void setProductId(int productId) { this.productId = productId; }
+    public void setUnitPrice(double unitPrice) { this.unitPrice = unitPrice; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void setSelected(boolean selected) { this.selected = selected; }
+
+
     // (Tạo getters và setters cho tất cả các trường)
 
     public int getCartItemId() { return cartItemId; }

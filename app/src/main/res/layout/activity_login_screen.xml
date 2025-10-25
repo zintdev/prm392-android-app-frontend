@@ -17,7 +17,7 @@
         android:layout_marginTop="24dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/backToHome"
-        app:srcCompat="@drawable/ic_arrow_left"
+        app:srcCompat="@drawable/ic_arrow_back"
     app:tint="@android:color/white"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
