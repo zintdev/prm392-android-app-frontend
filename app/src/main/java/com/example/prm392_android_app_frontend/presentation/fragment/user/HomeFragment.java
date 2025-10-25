@@ -27,6 +27,8 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -41,7 +43,7 @@ public class HomeFragment extends Fragment {
     
     // Filter chips
     private ChipGroup chipGroup;
-    private Chip chipAll, chipNew, chipPromotion;
+    private Chip chipAll, chipNew;
     
     // Layout mode: 0 = Grid 2 cột, 1 = List (horizontal), 2 = Grid 3 cột
     private int currentLayoutMode = 0;
@@ -73,7 +75,6 @@ public class HomeFragment extends Fragment {
         chipGroup = view.findViewById(R.id.chipGroup);
         chipAll = view.findViewById(R.id.chipAll);
         chipNew = view.findViewById(R.id.chipNew);
-        chipPromotion = view.findViewById(R.id.chipPromotion);
 
         // Search bar → mở SearchActivity (màn riêng)
         if (searchBar != null) {
@@ -223,21 +224,15 @@ public class HomeFragment extends Fragment {
             // Hiển thị tất cả sản phẩm
             filteredProducts.addAll(allProducts);
         } else if (chipNew.isChecked()) {
-            // Lọc sản phẩm mới (có thể dựa vào ngày tạo hoặc flag)
-            for (ProductDto product : allProducts) {
-                // Logic lọc sản phẩm mới - ví dụ dựa vào tên có chứa "NEW" hoặc logic khác
-                if (product.getName().toLowerCase().contains("new") || isNewProduct(product)) {
-                    filteredProducts.add(product);
+            // Sắp xếp sản phẩm theo ID mới nhất (từ cao đến thấp)
+            filteredProducts.addAll(allProducts);
+            Collections.sort(filteredProducts, new Comparator<ProductDto>() {
+                @Override
+                public int compare(ProductDto p1, ProductDto p2) {
+                    // Sắp xếp theo ID giảm dần (ID cao nhất = sản phẩm mới nhất)
+                    return Integer.compare(p2.getId(), p1.getId());
                 }
-            }
-        } else if (chipPromotion.isChecked()) {
-            // Lọc sản phẩm khuyến mãi
-            for (ProductDto product : allProducts) {
-                // Logic lọc sản phẩm khuyến mãi - có thể dựa vào giá giảm hoặc flag
-                if (product.getName().toLowerCase().contains("sale") || isPromotionProduct(product)) {
-                    filteredProducts.add(product);
-                }
-            }
+            });
         }
         
         productAdapter.setProducts(filteredProducts);
@@ -247,12 +242,6 @@ public class HomeFragment extends Fragment {
         // Logic để xác định sản phẩm mới
         // Ví dụ: sản phẩm được tạo trong 30 ngày gần đây
         return false; // Placeholder
-    }
-
-    private boolean isPromotionProduct(ProductDto product) {
-        // Logic để xác định sản phẩm khuyến mãi
-        // Ví dụ: sản phẩm có giá < 100000 hoặc có flag promotion
-        return product.getPrice() < 100000;
     }
 
     private void showLoading(boolean show) {
@@ -272,7 +261,6 @@ public class HomeFragment extends Fragment {
         chipGroup = null;
         chipAll = null;
         chipNew = null;
-        chipPromotion = null;
         allProducts.clear();
         filteredProducts.clear();
     }
