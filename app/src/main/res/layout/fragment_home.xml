@@ -44,32 +44,35 @@
     </LinearLayout>
 
     <!-- Filter chips -->
+
+    <!-- Danh sách sản phẩm -->
+
     <HorizontalScrollView
         android:id="@+id/chipScrollView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/searchBar"
+        app:layout_constraintEnd_toStartOf="@id/buttonToggleLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/searchBar">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            app:singleSelection="true"
-            app:selectionRequired="false">
+            android:paddingEnd="8dp"
+            app:selectionRequired="false"
+            app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipAll"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tất cả"
-                android:checked="true" />
+                android:checked="true"
+                android:text="Tất cả" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipNew"
@@ -88,7 +91,25 @@
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
-    <!-- Danh sách sản phẩm -->
+    <!-- Toggle Layout Button -->
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonToggleLayout"
+        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="-5dp"
+        android:contentDescription="Chuyển đổi hiển thị"
+        app:icon="@android:drawable/ic_menu_sort_by_size"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="24dp"
+        app:iconTint="@color/nogi_main"
+        app:layout_constraintBottom_toBottomOf="@id/chipScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/chipScrollView"
+        app:layout_constraintVertical_bias="1.0" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_products"
         android:layout_width="0dp"

@@ -25,8 +25,13 @@ import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
+    private static final int VIEW_TYPE_GRID_2 = 0;  // item_product (grid 2 cột)
+    private static final int VIEW_TYPE_LIST = 1;    // item_product_2 (list/horizontal)
+    private static final int VIEW_TYPE_GRID_3 = 2;  // item_product_3 (grid 3 cột)
+    
     private List<ProductDto> productList = new ArrayList<>();
     private static OnAddToCartClickListener onAddToCartClickListener;
+    private int currentViewType = VIEW_TYPE_GRID_2;  // Mặc định là grid 2 cột
 
     // Interface để xử lý sự kiện thêm vào giỏ hàng
     public interface OnAddToCartClickListener {
@@ -37,16 +42,40 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void setOnAddToCartClickListener(OnAddToCartClickListener listener) {
         this.onAddToCartClickListener = listener;
     }
+    
+    // Setter cho view type
+    public void setViewType(int viewType) {
+        this.currentViewType = viewType;
+        notifyDataSetChanged();
+    }
+    
+    // Getter cho view type
+    public int getCurrentViewType() {
+        return currentViewType;
+    }
 
     public void setProducts(List<ProductDto> products) {
         this.productList = products;
         notifyDataSetChanged();
     }
+    
+    @Override
+    public int getItemViewType(int position) {
+        return currentViewType;
+    }
 
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
+        int layoutId;
+        if (viewType == VIEW_TYPE_GRID_2) {
+            layoutId = R.layout.item_product;
+        } else if (viewType == VIEW_TYPE_LIST) {
+            layoutId = R.layout.item_product_2;
+        } else {
+            layoutId = R.layout.item_product_3;
+        }
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
         return new ProductViewHolder(view);
     }
 
@@ -63,6 +92,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     static class ProductViewHolder extends RecyclerView.ViewHolder {
         ImageView imageViewProduct;
         TextView textViewProductName, textViewArtistName, textViewProductPrice, textViewProductCategory, textViewStock;
+        TextView textViewPublisher;  // Thêm cho item_product_2
         MaterialButton buttonViewDetails, buttonAddToCart;
         android.widget.ImageButton buttonFavorite;
 
@@ -75,6 +105,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             textViewProductCategory = itemView.findViewById(R.id.textView_productCategory);
             textViewStock = itemView.findViewById(R.id.textView_stock);
             
+            // Thêm cho item_product_2 (có thể null nếu dùng item_product)
+            textViewPublisher = itemView.findViewById(R.id.textView_publisher);
+            
             // Buttons
             buttonViewDetails = itemView.findViewById(R.id.button_view_details);
             buttonAddToCart = itemView.findViewById(R.id.button_addToCart);
@@ -84,11 +117,22 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         void bind(ProductDto product) {
             textViewProductName.setText(product.getName());
             textViewArtistName.setText(product.getArtistName() != null ? product.getArtistName() : "Không có nghệ sĩ");
-            textViewProductCategory.setText(product.getCategoryName() != null ? product.getCategoryName() : "Không có thể loại");
-            textViewStock.setText(product.getQuantity() > 0 ? "Còn hàng" : "Hết hàng");
+            
+            // Chỉ set cho item_product (grid view) - không có trong item_product_2
+            if (textViewProductCategory != null) {
+                textViewProductCategory.setText(product.getCategoryName() != null ? product.getCategoryName() : "Không có thể loại");
+            }
+            if (textViewStock != null) {
+                textViewStock.setText(product.getQuantity() > 0 ? "Còn hàng" : "Hết hàng");
+            }
             
             // Sử dụng PriceFormatter
             textViewProductPrice.setText(PriceFormatter.formatPrice(product.getPrice()));
+            
+            // Bind dữ liệu cho item_product_2 (list view) - không có trong item_product
+            if (textViewPublisher != null) {
+                textViewPublisher.setText(product.getPublisherName() != null ? product.getPublisherName() : "N/A");
+            }
 
             Glide.with(itemView.getContext())
                     .load(product.getImageUrl())
@@ -97,7 +141,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                     .into(imageViewProduct);
 
             // 3. Gán sự kiện click cho nút bấm chi tiết
-            buttonViewDetails.setOnClickListener(v -> {
+            if (buttonViewDetails != null && buttonViewDetails.getVisibility() == View.VISIBLE) {
+                buttonViewDetails.setOnClickListener(v -> {
+                    Context context = itemView.getContext();
+                    Intent intent = new Intent(context, ProductDetailActivity.class);
+                    intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+                    context.startActivity(intent);
+                });
+            }
+            
+            // Gán sự kiện click cho toàn bộ card (cho item_product_3 không có nút chi tiết)
+            itemView.setOnClickListener(v -> {
                 Context context = itemView.getContext();
                 Intent intent = new Intent(context, ProductDetailActivity.class);
                 intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
