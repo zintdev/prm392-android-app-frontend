@@ -46,11 +46,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-<<<<<<< Updated upstream
             android:text="@strings/pickup"/>
-=======
-            android:text="@string/pickup"/>
->>>>>>> Stashed changes
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <!-- Filters -->
@@ -64,11 +60,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-<<<<<<< Updated upstream
                 android:hint="@strings/hint_radius_km">
-=======
-                android:hint="@string/hint_radius_km">
->>>>>>> Stashed changes
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtRadius"
                 android:layout_width="match_parent"
@@ -86,11 +78,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-<<<<<<< Updated upstream
             android:hint="@strings/hint_product_id_pickup">
-=======
-            android:hint="@string/hint_product_id_pickup">
->>>>>>> Stashed changes
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtProductId"
                 android:layout_width="match_parent"
@@ -108,11 +96,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnApply"
             style="@style/Widget.Material3.Button.TonalButton"
-<<<<<<< Updated upstream
             android:text="@strings/apply"
-=======
-            android:text="@string/apply"
->>>>>>> Stashed changes
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
