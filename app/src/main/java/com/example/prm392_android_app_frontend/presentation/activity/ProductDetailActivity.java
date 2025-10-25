@@ -18,6 +18,7 @@ import com.example.prm392_android_app_frontend.data.dto.ProductDto;
 import com.example.prm392_android_app_frontend.presentation.component.NavbarManager;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.CartViewModel;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.ProductViewModel;
+import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.example.prm392_android_app_frontend.utils.PriceFormatter;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -97,6 +98,14 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         buttonAddToCart.setOnClickListener(v -> {
+            // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
+            if (!TokenStore.isLoggedIn(this)) {
+                Toast.makeText(this, "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivity(loginIntent);
+                return;
+            }
+            
             if (currentProduct != null && currentProduct.getQuantity() > 0) {
                 showLoading(true);
                 cartViewModel.addProductToCart(productId, 1);

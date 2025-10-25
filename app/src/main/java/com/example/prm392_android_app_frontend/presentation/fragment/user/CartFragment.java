@@ -1,5 +1,6 @@
 package com.example.prm392_android_app_frontend.presentation.fragment.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.prm392_android_app_frontend.data.dto.CartDto;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.CartItemDto;
+import com.example.prm392_android_app_frontend.presentation.activity.LoginActivity;
 import com.example.prm392_android_app_frontend.presentation.adapter.CartAdapter;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.CartViewModel;
+import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -39,14 +42,27 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Kiểm tra đăng nhập ngay từ đầu
+        if (!TokenStore.isLoggedIn(requireContext())) {
+            // Hiển thị thông báo và chuyển đến trang đăng nhập
+            Toast.makeText(requireContext(), "Bạn cần đăng nhập để xem giỏ hàng", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(requireContext(), LoginActivity.class));
+            // Trả về view trống để không hiển thị gì
+            return new View(requireContext());
+        }
+        
         // Gắn layout "fragment_cart.xml" vào Fragment này.
-        // Tuyệt đối không viết thêm logic nào sau lệnh return này.
         return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Kiểm tra lại lần nữa để đảm bảo
+        if (!TokenStore.isLoggedIn(requireContext())) {
+            return;
+        }
 
         // Khởi tạo các view từ layout
         initViews(view);

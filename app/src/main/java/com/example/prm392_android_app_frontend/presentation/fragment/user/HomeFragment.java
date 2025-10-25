@@ -18,6 +18,7 @@ import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
 import com.example.prm392_android_app_frontend.presentation.activity.SearchProductActivity;
 import com.example.prm392_android_app_frontend.presentation.adapter.ProductAdapter;
+import com.example.prm392_android_app_frontend.presentation.viewmodel.CartViewModel;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.ProductViewModel;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -28,6 +29,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private ProductViewModel productViewModel;
+    private CartViewModel cartViewModel;
     private RecyclerView recyclerView;
     private ProductAdapter productAdapter;
     private ProgressBar progressBar;
@@ -82,6 +84,12 @@ public class HomeFragment extends Fragment {
 
         // ViewModel (dùng viewLifecycleOwner để observe đúng vòng đời)
         productViewModel = new ViewModelProvider(this).get(ProductViewModel.class);
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+
+        // Setup adapter listener để xử lý thêm vào giỏ hàng
+        productAdapter.setOnAddToCartClickListener((productId, quantity) -> {
+            cartViewModel.addProductToCart(productId, quantity);
+        });
 
         observeViewModel();
 
@@ -99,6 +107,24 @@ public class HomeFragment extends Fragment {
                 applyCurrentFilter();
             }
             showLoading(false);
+        });
+
+        // Lắng nghe kết quả thêm vào giỏ hàng
+        cartViewModel.getCartLiveData().observe(getViewLifecycleOwner(), cartDto -> {
+            if (cartDto != null) {
+                android.widget.Toast.makeText(requireContext(), 
+                    "Đã thêm sản phẩm vào giỏ hàng thành công!", 
+                    android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Lắng nghe lỗi từ CartViewModel
+        cartViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                android.widget.Toast.makeText(requireContext(), 
+                    "Lỗi: " + error, 
+                    android.widget.Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Nếu ViewModel có expose trạng thái lỗi, có thể bật đoạn sau:

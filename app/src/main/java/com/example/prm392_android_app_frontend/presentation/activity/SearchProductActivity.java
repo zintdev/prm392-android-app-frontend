@@ -31,6 +31,7 @@ import com.example.prm392_android_app_frontend.data.repository.ArtistRepository;
 import com.example.prm392_android_app_frontend.data.repository.CategoryRepository;
 import com.example.prm392_android_app_frontend.data.repository.PublisherRepository;
 import com.example.prm392_android_app_frontend.presentation.adapter.ProductAdapter;
+import com.example.prm392_android_app_frontend.presentation.viewmodel.CartViewModel;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.ProductViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -49,6 +50,7 @@ public class SearchProductActivity extends AppCompatActivity {
 
     private ProductAdapter adapter;
     private ProductViewModel viewModel;
+    private CartViewModel cartViewModel;
 
     private String currentQuery = "";
     private ProductFilter currentFilter = null;
@@ -96,6 +98,16 @@ public class SearchProductActivity extends AppCompatActivity {
                 this,
                 new ViewModelProvider.AndroidViewModelFactory(getApplication())
         ).get(ProductViewModel.class);
+        
+        cartViewModel = new ViewModelProvider(
+                this,
+                new ViewModelProvider.AndroidViewModelFactory(getApplication())
+        ).get(CartViewModel.class);
+
+        // Setup adapter listener để xử lý thêm vào giỏ hàng
+        adapter.setOnAddToCartClickListener((productId, quantity) -> {
+            cartViewModel.addProductToCart(productId, quantity);
+        });
 
         observeViewModel();
 
@@ -218,6 +230,24 @@ public class SearchProductActivity extends AppCompatActivity {
                             res.getMessage() != null ? res.getMessage() : "Lỗi tải dữ liệu",
                             Toast.LENGTH_SHORT).show();
                     break;
+            }
+        });
+        
+        // Lắng nghe kết quả thêm vào giỏ hàng
+        cartViewModel.getCartLiveData().observe(this, cartDto -> {
+            if (cartDto != null) {
+                Toast.makeText(this, 
+                    "Đã thêm sản phẩm vào giỏ hàng thành công!", 
+                    Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Lắng nghe lỗi từ CartViewModel
+        cartViewModel.getErrorMessage().observe(this, error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(this, 
+                    "Lỗi: " + error, 
+                    Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -12,9 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
+import com.example.prm392_android_app_frontend.presentation.activity.LoginActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.MainActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.ProductDetailActivity; // Import mới
 import com.example.prm392_android_app_frontend.presentation.component.NavbarManager;
+import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.example.prm392_android_app_frontend.utils.PriceFormatter;
 import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
@@ -23,6 +25,17 @@ import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
     private List<ProductDto> productList = new ArrayList<>();
+    private static OnAddToCartClickListener onAddToCartClickListener;
+
+    // Interface để xử lý sự kiện thêm vào giỏ hàng
+    public interface OnAddToCartClickListener {
+        void onAddToCart(int productId, int quantity);
+    }
+
+    // Setter cho listener
+    public void setOnAddToCartClickListener(OnAddToCartClickListener listener) {
+        this.onAddToCartClickListener = listener;
+    }
 
     public void setProducts(List<ProductDto> products) {
         this.productList = products;
@@ -92,16 +105,37 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
             buttonAddToCart.setOnClickListener(v -> {
                 Context context = itemView.getContext();
-                // TODO: Implement add to cart functionality here
-                android.widget.Toast.makeText(context, 
-                    "Đã thêm " + product.getName() + " vào giỏ hàng", 
-                    android.widget.Toast.LENGTH_SHORT).show();
                 
-                // Chuyển tới MainActivity với tab Cart được chọn
-                Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra(NavbarManager.EXTRA_SELECT_TAB, R.id.nav_cart);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                context.startActivity(intent);
+                // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
+                if (!TokenStore.isLoggedIn(context)) {
+                    // Hiển thị thông báo yêu cầu đăng nhập
+                    android.widget.Toast.makeText(context, 
+                        "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", 
+                        android.widget.Toast.LENGTH_SHORT).show();
+                    
+                    // Chuyển đến màn hình đăng nhập
+                    Intent loginIntent = new Intent(context, LoginActivity.class);
+                    context.startActivity(loginIntent);
+                    return;
+                }
+                
+                // Kiểm tra số lượng sản phẩm còn hàng
+                if (product.getQuantity() <= 0) {
+                    android.widget.Toast.makeText(context, 
+                        "Sản phẩm đã hết hàng", 
+                        android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                // Nếu đã đăng nhập và còn hàng, gọi callback để thêm vào giỏ
+                if (onAddToCartClickListener != null) {
+                    onAddToCartClickListener.onAddToCart(product.getId(), 1);
+                } else {
+                    // Fallback: Chỉ hiện thông báo nếu không có listener
+                    android.widget.Toast.makeText(context, 
+                        "Đã thêm " + product.getName() + " vào giỏ hàng", 
+                        android.widget.Toast.LENGTH_SHORT).show();
+                }
             });
 
             buttonFavorite.setOnClickListener(v -> {
