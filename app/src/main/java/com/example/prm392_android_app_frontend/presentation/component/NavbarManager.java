@@ -110,11 +110,26 @@ public class NavbarManager {
     private boolean switchByMenuId(int id) {
         if (id == R.id.nav_home)           return switchFragment(new HomeFragment());
         else if (id == R.id.nav_blog)      return switchFragment(new BlogListFragment());
-        else if (id == R.id.nav_cart)      return switchFragment(new CartFragment());
+        else if (id == R.id.nav_cart)      return handleCartTab();
         else if (id == R.id.nav_notification) return switchFragment(new NotificationFragment());
         else if (id == R.id.nav_setting)   return switchFragment(new SettingFragment());
         else if (id == R.id.nav_account)   return handleAccountTab();
         return false;
+    }
+
+    private boolean handleCartTab() {
+        if (TokenStore.isLoggedIn(activity)) {
+            return switchFragment(new CartFragment());
+        } else {
+            new AlertDialog.Builder(activity)
+                    .setTitle("Yêu cầu đăng nhập")
+                    .setMessage("Bạn cần đăng nhập để sử dụng tính năng này.")
+                    .setPositiveButton("ĐĂNG NHẬP",
+                            (d, w) -> activity.startActivity(new Intent(activity, LoginActivity.class)))
+                    .setNegativeButton("HỦY", null)
+                    .show();
+            return false;
+        }
     }
 
     private boolean handleAccountTab() {

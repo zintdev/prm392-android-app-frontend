@@ -22,6 +22,7 @@ import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.example.prm392_android_app_frontend.utils.PriceFormatter;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -100,9 +101,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         buttonAddToCart.setOnClickListener(v -> {
             // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
             if (!TokenStore.isLoggedIn(this)) {
-                Toast.makeText(this, "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                Intent loginIntent = new Intent(this, LoginActivity.class);
-                startActivity(loginIntent);
+                showLoginRequiredDialog();
                 return;
             }
             
@@ -115,6 +114,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         buttonCartIcon.setOnClickListener(v -> {
+            // Kiểm tra đăng nhập trước khi chuyển tới giỏ hàng
+            if (!TokenStore.isLoggedIn(this)) {
+                showLoginRequiredDialog();
+                return;
+            }
+            
             // Chuyển tới MainActivity với tab Cart được chọn
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra(NavbarManager.EXTRA_SELECT_TAB, R.id.nav_cart);
@@ -227,5 +232,21 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         }
         return dateString;
+    }
+
+    /**
+     * Hiển thị dialog yêu cầu đăng nhập
+     */
+    private void showLoginRequiredDialog() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Yêu cầu đăng nhập")
+                .setMessage("Bạn cần đăng nhập để sử dụng tính năng này.")
+                .setPositiveButton("ĐĂNG NHẬP", (dialog, which) -> {
+                    Intent loginIntent = new Intent(this, LoginActivity.class);
+                    startActivity(loginIntent);
+                })
+                .setNegativeButton("HỦY", null)
+                .setCancelable(false)
+                .show();
     }
 }

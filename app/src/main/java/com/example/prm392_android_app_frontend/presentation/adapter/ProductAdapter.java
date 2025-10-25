@@ -1,5 +1,6 @@
 package com.example.prm392_android_app_frontend.presentation.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context; // Import mới
 import android.content.Intent;   // Import mới
 import android.view.LayoutInflater;
@@ -108,14 +109,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 
                 // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
                 if (!TokenStore.isLoggedIn(context)) {
-                    // Hiển thị thông báo yêu cầu đăng nhập
-                    android.widget.Toast.makeText(context, 
-                        "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", 
-                        android.widget.Toast.LENGTH_SHORT).show();
-                    
-                    // Chuyển đến màn hình đăng nhập
-                    Intent loginIntent = new Intent(context, LoginActivity.class);
-                    context.startActivity(loginIntent);
+                    // Hiển thị dialog yêu cầu đăng nhập
+                    new AlertDialog.Builder(context)
+                            .setTitle("Yêu cầu đăng nhập")
+                            .setMessage("Bạn cần đăng nhập để sử dụng tính năng này.")
+                            .setPositiveButton("ĐĂNG NHẬP", (dialog, which) -> {
+                                Intent loginIntent = new Intent(context, LoginActivity.class);
+                                context.startActivity(loginIntent);
+                            })
+                            .setNegativeButton("HỦY", null)
+                            .setCancelable(false)
+                            .show();
                     return;
                 }
                 
