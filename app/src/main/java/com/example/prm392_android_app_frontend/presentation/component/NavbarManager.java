@@ -1,6 +1,5 @@
 package com.example.prm392_android_app_frontend.presentation.component;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -12,8 +11,11 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.example.prm392_android_app_frontend.R;
+import com.example.prm392_android_app_frontend.data.dto.CartDto;
 import com.example.prm392_android_app_frontend.presentation.activity.LoginActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.MapsActivity;
 import com.example.prm392_android_app_frontend.presentation.fragment.user.AccountFragment;
@@ -22,8 +24,10 @@ import com.example.prm392_android_app_frontend.presentation.fragment.user.CartFr
 import com.example.prm392_android_app_frontend.presentation.fragment.user.HomeFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.user.NotificationFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.user.SettingFragment;
+import com.example.prm392_android_app_frontend.presentation.viewmodel.CartViewModel;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class NavbarManager {
@@ -32,26 +36,33 @@ public class NavbarManager {
 
     private final Activity activity;
     private final FragmentManager fm;
-    private final @IdRes int containerId;
+    private final @IdRes
+    int containerId;
     private final BottomNavigationView bottomNav;
     private final MaterialToolbar toolbar;
+    private final CartViewModel cartViewModel;
 
     public NavbarManager(Activity activity,
                          FragmentManager fm,
                          @IdRes int containerId,
                          BottomNavigationView bottomNav,
-                         MaterialToolbar toolbar) {
+                         MaterialToolbar toolbar,
+                         ViewModelStoreOwner viewModelStoreOwner) {
         this.activity = activity;
         this.fm = fm;
         this.containerId = containerId;
         this.bottomNav = bottomNav;
         this.toolbar = toolbar;
+        this.cartViewModel = new ViewModelProvider(viewModelStoreOwner).get(CartViewModel.class);
     }
 
-    /** Gọi trong onCreate() của MainActivity */
+    /**
+     * Gọi trong onCreate() của MainActivity
+     */
     public void init(@Nullable Bundle savedInstanceState) {
         setupToolbarMenu();
         setupBottomNav();
+        observeCartViewModel();
 
         if (savedInstanceState == null) {
             // Kiểm tra xem có intent extra để chọn tab không
@@ -73,7 +84,23 @@ public class NavbarManager {
         }
     }
 
-    /** Gọi trong onResume() của MainActivity để xử lý chọn tab qua Intent */
+    private void observeCartViewModel() {
+        cartViewModel.getCartLiveData().observeForever(this::updateCartBadge);
+    }
+
+    private void updateCartBadge(CartDto cartDto) {
+        BadgeDrawable badge = bottomNav.getOrCreateBadge(R.id.nav_cart);
+        if (cartDto != null && cartDto.getItems() != null && !cartDto.getItems().isEmpty()) {
+            badge.setVisible(true);
+            badge.setNumber(cartDto.getItems().size());
+        } else {
+            badge.setVisible(false);
+        }
+    }
+
+    /**
+     * Gọi trong onResume() của MainActivity để xử lý chọn tab qua Intent
+     */
     public void handleSelectTabExtra(Intent intent) {
         if (intent == null) return;
         int nextTab = intent.getIntExtra(EXTRA_SELECT_TAB, -1);
@@ -108,12 +135,12 @@ public class NavbarManager {
     }
 
     private boolean switchByMenuId(int id) {
-        if (id == R.id.nav_home)           return switchFragment(new HomeFragment());
-        else if (id == R.id.nav_blog)      return switchFragment(new BlogListFragment());
-        else if (id == R.id.nav_cart)      return handleCartTab();
+        if (id == R.id.nav_home) return switchFragment(new HomeFragment());
+        else if (id == R.id.nav_blog) return switchFragment(new BlogListFragment());
+        else if (id == R.id.nav_cart) return handleCartTab();
         else if (id == R.id.nav_notification) return switchFragment(new NotificationFragment());
-        else if (id == R.id.nav_setting)   return switchFragment(new SettingFragment());
-        else if (id == R.id.nav_account)   return handleAccountTab();
+        else if (id == R.id.nav_setting) return switchFragment(new SettingFragment());
+        else if (id == R.id.nav_account) return handleAccountTab();
         return false;
     }
 

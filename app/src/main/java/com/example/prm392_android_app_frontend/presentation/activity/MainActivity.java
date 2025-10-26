@@ -16,7 +16,6 @@ import com.example.prm392_android_app_frontend.presentation.util.NotificationHel
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager(),
                 R.id.fragment_container,   // ID container fragment trong activity_main_page.xml
                 nav,
-                toolbar
+                toolbar,
+                this // Truyền Activity vào làm ViewModelStoreOwner
         );
         navMgr.init(savedInstanceState);
     }

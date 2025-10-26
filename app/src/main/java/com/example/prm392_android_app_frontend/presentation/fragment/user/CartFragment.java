@@ -51,7 +51,8 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
         initViews(view);
 
         // Khởi tạo ViewModel
-        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        // SỬA LỖI: Lấy ViewModel từ Activity để đảm bảo sử dụng chung một đối tượng
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         // Thiết lập RecyclerView và Adapter
         setupRecyclerView();

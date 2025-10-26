@@ -12,6 +12,7 @@ import com.example.prm392_android_app_frontend.data.dto.UpdateCartItemRequest;
 import com.example.prm392_android_app_frontend.data.remote.api.CartApi;
 import com.example.prm392_android_app_frontend.data.repository.CartRepository;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
+import com.example.prm392_android_app_frontend.presentation.util.Event;
 import com.example.prm392_android_app_frontend.presentation.util.NotificationHelper;
 
 import retrofit2.Call;
@@ -25,6 +26,10 @@ public class CartViewModel extends AndroidViewModel {
     private final MutableLiveData<CartDto> cartLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+    private final MutableLiveData<Event<String>> _showToast = new MutableLiveData<>();
+    public LiveData<Event<String>> getShowToast() {
+        return _showToast;
+    }
 
     public CartViewModel(@NonNull Application application) {
         super(application);
@@ -104,6 +109,7 @@ public class CartViewModel extends AndroidViewModel {
                     CartDto cart = response.body();
                     cartLiveData.postValue(cart);
                     NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
+                    _showToast.setValue(new Event<>("Đã thêm sản phẩm vào giỏ hàng thành công!"));
                 } else {
                     errorMessage.postValue("Lỗi thêm vào giỏ hàng. Mã: " + response.code());
                 }
