@@ -12,6 +12,7 @@ import com.example.prm392_android_app_frontend.presentation.fragment.user.CartFr
 import com.example.prm392_android_app_frontend.presentation.fragment.user.HomeFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.user.NotificationFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.user.SettingFragment;
+import com.example.prm392_android_app_frontend.presentation.util.NotificationHelper;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
+
+        NotificationHelper.createNotificationChannel(this);
 
         BottomNavigationView nav = findViewById(R.id.bottomNav);
         MaterialToolbar toolbar = findViewById(R.id.toolbar);

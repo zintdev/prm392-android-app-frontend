@@ -12,6 +12,7 @@ import com.example.prm392_android_app_frontend.data.dto.UpdateCartItemRequest;
 import com.example.prm392_android_app_frontend.data.remote.api.CartApi;
 import com.example.prm392_android_app_frontend.data.repository.CartRepository;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
+import com.example.prm392_android_app_frontend.presentation.util.NotificationHelper;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,7 +53,13 @@ public class CartViewModel extends AndroidViewModel {
             @Override
             public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
                 if (response.isSuccessful()) {
-                    cartLiveData.postValue(response.body());
+                    CartDto cart = response.body();
+                    cartLiveData.postValue(cart);
+                    if (cart != null && cart.getItems() != null) {
+                        NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
+                    } else {
+                        NotificationHelper.showCartNotification(getApplication(), 0);
+                    }
                 } else {
                     errorMessage.postValue("Lỗi tải giỏ hàng: " + response.code());
                 }
@@ -94,9 +101,9 @@ public class CartViewModel extends AndroidViewModel {
             @Override
             public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Cập nhật giỏ hàng với dữ liệu mới nhận về
-                    // Hoặc có thể tạo một LiveData riêng để báo thành công
-                    cartLiveData.postValue(response.body());
+                    CartDto cart = response.body();
+                    cartLiveData.postValue(cart);
+                    NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
                 } else {
                     errorMessage.postValue("Lỗi thêm vào giỏ hàng. Mã: " + response.code());
                 }
@@ -118,7 +125,7 @@ public class CartViewModel extends AndroidViewModel {
         // Lấy thông tin cart hiện tại để biết selected status
         CartDto currentCart = cartLiveData.getValue();
         boolean isSelected = false;
-        
+
         // Kiểm tra xem item có đang được chọn không
         if (currentCart != null && currentCart.getItems() != null) {
             for (CartItemDto item : currentCart.getItems()) {
@@ -131,13 +138,15 @@ public class CartViewModel extends AndroidViewModel {
 
         // Tạo request với cả selected status
         UpdateCartItemRequest request = new UpdateCartItemRequest(quantityChange, isSelected);
-        
+
         // Gọi repository để update
         cartRepository.updateItemQuantity(CartItemId, request, new Callback<CartDto>() {
             @Override
             public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    cartLiveData.postValue(response.body()); // Cập nhật lại giỏ hàng
+                    CartDto cart = response.body();
+                    cartLiveData.postValue(cart); // Cập nhật lại giỏ hàng
+                    NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
                 } else {
                     errorMessage.postValue("Lỗi cập nhật số lượng. Mã: " + response.code());
                 }
@@ -158,7 +167,9 @@ public class CartViewModel extends AndroidViewModel {
             @Override
             public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    cartLiveData.postValue(response.body()); // Cập nhật lại giỏ hàng
+                    CartDto cart = response.body();
+                    cartLiveData.postValue(cart); // Cập nhật lại giỏ hàng
+                    NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
                 } else {
                     errorMessage.postValue("Lỗi cập nhật trạng thái chọn. Mã: " + response.code());
                 }
@@ -188,6 +199,7 @@ public class CartViewModel extends AndroidViewModel {
                     emptyCart.setShippingFee(0.0);
                     emptyCart.setStatus("empty");
                     cartLiveData.postValue(emptyCart);
+                    NotificationHelper.showCartNotification(getApplication(), 0);
                 } else {
                     errorMessage.postValue("Lỗi xóa giỏ hàng. Mã: " + response.code());
                 }
@@ -208,7 +220,9 @@ public class CartViewModel extends AndroidViewModel {
             @Override
             public void onResponse(@NonNull Call<CartDto> call, @NonNull Response<CartDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    cartLiveData.postValue(response.body());
+                    CartDto cart = response.body();
+                    cartLiveData.postValue(cart);
+                    NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
                 } else {
                     errorMessage.postValue("Lỗi khi chọn tất cả sản phẩm. Mã: " + response.code());
                 }
