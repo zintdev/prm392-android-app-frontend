@@ -4,7 +4,7 @@
     <color name="text_tertiary">#757575</color>
     <color name="icon_border">#CCCCCC</color>
     <color name="gray">#808080</color>
-    
+    <color name="red">#FF0000</color>
     <!-- Light Theme Colors -->
     <color name="background_light">#FAFAFA</color>
     <color name="surface_light">#FFFFFF</color>
