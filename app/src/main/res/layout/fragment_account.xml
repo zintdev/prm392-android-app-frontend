@@ -63,6 +63,13 @@
                             android:layout_weight="1"
                             android:orientation="vertical"
                             android:paddingStart="10dp">
+                            <TextView
+                                android:id="@+id/txtGreet"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Xin chào,"
+                                android:textSize="12sp"
+                                android:textStyle="" />
 
                             <TextView
                                 android:id="@+id/txtName"
@@ -77,18 +84,13 @@
                                 style="@style/Widget.Material3.Chip.Assist"
                                 android:layout_width="wrap_content"
                                 android:layout_height="32dp"
-                                android:text=""
-                                app:chipIcon="@drawable/ic_nogi_logo"
-                                app:chipIconTint="@color/black" />
+                                android:text="Khách hàng"
+                            />
                         </LinearLayout>
 
-                        <ImageView
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:src="@drawable/ic_nogi_logo" />
                     </LinearLayout>
 
-                    <!-- Hàng F-Point / Freeship -->
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -107,14 +109,14 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@drawable/ic_nogi_logo" />
+                                android:src="@drawable/ic_dashboard_logo" />
 
                             <TextView
                                 android:id="@+id/txtFPoint"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="6dp"
-                                android:text="396"
+                                android:text="Để đây vì nghĩ nó có ích"
                                 android:textStyle="bold" />
                         </LinearLayout>
 
@@ -128,27 +130,27 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@drawable/ic_nogi_logo" />
+                                android:src="@drawable/ic_dashboard_logo" />
 
                             <TextView
                                 android:id="@+id/txtFreeship"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="6dp"
-                                android:text="1 lần"
+                                android:text="Giống cái bên trái"
                                 android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- ĐƠN HÀNG CỦA TÔI -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="6dp"
-                android:paddingBottom="2dp">
+                android:paddingTop="10dp"
+                android:paddingBottom="30dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -162,36 +164,84 @@
                     android:layout_height="72dp"
                     android:gravity="center"
                     android:paddingHorizontal="6dp"
-                    android:weightSum="4">
+                    android:orientation="horizontal"
+                    android:weightSum="3">
 
-                    <!-- 4 icon - KHÔNG có text -->
-                    <ImageButton
-                        android:id="@+id/btnOrderWaitingPay"
-                        style="@style/Widget.Material3.Button.IconButton"
+                    <!-- Item 1 -->
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/ic_nogi_logo" />
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                    <ImageButton
-                        android:id="@+id/btnOrderProcessing"
-                        style="@style/Widget.Material3.Button.IconButton"
+                        <ImageButton
+                            android:id="@+id/btnOrderWaitingPay"
+                            style="@style/Widget.Material3.Button.IconButton"
+                            android:layout_width="82dp"
+                            android:layout_height="49dp"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_wait_for_payment" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:rotationX="0"
+                            android:text="Chờ thanh toán"
+                            android:textColor="@color/black"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Item 2 -->
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/ic_truck_delivery" />
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                    <ImageButton
-                        android:id="@+id/btnOrderCompleted"
-                        style="@style/Widget.Material3.Button.IconButton"
+                        <ImageButton
+                            android:id="@+id/btnOrderProcessing"
+                            style="@style/Widget.Material3.Button.IconButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="46dp"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_truck_delivery" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Đang giao"
+                            android:textSize="12sp"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
+                    <!-- Item 3 -->
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/ic_nogi_logo" />
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/btnOrderCompleted"
+                            style="@style/Widget.Material3.Button.IconButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="49dp"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_done" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hoàn thành"
+                            android:textSize="12sp"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- MENU DANH SÁCH -->
@@ -199,26 +249,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+                <!--                Thay đổi thông tin-->
+                <include
+                    android:id="@+id/rowUpdateProfile"
+                    layout="@layout/row_account_fragment_change_account_info" />
+                <include android:id="@+id/rowUserAddress"
+                    layout="@layout/row_account_fragment_user_address"/>
+                <include layout="@layout/row_account_fragment_term_and_condition" />
 
-                <include layout="@layout/row_menu_item" />
+                <include layout="@layout/row_account_fragment_user_term" />
 
-                <include layout="@layout/row_menu_item" />
+                <include layout="@layout/row_account_fragment_q_and_a" />
 
-                <include layout="@layout/row_menu_item" />
-
-                <include layout="@layout/row_menu_item" />
-
-                <include layout="@layout/row_menu_item" />
+                <include layout="@layout/row_account_fragment_private_rule" />
 
                 <!-- Hồ sơ cá nhân -->
                 <include
-                    android:id="@+id/rowProfile"
-                    layout="@layout/row_menu_item" />
+                    android:id="@+id/rowChangePassword"
+                    layout="@layout/row_account_fragment_change_passsword" />
 
                 <!-- Đăng xuất -->
                 <include
                     android:id="@+id/rowLogout"
                     layout="@layout/row_account_fragment_logout" />
+
+                <include layout="@layout/row_account_fragment_delete_account" />
+
             </LinearLayout>
 
         </LinearLayout>

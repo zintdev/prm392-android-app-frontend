@@ -60,7 +60,15 @@
         <activity
             android:name=".presentation.activity.ProductDetailActivity"
             android:exported="false" />
-
+        <activity android:name=".presentation.activity.ChangePasswordActivity"
+            />
+        <activity android:name=".presentation.activity.EditProfileActivity"
+            android:exported="false"/>
+        >
+        <activity android:name=".presentation.activity.AddUserAddressActivity"
+            android:exported="false"/>
+        <activity android:name=".presentation.activity.UserAddressesActivity"
+            android:exported="false"/>
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
 </manifest>
