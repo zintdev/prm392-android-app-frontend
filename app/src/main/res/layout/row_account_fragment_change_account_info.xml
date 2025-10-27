@@ -7,20 +7,24 @@
     android:paddingHorizontal="12dp"
     android:foreground="?attr/selectableItemBackground">
 
-
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:src="@drawable/ic_logout"/>
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@drawable/ic_change_information"/>
+
     <TextView
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_weight="1"
-        android:text="Đăng xuất"
-        android:textSize="15sp"/>
+        android:text="Thay đổi thông tin tài khoản"
+        android:textStyle="normal|bold"
+        android:textSize="16sp"/>
 
-
+    <ImageView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:src="@drawable/ic_angle_right"/>
 </LinearLayout>

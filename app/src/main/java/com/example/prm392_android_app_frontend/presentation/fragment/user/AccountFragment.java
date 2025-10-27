@@ -5,24 +5,30 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.prm392_android_app_frontend.R;
+import com.example.prm392_android_app_frontend.presentation.activity.ChangePasswordActivity;
+import com.example.prm392_android_app_frontend.presentation.activity.EditProfileActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.MainActivity;
+import com.example.prm392_android_app_frontend.presentation.activity.AddUserAddressActivity;
+import com.example.prm392_android_app_frontend.presentation.activity.UserAddressesActivity;
+import com.example.prm392_android_app_frontend.presentation.viewmodel.UserViewModel;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
-import com.example.prm392_android_app_frontend.presentation.activity.LoginActivity;
-import com.example.prm392_android_app_frontend.presentation.activity.ProfileActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AccountFragment extends Fragment {
 
     private TextView txtName, txtFPoint, txtFreeship;
-    private View rowProfile, rowLogout;
+    private View rowLogout, rowChangePassword, rowUpdateProfile, rowUserAddress;
+
+    private UserViewModel vm;
+    private int userId;
 
     @Nullable
     @Override
@@ -38,29 +44,25 @@ public class AccountFragment extends Fragment {
         txtName = v.findViewById(R.id.txtName);
         txtFPoint = v.findViewById(R.id.txtFPoint);
         txtFreeship = v.findViewById(R.id.txtFreeship);
-        rowProfile = v.findViewById(R.id.rowProfile);
         rowLogout = v.findViewById(R.id.rowLogout);
-        String username = TokenStore.getUsername(requireContext());
-        txtName.setText(username);
-            ((TextView) rowProfile.findViewById(R.id.title)).setText("Hồ sơ cá nhân");
-            ((ImageView) rowProfile.findViewById(R.id.icon)).setImageResource(R.drawable.ic_person);
-
-            ((TextView) rowLogout.findViewById(R.id.title)).setText("Đăng xuất");
-            ((ImageView) rowLogout.findViewById(R.id.icon)).setImageResource(R.drawable.ic_logout);
-
-        // Click: mở trang cập nhật hồ sơ
-        rowProfile.setOnClickListener(v12 -> {
-            if (!TokenStore.isLoggedIn(requireContext())) {
-                Snackbar.make(v12, "Bạn cần đăng nhập", Snackbar.LENGTH_SHORT).show();
-                startActivity(new Intent(requireContext(), LoginActivity.class));
-                return;
+        rowUpdateProfile = v.findViewById(R.id.rowUpdateProfile);
+        rowChangePassword = v.findViewById(R.id.rowChangePassword);
+        rowUserAddress = v.findViewById(R.id.rowUserAddress);
+        userId = TokenStore.getUserId(requireContext());
+        vm = new ViewModelProvider(this).get(UserViewModel.class);
+        vm.user.observe(getViewLifecycleOwner(), user -> {
+            if (user != null) {
+                txtName.setText(user.username != null ? user.username : "");
             }
-            Intent i = new Intent(requireContext(), ProfileActivity.class);
-            i.putExtra("userId", TokenStore.getUserId(requireContext()));
-            startActivity(i);
         });
 
-        // Click: đăng xuất
+        vm.error.observe(getViewLifecycleOwner(), msg -> {
+            if (msg != null && getView() != null) {
+                Snackbar.make(getView(), msg, Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+        vm.loadUser(userId);
         rowLogout.setOnClickListener(v1 -> {
             TokenStore.clear(requireContext());
             Snackbar.make(v1, "Đã đăng xuất", Snackbar.LENGTH_SHORT).show();
@@ -68,13 +70,19 @@ public class AccountFragment extends Fragment {
             requireActivity().finish();
         });
 
-//        v.findViewById(R.id.btnOrderWaitingPay).setOnClickListener(x ->
-//                Snackbar.make(x, "Chờ thanh toán", Snackbar.LENGTH_SHORT).show());
-//        v.findViewById(R.id.btnOrderProcessing).setOnClickListener(x ->
-//                Snackbar.make(x, "Đang xử lý", Snackbar.LENGTH_SHORT).show());
-////        v.findViewById(R.id.btnOrderShipping).setOnClickListener(x ->
-////                Snackbar.make(x, "Đang giao hàng", Snackbar.LENGTH_SHORT).show());
-//        v.findViewById(R.id.btnOrderCompleted).setOnClickListener(x ->
-//                Snackbar.make(x, "Hoàn tất", Snackbar.LENGTH_SHORT).show());
+        rowChangePassword.setOnClickListener(v1 ->
+                startActivity(new Intent(requireContext(), ChangePasswordActivity.class)));
+
+        rowUpdateProfile.setOnClickListener(v1 ->
+                startActivity(new Intent(requireContext(), EditProfileActivity.class)));
+
+        rowUserAddress.setOnClickListener(v1 ->
+                startActivity(new Intent(requireContext(), UserAddressesActivity.class)));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        vm.loadUser(userId);
     }
 }
