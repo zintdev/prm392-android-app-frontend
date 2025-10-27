@@ -34,4 +34,13 @@ public class CartDto {
     public double getShippingFee() { return shippingFee; }
     public double getGrandTotal() { return grandTotal; }
     public List<CartItemDto> getItems() {return items; }
+    
+    // Setters
+    public void setCartId(int cartId) { this.cartId = cartId; }
+    public void setStatus(String status) { this.status = status; }
+    public void setSubtotal(double subtotal) { this.subtotal = subtotal; }
+    public void setTaxTotal(double taxTotal) { this.taxTotal = taxTotal; }
+    public void setShippingFee(double shippingFee) { this.shippingFee = shippingFee; }
+    public void setGrandTotal(double grandTotal) { this.grandTotal = grandTotal; }
+    public void setItems(List<CartItemDto> items) { this.items = items; }
 }

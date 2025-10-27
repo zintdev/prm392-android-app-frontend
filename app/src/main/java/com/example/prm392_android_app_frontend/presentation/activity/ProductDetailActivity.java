@@ -1,24 +1,28 @@
 package com.example.prm392_android_app_frontend.presentation.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull; // Thêm import này
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
+import com.example.prm392_android_app_frontend.presentation.component.NavbarManager;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.CartViewModel;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.ProductViewModel;
+import com.example.prm392_android_app_frontend.storage.TokenStore;
+import com.example.prm392_android_app_frontend.utils.PriceFormatter;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -39,7 +43,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView detailName, detailArtist, detailPrice, detailDescription, quantity, publisherName, categoryName, releaseDate;
     private ProgressBar progressBar;
     private MaterialButton buttonAddToCart;
-    private ImageButton buttonCartIcon;
+    private MaterialButton buttonCartIcon;
 
     private int productId;
     private ProductDto currentProduct;
@@ -95,6 +99,12 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         buttonAddToCart.setOnClickListener(v -> {
+            // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
+            if (!TokenStore.isLoggedIn(this)) {
+                showLoginRequiredDialog();
+                return;
+            }
+            
             if (currentProduct != null && currentProduct.getQuantity() > 0) {
                 showLoading(true);
                 cartViewModel.addProductToCart(productId, 1);
@@ -104,9 +114,22 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         buttonCartIcon.setOnClickListener(v -> {
-            Toast.makeText(this, "Mở giỏ hàng", Toast.LENGTH_SHORT).show();
-            // Intent intent = new Intent(this, CartActivity.class);
-            // startActivity(intent);
+            // Kiểm tra đăng nhập trước khi chuyển tới giỏ hàng
+            if (!TokenStore.isLoggedIn(this)) {
+                showLoginRequiredDialog();
+                return;
+            }
+            
+            // Chuyển tới MainActivity với tab Cart được chọn
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(NavbarManager.EXTRA_SELECT_TAB, R.id.nav_cart);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            
+            // Debug logging
+            android.util.Log.d("ProductDetail", "Chuyển tới Cart với ID: " + R.id.nav_cart);
+            
+            startActivity(intent);
+            finish(); // Đóng ProductDetailActivity
         });
     }
 
@@ -157,8 +180,8 @@ public class ProductDetailActivity extends AppCompatActivity {
         publisherName.setText(product.getPublisherName());
         categoryName.setText(product.getCategoryName());
 
-        DecimalFormat formatter = new DecimalFormat("###,###,###");
-        detailPrice.setText(formatter.format(product.getPrice()) + "đ");
+        // Sử dụng PriceFormatter
+        detailPrice.setText(PriceFormatter.formatPrice(product.getPrice()));
 
         releaseDate.setText(formatDate(product.getReleaseDate()));
 
@@ -209,5 +232,21 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         }
         return dateString;
+    }
+
+    /**
+     * Hiển thị dialog yêu cầu đăng nhập
+     */
+    private void showLoginRequiredDialog() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Yêu cầu đăng nhập")
+                .setMessage("Bạn cần đăng nhập để sử dụng tính năng này.")
+                .setPositiveButton("ĐĂNG NHẬP", (dialog, which) -> {
+                    Intent loginIntent = new Intent(this, LoginActivity.class);
+                    startActivity(loginIntent);
+                })
+                .setNegativeButton("HỦY", null)
+                .setCancelable(false)
+                .show();
     }
 }

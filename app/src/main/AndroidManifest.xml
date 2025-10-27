@@ -63,6 +63,9 @@
         <activity
             android:name=".presentation.activity.ProductDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".presentation.activity.SearchProductActivity"
+            android:exported="false"/>
 
         <activity
             android:name=".presentation.activity.AdminProductActivity"
