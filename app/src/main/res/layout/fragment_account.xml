@@ -220,6 +220,14 @@
                     android:id="@+id/rowLogout"
                     layout="@layout/row_account_fragment_logout" />
             </LinearLayout>
+            <Button
+                android:id="@+id/btn_chat_with_admin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Liên hệ hỗ trợ (Chat)"
+                android:backgroundTint="@color/nav_item_tint"
+                android:textColor="@android:color/white"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

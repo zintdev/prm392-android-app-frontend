@@ -1,5 +1,4 @@
-package com.example.prm392_android_app_frontend.data.dto;
-import com.google.firebase.Timestamp;
+package com.example.prm392_android_app_frontend.data.dto.chat;
 import com.google.gson.annotations.SerializedName;
 
 // Lớp này là POJO (Plain Old Java Object) để Gson
@@ -27,8 +26,7 @@ public class MessageDto {
     private String content;
 
     // Backend (Java) dùng Instant, khi serialize thành JSON,
-    // nó thường là một String ISO 8601 (ví dụ: "2025-10-24T10:30:00Z").
-    // Nhận nó dưới dạng String là an toàn nhất trên Android.
+    // nó thường là một Long timestamp (milliseconds since epoch).
     @SerializedName("createdAt")
     private Long createdAt;
 

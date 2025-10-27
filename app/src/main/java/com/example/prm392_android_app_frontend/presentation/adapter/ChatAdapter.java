@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.prm392_android_app_frontend.R;
-import com.example.prm392_android_app_frontend.data.dto.MessageDto; // (Import model DTO của bạn)
+import com.example.prm392_android_app_frontend.data.dto.chat.MessageDto; // (Import model DTO của bạn)
 
 import java.util.List;
 import java.util.Objects;
@@ -93,11 +93,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * Dùng để cập nhật trạng thái "đã đọc" (từ Firebase listener)
      */
     public void updateMessageReadStatus(MessageDto readMessage) {
+        if (readMessage == null || readMessage.getId() == null) return;
+        
         for (int i = messageList.size() - 1; i >= 0; i--) { // Duyệt ngược để tìm tin mới nhất
             MessageDto item = messageList.get(i);
             // Dùng Objects.equals để so sánh ID
             if (Objects.equals(item.getId(), readMessage.getId())) {
-                if(item.getReadAt() == null) { // Chỉ cập nhật nếu trạng thái thay đổi
+                if(item.getReadAt() == null && readMessage.getReadAt() != null) { // Chỉ cập nhật nếu trạng thái thay đổi
                     item.setReadAt(readMessage.getReadAt());
                     notifyItemChanged(i);
                 }

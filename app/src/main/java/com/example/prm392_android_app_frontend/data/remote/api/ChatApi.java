@@ -1,7 +1,8 @@
 package com.example.prm392_android_app_frontend.data.remote.api;
 
 // Import DTOs từ package DTO chính xác của bạn
-import com.example.prm392_android_app_frontend.data.dto.MessageDto;
+import com.example.prm392_android_app_frontend.data.dto.chat.ConversationDto;
+import com.example.prm392_android_app_frontend.data.dto.chat.MessageDto;
 import com.example.prm392_android_app_frontend.data.dto.chat.ReadReceiptRequest;
 import com.example.prm392_android_app_frontend.data.dto.chat.SendMessageRequest;
 import com.example.prm392_android_app_frontend.data.dto.chat.TypingEventRequest;
@@ -62,4 +63,19 @@ public interface ChatApi {
      */
     @POST("chat/read")
     Call<Void> sendReadReceipt(@Body ReadReceiptRequest request);
+
+
+    /**
+     * Customer: Lấy conversation với admin
+     * Tương ứng: @GetMapping("/api/chat/conversation")
+     */
+    @GET("chat/conversation")
+    Call<ConversationDto> getCustomerConversation();
+
+    /**
+     * Customer: Lấy số tin nhắn chưa đọc
+     * Tương ứng: @GetMapping("/api/chat/unread-count/{conversationId}")
+     */
+    @GET("chat/unread-count/{conversationId}")
+    Call<Integer> getUnreadCount(@Path("conversationId") Integer conversationId);
 }

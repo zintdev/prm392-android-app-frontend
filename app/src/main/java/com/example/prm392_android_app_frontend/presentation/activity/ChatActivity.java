@@ -1,13 +1,15 @@
 package com.example.prm392_android_app_frontend.presentation.activity;
 
 import android.content.Intent;
+// Xóa SharedPreferences, chúng ta sẽ dùng TokenStore
+// import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -19,7 +21,7 @@ import com.example.prm392_android_app_frontend.presentation.viewmodel.ChatViewMo
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.presentation.adapter.ChatAdapter;
-import com.example.prm392_android_app_frontend.data.dto.MessageDto;
+import com.example.prm392_android_app_frontend.storage.TokenStore; // <-- THÊM IMPORT TOKENSTORE
 
 import java.util.ArrayList;
 
@@ -35,25 +37,43 @@ public class ChatActivity extends AppCompatActivity {
 
     private ChatViewModel viewModel;
 
-    // Thông tin chat
-    private Integer currentUserId = 1; // TODO: Lấy từ SharedPreferences
-    private Integer receiverId = 2; // TODO: Lấy từ Intent
-    private Integer conversationId = 1; // TODO: Lấy từ Intent hoặc API
+    // Thông tin chat (sẽ được lấy từ Intent/TokenStore)
+    private Integer currentUserId;
+    private Integer receiverId;
+    private Integer conversationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        // TODO: Lấy currentUserId, receiverId, conversationId từ SharedPreferences/Intent
+        // --- BẮT ĐẦU SỬA: Lấy dữ liệu thật ---
+
+        // 1. Lấy currentUserId từ TokenStore (Cho nhất quán với AccountFragment)
+        currentUserId = TokenStore.getUserId(this);
+
+        // 2. Lấy receiverId và conversationId từ Intent
+        Intent intent = getIntent();
+        receiverId = intent.getIntExtra("RECEIVER_ID", -1);
+        conversationId = intent.getIntExtra("CONVERSATION_ID", -1);
+
+        // 3. Kiểm tra dữ liệu
+        // (TokenStore.getUserId trả về 0 nếu không tìm thấy, nên ta kiểm tra <= 0)
+        if (currentUserId <= 0 || receiverId == -1 || conversationId == -1) {
+            Toast.makeText(this, "Lỗi: Không đủ thông tin để bắt đầu chat.", Toast.LENGTH_SHORT).show();
+            finish(); // Đóng Activity nếu thiếu thông tin
+            return; // Dừng hàm onCreate
+        }
+        // --- KẾT THÚC SỬA ---
+
 
         // 1. Khởi tạo ViewModel
         viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
 
-        // 2. Thiết lập UI
+        // 2. Thiết lập UI (Hàm này giờ sẽ dùng ID thật)
         setupUI();
 
-        // 3. Khởi tạo ViewModel (chỉ 1 lần)
+        // 3. Khởi tạo ViewModel (Giờ đã dùng ID thật)
         viewModel.init(conversationId, currentUserId, receiverId);
 
         // 4. Lắng nghe (Observe) LiveData từ ViewModel
@@ -66,13 +86,15 @@ public class ChatActivity extends AppCompatActivity {
     private void setupUI() {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle("Chat với User " + receiverId);
+        // Sửa: Dùng receiverId thật
+        toolbar.setTitle("Hỗ trợ (Admin)"); // Hiển thị "Hỗ trợ" thay vì ID
 
         recyclerView = findViewById(R.id.recycler_view_messages);
         etMessage = findViewById(R.id.edit_text_message);
         btnSend = findViewById(R.id.button_send);
         btnAttach = findViewById(R.id.button_attach_image);
 
+        // Sửa: Dùng currentUserId thật
         adapter = new ChatAdapter(this, new ArrayList<>(), currentUserId);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -81,12 +103,12 @@ public class ChatActivity extends AppCompatActivity {
     private void setupObservers() {
         // 4.1. Quan sát LỊCH SỬ chat
         viewModel.getHistoryMessages().observe(this, historyList -> {
-            if (historyList != null && !historyList.isEmpty()) {
-                adapter.setMessageList(historyList); // Giả sử adapter có hàm setMessageList
-                recyclerView.scrollToPosition(historyList.size() - 1);
-
-                // Gửi "đã đọc" cho tin nhắn cuối cùng (nếu cần)
-                viewModel.notifyMessageRead(historyList.get(historyList.size() - 1));
+            if (historyList != null) {
+                adapter.setMessageList(historyList);
+                if (!historyList.isEmpty()) {
+                    recyclerView.scrollToPosition(historyList.size() - 1);
+                    viewModel.notifyMessageRead(historyList.get(historyList.size() - 1));
+                }
             }
         });
 
@@ -95,8 +117,6 @@ public class ChatActivity extends AppCompatActivity {
             if (message != null) {
                 adapter.addMessage(message);
                 recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-
-                // Gửi "đã đọc"
                 viewModel.notifyMessageRead(message);
             }
         });
@@ -106,7 +126,7 @@ public class ChatActivity extends AppCompatActivity {
             if (status != null && !status.isEmpty()) {
                 toolbar.setSubtitle(status);
             } else {
-                toolbar.setSubtitle("online"); // (Hoặc rỗng)
+                toolbar.setSubtitle("online");
             }
         });
 
@@ -121,9 +141,11 @@ public class ChatActivity extends AppCompatActivity {
     private void setupClickListeners() {
         // 5.1. Nút Gửi
         btnSend.setOnClickListener(v -> {
-            String messageContent = etMessage.getText().toString();
-            viewModel.sendTextMessage(messageContent);
-            etMessage.setText(""); // Xóa input
+            String messageContent = etMessage.getText().toString().trim();
+            if (!messageContent.isEmpty()) {
+                viewModel.sendTextMessage(messageContent);
+                etMessage.setText("");
+            }
         });
 
         // 5.2. Nút Đính kèm
@@ -136,7 +158,6 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Báo cho ViewModel biết user đang gõ
                 viewModel.notifyTyping(s.length() > 0);
             }
 
@@ -150,18 +171,13 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        viewModel.setPresence(true); // Báo là tôi Online
+        viewModel.setPresence(true);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Không set offline ở đây, vì có thể chỉ là chuyển app tạm thời
-        // ViewModel sẽ xử lý offline khi Activity bị destroy (trong onCleared)
-        // Hoặc Firebase onDisconnect sẽ tự xử lý
     }
-
-
 
     // --- Xử lý Chọn ảnh ---
 
@@ -179,7 +195,6 @@ public class ChatActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && data != null) {
             Uri imageUri = data.getData();
             if (imageUri != null) {
-                // Gửi Uri cho ViewModel xử lý
                 viewModel.uploadImage(imageUri);
             }
         }

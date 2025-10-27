@@ -4,12 +4,12 @@ import android.app.Application;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.example.prm392_android_app_frontend.data.dto.MessageDto;
+import com.example.prm392_android_app_frontend.data.dto.chat.MessageDto;
 import com.example.prm392_android_app_frontend.data.dto.chat.ReadReceiptRequest;
 import com.example.prm392_android_app_frontend.data.dto.chat.SendMessageRequest;
 import com.example.prm392_android_app_frontend.data.dto.chat.TypingEventRequest;
@@ -68,6 +68,10 @@ public class ChatViewModel extends AndroidViewModel {
 
     public void sendTextMessage(String content) {
         if (content == null || content.trim().isEmpty()) return;
+        if (receiverId == null || conversationId == null) return;
+
+        // Log để debug
+        Log.d("ChatViewModel", "Sending message to receiverId: " + receiverId + ", conversationId: " + conversationId);
 
         SendMessageRequest request = new SendMessageRequest(
                 receiverId,
@@ -78,7 +82,7 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public void uploadImage(Uri imageUri) {
-        if (imageUri == null) return;
+        if (imageUri == null || receiverId == null) return;
         chatRepository.uploadImage(imageUri, receiverId);
     }
 

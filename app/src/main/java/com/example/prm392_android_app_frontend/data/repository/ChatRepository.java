@@ -9,7 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.prm392_android_app_frontend.data.dto.MessageDto;
+import com.example.prm392_android_app_frontend.data.dto.chat.ConversationDto;
+import com.example.prm392_android_app_frontend.data.dto.chat.MessageDto;
 import com.example.prm392_android_app_frontend.data.dto.chat.FirebaseTypingEvent;
 import com.example.prm392_android_app_frontend.data.dto.chat.ReadReceiptRequest;
 import com.example.prm392_android_app_frontend.data.dto.chat.SendMessageRequest;
@@ -18,18 +19,16 @@ import com.example.prm392_android_app_frontend.data.remote.api.ChatApi;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
+import com.example.prm392_android_app_frontend.storage.TokenStore;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -101,6 +100,8 @@ public class ChatRepository {
 
     // 2. Gửi tin nhắn text
     public void sendTextMessage(SendMessageRequest request) {
+        Log.d(TAG, "Sending message request: receiverId=" + request.getReceiverId() + ", type=" + request.getMessageType() + ", content=" + request.getContent());
+        
         chatApi.sendMessage(request).enqueue(new Callback<MessageDto>() {
             @Override
             public void onResponse(Call<MessageDto> call, Response<MessageDto> response) {
@@ -108,13 +109,16 @@ public class ChatRepository {
                     Log.d(TAG, "Message sent via REST, waiting for Firebase echo");
                 } else {
                     Log.e(TAG, "Failed to send message: " + response.code());
-                    // TODO: Báo lỗi về ViewModel
+                    if (response.code() == 403) {
+                        Log.e(TAG, "403 Forbidden - Customer can only send messages to admin. Check receiverId: " + request.getReceiverId());
+                    }
+                    // Có thể thêm callback để báo lỗi về UI
                 }
             }
             @Override
             public void onFailure(Call<MessageDto> call, Throwable t) {
                 Log.e(TAG, "Error sending message: " + t.getMessage());
-                // TODO: Báo lỗi về ViewModel
+                // Có thể thêm callback để báo lỗi về UI
             }
         });
     }
@@ -265,17 +269,33 @@ public class ChatRepository {
         ChildEventListener listener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, String previousChildName) {
-
+                try {
+                    MessageDto readMessage = snapshot.getValue(MessageDto.class);
+                    if (readMessage != null) {
+                        readReceiptData.postValue(readMessage);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse read receipt", e);
+                }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                try {
+                    MessageDto readMessage = snapshot.getValue(MessageDto.class);
+                    if (readMessage != null) {
+                        readReceiptData.postValue(readMessage);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse read receipt update", e);
+                }
             }
 
             @Override public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
             @Override public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
-            @Override public void onCancelled(@NonNull DatabaseError error) {}
+            @Override public void onCancelled(@NonNull DatabaseError error) {
+                Log.w(TAG, "readReceiptListener:onCancelled", error.toException());
+            }
         };
 
         ref.orderByChild("readAt").startAt(System.currentTimeMillis()).addChildEventListener(listener);
@@ -359,5 +379,90 @@ public class ChatRepository {
     }
     // ===================================
 
+    // --- THÊM HÀM MỚI ĐỂ GỌI API TÌM CONVERSATION ---
+    public LiveData<ConversationDto> findOrCreateConversation(Integer receiverId) {
+        MutableLiveData<ConversationDto> conversationData = new MutableLiveData<>();
+
+        // Sử dụng endpoint mới: /api/chat/conversation
+        chatApi.getCustomerConversation().enqueue(new Callback<ConversationDto>() {
+            @Override
+            public void onResponse(Call<ConversationDto> call, Response<ConversationDto> response) {
+                if (response.isSuccessful()) {
+                    conversationData.postValue(response.body());
+                } else {
+                    Log.e(TAG, "Failed to get customer conversation: " + response.code());
+                    // Fallback: Tạo conversation ID local khi backend có lỗi
+                    ConversationDto fallbackConversation = createFallbackConversation();
+                    conversationData.postValue(fallbackConversation);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ConversationDto> call, Throwable t) {
+                Log.e(TAG, "Error getting customer conversation: " + t.getMessage());
+                // Fallback: Tạo conversation ID local khi có lỗi network
+                ConversationDto fallbackConversation = createFallbackConversation();
+                conversationData.postValue(fallbackConversation);
+            }
+        });
+
+        return conversationData;
+    }
+
+    /**
+     * Tạo ConversationDto fallback khi backend có lỗi (500, network, etc.)
+     */
+    private ConversationDto createFallbackConversation() {
+        ConversationDto conversation = new ConversationDto();
+        
+        // Lấy user ID thực tế từ TokenStore
+        int currentUserId = TokenStore.getUserId(application);
+        int adminId = 1; // Admin ID cố định (chỉ có 1 admin duy nhất)
+        
+        // Tạo conversation ID dựa trên user IDs
+        int minId = Math.min(currentUserId, adminId);
+        int maxId = Math.max(currentUserId, adminId);
+        int conversationId = minId * 10000 + maxId;
+        
+        conversation.setConversationId(conversationId);
+        conversation.setCreatedAt(System.currentTimeMillis());
+        conversation.setUpdatedAt(System.currentTimeMillis());
+        
+        List<Integer> participants = new ArrayList<>();
+        participants.add(currentUserId);
+        participants.add(adminId);
+        conversation.setParticipantIds(participants);
+        
+        Log.d(TAG, "Created fallback conversation with ID: " + conversationId + 
+              ", currentUserId: " + currentUserId + ", adminId: " + adminId);
+        return conversation;
+    }
+
+    /**
+     * Lấy số tin nhắn chưa đọc cho customer
+     */
+    public LiveData<Integer> getUnreadCount(Integer conversationId) {
+        MutableLiveData<Integer> unreadCountData = new MutableLiveData<>();
+
+        chatApi.getUnreadCount(conversationId).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful()) {
+                    unreadCountData.postValue(response.body());
+                } else {
+                    Log.e(TAG, "Failed to get unread count: " + response.code());
+                    unreadCountData.postValue(0); // Fallback to 0
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Log.e(TAG, "Error getting unread count: " + t.getMessage());
+                unreadCountData.postValue(0); // Fallback to 0
+            }
+        });
+
+        return unreadCountData;
+    }
 
 }

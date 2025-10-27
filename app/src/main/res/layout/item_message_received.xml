@@ -16,7 +16,9 @@
         android:textStyle="bold"
         android:text="Sender Name"
         android:layout_marginBottom="2dp"
-        android:visibility="gone" /> <FrameLayout
+        android:visibility="gone" />
+
+    <FrameLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_message_received">

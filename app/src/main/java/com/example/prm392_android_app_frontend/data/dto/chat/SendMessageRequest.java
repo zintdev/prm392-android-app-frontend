@@ -1,7 +1,5 @@
 package com.example.prm392_android_app_frontend.data.dto.chat;
 
-import com.example.prm392_android_app_frontend.data.dto.MessageDto;
-
 public class SendMessageRequest {
 
     private Integer receiverId;
