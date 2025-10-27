@@ -47,19 +47,23 @@ public class AdminDashboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.button1.setOnClickListener(v -> {
+        binding.buttonProductManagement.setOnClickListener(v -> {
             // 3. Gọi phương thức của listener
             if (listener != null) {
                 listener.navigateToProductManagement();
             }
         });
 
-        binding.button2.setOnClickListener(v -> {
+        binding.buttonPublisherManagement.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Chuẩn bị gọi API Quản lý Nhà xuất bản", Toast.LENGTH_SHORT).show();
         });
 
-        binding.button3.setOnClickListener(v -> {
+        binding.buttonAuthorManagement.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Chuẩn bị gọi API Quản lý Tác giả", Toast.LENGTH_SHORT).show();
+        });
+
+        binding.buttonCategoryManagement.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Chuẩn bị gọi API Quản lý Danh mục", Toast.LENGTH_SHORT).show();
         });
     }
 
