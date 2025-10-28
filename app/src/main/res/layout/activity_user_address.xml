@@ -12,7 +12,7 @@
         android:layout_height="56dp"
         android:background="@drawable/header_gradiant"
         app:navigationIcon="@drawable/ic_back"
-        app:title="Sổ địa chỉ"
+        app:title="Địa chỉ người dùng"
         app:titleCentered="true"
         app:titleTextColor="@android:color/white"
         app:layout_constraintTop_toTopOf="parent"

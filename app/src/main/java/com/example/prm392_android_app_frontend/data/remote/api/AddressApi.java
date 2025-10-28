@@ -19,11 +19,9 @@ public interface AddressApi {
     Call<List<AddressDto>> getAddressesByUserId(@Path("userId") int userId);
     @POST("addresses")
     Call<AddressDto> createAddress(@Body CreateAddressRequest body);
-    // NEW: Update address (PUT /api/addresses/{id})
     @PUT("addresses/{id}")
     Call<AddressDto> updateAddress(@Path("id") int id, @Body UpdateAddressRequest body);
 
-    // NEW: Delete address (DELETE /api/addresses/{id})
     @DELETE("addresses/{id}")
     Call<Void> deleteAddress(@Path("id") int id);
 }

@@ -1,12 +1,10 @@
 package com.example.prm392_android_app_frontend.presentation.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,22 +12,47 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.address.AddressDto;
 
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressViewHolder> {
 
-    private List<AddressDto> list;
-    private Context context;
+    public interface OnAddressActionListener {
+        void onEdit(AddressDto address);
+        void onDelete(AddressDto address);
+    }
 
-    public AddressAdapter(List<AddressDto> list, Context context) {
-        this.list = list;
-        this.context = context;
+    private final List<AddressDto> list = new ArrayList<>();
+    private final OnAddressActionListener listener;
+
+    public AddressAdapter(OnAddressActionListener listener) {
+        this.listener = listener;
     }
 
     public void setAddresses(List<AddressDto> addresses) {
-        this.list = addresses;
+        list.clear();
+        if (addresses != null) list.addAll(addresses);
         notifyDataSetChanged();
+    }
+
+    public void updateItem(AddressDto updated) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).id == updated.id) {
+                list.set(i, updated);
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
+    public void removeItemById(int id) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).id == id) {
+                list.remove(i);
+                notifyItemRemoved(i);
+                return;
+            }
+        }
     }
 
     @NonNull
@@ -42,20 +65,29 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
     @Override
     public void onBindViewHolder(@NonNull AddressViewHolder h, int pos) {
         AddressDto a = list.get(pos);
-        h.tvRecipient.setText("Người nhận ");
-        h.tvAddressLine.setText(a.shippingAddressLine1 + ", " + a.shippingAddressLine2);
-        h.tvWardDistrictCity.setText(a.shippingCityState);
 
-        h.btnEdit.setOnClickListener(v ->
-                Toast.makeText(context, "Sửa địa chỉ #" + a.id, Toast.LENGTH_SHORT).show());
+//        String recipient = (a.recipientName != null && !a.recipientName.isEmpty())
+////                ? a.recipientName : "Người nhận";
+//        h.tvRecipient.setText(recipient);
 
-        h.btnDelete.setOnClickListener(v ->
-                Toast.makeText(context, "Xoá địa chỉ #" + a.id, Toast.LENGTH_SHORT).show());
+        String line1 = a.shippingAddressLine1 != null ? a.shippingAddressLine1 : "";
+        String line2 = a.shippingAddressLine2 != null && !a.shippingAddressLine2.isEmpty()
+                ? (", " + a.shippingAddressLine2) : "";
+        h.tvAddressLine.setText(line1 + line2);
+
+        h.tvWardDistrictCity.setText(a.shippingCityState != null ? a.shippingCityState : "");
+
+        h.btnEdit.setOnClickListener(v -> {
+            if (listener != null) listener.onEdit(a);
+        });
+        h.btnDelete.setOnClickListener(v -> {
+            if (listener != null) listener.onDelete(a);
+        });
     }
 
     @Override
     public int getItemCount() {
-        return list != null ? list.size() : 0;
+        return list.size();
     }
 
     public static class AddressViewHolder extends RecyclerView.ViewHolder {
