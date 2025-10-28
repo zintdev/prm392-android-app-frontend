@@ -1,5 +1,6 @@
 package com.example.prm392_android_app_frontend.presentation.fragment.admin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.order.OrderDto;
+import com.example.prm392_android_app_frontend.presentation.activity.OrderDetailActivity;
 import com.example.prm392_android_app_frontend.presentation.adapter.OrderAdapter;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.OrderViewModel;
 
 import java.util.Arrays;
 
-public class AdminOrdersFragment extends Fragment implements OrderAdapter.OnUpdateClickListener {
+public class AdminOrdersFragment extends Fragment implements OrderAdapter.OnUpdateClickListener, OrderAdapter.OnItemClickListener {
 
     private OrderViewModel orderViewModel;
     private RecyclerView ordersRecyclerView;
@@ -58,7 +60,7 @@ public class AdminOrdersFragment extends Fragment implements OrderAdapter.OnUpda
     }
 
     private void setupRecyclerView() {
-        orderAdapter = new OrderAdapter(this);
+        orderAdapter = new OrderAdapter(this, this);
         ordersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         ordersRecyclerView.setAdapter(orderAdapter);
     }
@@ -106,6 +108,13 @@ public class AdminOrdersFragment extends Fragment implements OrderAdapter.OnUpda
     @Override
     public void onUpdateClick(OrderDto order) {
         showUpdateStatusDialog(order);
+    }
+
+    @Override
+    public void onItemClick(OrderDto order) {
+        Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+        intent.putExtra(OrderDetailActivity.EXTRA_ORDER_ID, order.getId());
+        startActivity(intent);
     }
 
     private void showUpdateStatusDialog(final OrderDto order) {

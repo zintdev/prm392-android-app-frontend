@@ -21,15 +21,20 @@ import java.util.List;
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
     private List<OrderDto> orders = new ArrayList<>();
-    private OnUpdateClickListener onUpdateClickListener;
+    private final OnUpdateClickListener onUpdateClickListener;
+    private final OnItemClickListener onItemClickListener;
 
-    // Interface to handle click events
     public interface OnUpdateClickListener {
         void onUpdateClick(OrderDto order);
     }
 
-    public OrderAdapter(OnUpdateClickListener listener) {
-        this.onUpdateClickListener = listener;
+    public interface OnItemClickListener {
+        void onItemClick(OrderDto order);
+    }
+
+    public OrderAdapter(OnUpdateClickListener updateListener, OnItemClickListener itemListener) {
+        this.onUpdateClickListener = updateListener;
+        this.onItemClickListener = itemListener;
     }
 
     @NonNull
@@ -42,7 +47,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         OrderDto order = orders.get(position);
-        holder.bind(order, onUpdateClickListener);
+        holder.bind(order, onUpdateClickListener, onItemClickListener);
     }
 
     @Override
@@ -76,7 +81,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             buttonUpdateStatus = itemView.findViewById(R.id.button_update_status);
         }
 
-        public void bind(final OrderDto order, final OnUpdateClickListener listener) {
+        public void bind(final OrderDto order, final OnUpdateClickListener updateListener, final OnItemClickListener itemListener) {
             orderIdTextView.setText("Order ID: " + order.getId());
             orderStatusTextView.setText(order.getOrderStatus());
             customerNameTextView.setText("Customer: " + order.getShippingFullName());
@@ -84,7 +89,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             shipmentMethodTextView.setText("Method: " + order.getShipmentMethod());
             orderTotalTextView.setText(String.format("%,.0f VND", order.getGrandTotal()));
 
-            buttonUpdateStatus.setOnClickListener(v -> listener.onUpdateClick(order));
+            buttonUpdateStatus.setOnClickListener(v -> updateListener.onUpdateClick(order));
+            itemView.setOnClickListener(v -> itemListener.onItemClick(order));
         }
 
         private String formatDate(String dateString) {

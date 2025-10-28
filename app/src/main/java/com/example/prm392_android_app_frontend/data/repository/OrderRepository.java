@@ -28,11 +28,11 @@ public class OrderRepository {
         Log.d(TAG, "OrderApi created.");
     }
 
-    public LiveData<Resource<List<OrderDto>>> getAllOrders() {
-        Log.d(TAG, "getAllOrders: Making API call.");
+    public LiveData<Resource<List<OrderDto>>> getAllOrders(String orderStatus) {
+        Log.d(TAG, "getAllOrders: Making API call with status: " + orderStatus);
         MutableLiveData<Resource<List<OrderDto>>> data = new MutableLiveData<>();
         data.setValue(Resource.loading(null));
-        orderApi.getAllOrders(null).enqueue(new Callback<List<OrderDto>>() {
+        orderApi.getAllOrders(orderStatus).enqueue(new Callback<List<OrderDto>>() {
             @Override
             public void onResponse(Call<List<OrderDto>> call, Response<List<OrderDto>> response) {
                 if (response.isSuccessful()) {
@@ -47,6 +47,56 @@ public class OrderRepository {
             @Override
             public void onFailure(Call<List<OrderDto>> call, Throwable t) {
                 Log.e(TAG, "getAllOrders: API call failed on failure", t);
+                data.setValue(Resource.error(t.getMessage(), null));
+            }
+        });
+        return data;
+    }
+
+    public LiveData<Resource<OrderDto>> getOrderById(int orderId) {
+        Log.d(TAG, "getOrderById: Making API call for orderId " + orderId);
+        MutableLiveData<Resource<OrderDto>> data = new MutableLiveData<>();
+        data.setValue(Resource.loading(null));
+        orderApi.getOrderById(orderId).enqueue(new Callback<OrderDto>() {
+            @Override
+            public void onResponse(Call<OrderDto> call, Response<OrderDto> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "getOrderById: API call successful.");
+                    data.setValue(Resource.success(response.body()));
+                } else {
+                    Log.e(TAG, "getOrderById: API call failed with code " + response.code());
+                    data.setValue(Resource.error("Failed to get order details: " + response.message(), null));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderDto> call, Throwable t) {
+                Log.e(TAG, "getOrderById: API call failed on failure", t);
+                data.setValue(Resource.error(t.getMessage(), null));
+            }
+        });
+        return data;
+    }
+
+    public LiveData<Resource<List<OrderDto>>> getOrdersByUserId(int userId) {
+        Log.d(TAG, "getOrdersByUserId: Making API call for userId " + userId);
+        MutableLiveData<Resource<List<OrderDto>>> data = new MutableLiveData<>();
+        data.setValue(Resource.loading(null));
+        orderApi.getOrdersByUserId(userId).enqueue(new Callback<List<OrderDto>>() {
+            @Override
+            public void onResponse(Call<List<OrderDto>> call, Response<List<OrderDto>> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "getOrdersByUserId: API call successful.");
+                    data.setValue(Resource.success(response.body()));
+                } else {
+                    Log.e(TAG, "getOrdersByUserId: API call failed with code " + response.code());
+                    data.setValue(Resource.error("Failed to get user orders: " + response.message(), null));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<OrderDto>> call, Throwable t) {
+                Log.e(TAG, "getOrdersByUserId: API call failed on failure", t);
                 data.setValue(Resource.error(t.getMessage(), null));
             }
         });
