@@ -76,6 +76,10 @@
 
         <activity android:name=".presentation.activity.UserAddressesActivity"
             android:exported="false"/>
+
+        <activity
+            android:name=".presentation.activity.OrderCreateActivity"
+            android:exported="false" />
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
 </manifest>
