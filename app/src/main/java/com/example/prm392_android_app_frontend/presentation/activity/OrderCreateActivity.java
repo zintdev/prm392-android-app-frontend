@@ -13,16 +13,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.CartItemDto;
 import com.example.prm392_android_app_frontend.data.dto.CreateOrderRequestDto;
 import com.example.prm392_android_app_frontend.data.dto.OrderDTO;
+import com.example.prm392_android_app_frontend.presentation.adapter.AddressPagerAdapter;
 import com.example.prm392_android_app_frontend.presentation.adapter.OrderItemAdapter;
+import com.example.prm392_android_app_frontend.presentation.fragment.NewAddressFragment;
+import com.example.prm392_android_app_frontend.presentation.fragment.SavedAddressesFragment;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.OrderViewModel;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -39,19 +45,11 @@ public class OrderCreateActivity extends AppCompatActivity {
     private MaterialButton buttonPlaceOrder;
     private ProgressBar progressBar;
 
-    // Form inputs
-    private TextInputLayout inputLayoutFullName;
-    private TextInputLayout inputLayoutPhone;
-    private TextInputLayout inputLayoutAddressLine1;
-    private TextInputLayout inputLayoutAddressLine2;
-    private TextInputLayout inputLayoutCityState;
+    // Tab components
+    private TabLayout tabLayoutAddress;
+    private ViewPager2 viewPagerAddress;
+    private AddressPagerAdapter addressPagerAdapter;
     private RadioGroup radioGroupShipment;
-
-    private TextInputEditText editTextFullName;
-    private TextInputEditText editTextPhone;
-    private TextInputEditText editTextAddressLine1;
-    private TextInputEditText editTextAddressLine2;
-    private TextInputEditText editTextCityState;
 
     private OrderViewModel orderViewModel;
     private List<CartItemDto> selectedItems;
@@ -75,6 +73,7 @@ public class OrderCreateActivity extends AppCompatActivity {
         initViews();
         setupToolbar();
         setupRecyclerView();
+        setupTabLayout();
         setupViewModel();
         updateTotalPrice();
     }
@@ -86,19 +85,10 @@ public class OrderCreateActivity extends AppCompatActivity {
         buttonPlaceOrder = findViewById(R.id.button_place_order);
         progressBar = findViewById(R.id.progress_bar_order);
 
-        // Form inputs
-        inputLayoutFullName = findViewById(R.id.input_layout_full_name);
-        inputLayoutPhone = findViewById(R.id.input_layout_phone);
-        inputLayoutAddressLine1 = findViewById(R.id.input_layout_address_line1);
-        inputLayoutAddressLine2 = findViewById(R.id.input_layout_address_line2);
-        inputLayoutCityState = findViewById(R.id.input_layout_city_state);
+        // Tab components
+        tabLayoutAddress = findViewById(R.id.tab_layout_address);
+        viewPagerAddress = findViewById(R.id.view_pager_address);
         radioGroupShipment = findViewById(R.id.radio_group_shipment);
-
-        editTextFullName = findViewById(R.id.edit_text_full_name);
-        editTextPhone = findViewById(R.id.edit_text_phone);
-        editTextAddressLine1 = findViewById(R.id.edit_text_address_line1);
-        editTextAddressLine2 = findViewById(R.id.edit_text_address_line2);
-        editTextCityState = findViewById(R.id.edit_text_city_state);
 
         buttonPlaceOrder.setOnClickListener(v -> placeOrder());
     }
@@ -116,6 +106,26 @@ public class OrderCreateActivity extends AppCompatActivity {
         orderItemAdapter = new OrderItemAdapter(selectedItems);
         recyclerViewOrderItems.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewOrderItems.setAdapter(orderItemAdapter);
+    }
+
+    private void setupTabLayout() {
+        // Setup ViewPager2 với AddressPagerAdapter
+        addressPagerAdapter = new AddressPagerAdapter(this);
+        viewPagerAddress.setAdapter(addressPagerAdapter);
+
+        // Kết nối TabLayout với ViewPager2
+        new TabLayoutMediator(tabLayoutAddress, viewPagerAddress,
+                (tab, position) -> {
+                    switch (position) {
+                        case 0:
+                            tab.setText("Nhập địa chỉ mới");
+                            break;
+                        case 1:
+                            tab.setText("Chọn địa chỉ có sẵn");
+                            break;
+                    }
+                }
+        ).attach();
     }
 
     private void setupViewModel() {
@@ -160,15 +170,47 @@ public class OrderCreateActivity extends AppCompatActivity {
             return;
         }
 
+        // Lấy dữ liệu từ fragment đang active
+        String fullName = "";
+        String phone = "";
+        String addressLine1 = "";
+        String addressLine2 = "";
+        String cityState = "";
+
+        int currentTab = viewPagerAddress.getCurrentItem();
+        if (currentTab == 0) {
+            // Tab "Nhập địa chỉ mới"
+            NewAddressFragment newAddressFragment = (NewAddressFragment) getSupportFragmentManager()
+                    .findFragmentByTag("f" + 0);
+            if (newAddressFragment != null) {
+                fullName = newAddressFragment.getFullName();
+                phone = newAddressFragment.getPhone();
+                addressLine1 = newAddressFragment.getAddressLine1();
+                addressLine2 = newAddressFragment.getAddressLine2();
+                cityState = newAddressFragment.getCityState();
+            }
+        } else {
+            // Tab "Chọn địa chỉ có sẵn"
+            SavedAddressesFragment savedAddressesFragment = (SavedAddressesFragment) getSupportFragmentManager()
+                    .findFragmentByTag("f" + 1);
+            if (savedAddressesFragment != null) {
+                fullName = savedAddressesFragment.getFullName();
+                phone = savedAddressesFragment.getPhone();
+                addressLine1 = savedAddressesFragment.getAddressLine1();
+                addressLine2 = savedAddressesFragment.getAddressLine2();
+                cityState = savedAddressesFragment.getCityState();
+            }
+        }
+
         // Tạo request object
         CreateOrderRequestDto request = new CreateOrderRequestDto(
                 userId, // Lấy từ session thay vì hardcode
                 getShipmentMethod(),
-                editTextFullName.getText().toString().trim(),
-                editTextPhone.getText().toString().trim(),
-                editTextAddressLine1.getText().toString().trim(),
-                editTextAddressLine2.getText().toString().trim(),
-                editTextCityState.getText().toString().trim()
+                fullName,
+                phone,
+                addressLine1,
+                addressLine2,
+                cityState
         );
 
         // Gọi API tạo order
@@ -176,46 +218,27 @@ public class OrderCreateActivity extends AppCompatActivity {
     }
 
     private boolean validateInputs() {
-        boolean isValid = true;
-
-        // Validate tên
-        if (editTextFullName.getText().toString().trim().isEmpty()) {
-            inputLayoutFullName.setError("Vui lòng nhập họ tên");
-            isValid = false;
+        int currentTab = viewPagerAddress.getCurrentItem();
+        
+        if (currentTab == 0) {
+            // Tab "Nhập địa chỉ mới"
+            NewAddressFragment newAddressFragment = (NewAddressFragment) getSupportFragmentManager()
+                    .findFragmentByTag("f" + 0);
+            if (newAddressFragment != null) {
+                return newAddressFragment.validateInputs();
+            }
         } else {
-            inputLayoutFullName.setError(null);
+            // Tab "Chọn địa chỉ có sẵn"
+            SavedAddressesFragment savedAddressesFragment = (SavedAddressesFragment) getSupportFragmentManager()
+                    .findFragmentByTag("f" + 1);
+            if (savedAddressesFragment != null) {
+                return savedAddressesFragment.validateInputs();
+            }
         }
-
-        // Validate số điện thoại
-        String phone = editTextPhone.getText().toString().trim();
-        if (phone.isEmpty()) {
-            inputLayoutPhone.setError("Vui lòng nhập số điện thoại");
-            isValid = false;
-        } else if (!phone.matches("^[0-9]{10,11}$")) {
-            inputLayoutPhone.setError("Số điện thoại không hợp lệ");
-            isValid = false;
-        } else {
-            inputLayoutPhone.setError(null);
-        }
-
-        // Validate địa chỉ dòng 1
-        if (editTextAddressLine1.getText().toString().trim().isEmpty()) {
-            inputLayoutAddressLine1.setError("Vui lòng nhập địa chỉ");
-            isValid = false;
-        } else {
-            inputLayoutAddressLine1.setError(null);
-        }
-
-        // Validate thành phố
-        if (editTextCityState.getText().toString().trim().isEmpty()) {
-            inputLayoutCityState.setError("Vui lòng nhập thành phố/tỉnh");
-            isValid = false;
-        } else {
-            inputLayoutCityState.setError(null);
-        }
-
-        return isValid;
+        
+        return false;
     }
+
 
     private String getShipmentMethod() {
         int selectedId = radioGroupShipment.getCheckedRadioButtonId();
