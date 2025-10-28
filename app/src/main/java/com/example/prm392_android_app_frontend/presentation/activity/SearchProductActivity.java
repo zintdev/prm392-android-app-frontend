@@ -114,6 +114,7 @@ public class SearchProductActivity extends AppCompatActivity {
 
         edtQuery.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+
                 doSearch();
                 return true;
             }
@@ -141,7 +142,9 @@ public class SearchProductActivity extends AppCompatActivity {
             currentFilter.priceSort = "high_to_low";
             Toast.makeText(this, "Đã chọn: Giá cao xuống thấp", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
-            if (!currentQuery.isEmpty()) viewModel.search(currentQuery, currentFilter);
+//            if (!currentQuery.isEmpty())
+                viewModel.search(currentQuery, currentFilter);
+
         });
 
         optionPriceLowToHigh.setOnClickListener(v -> {
@@ -150,7 +153,8 @@ public class SearchProductActivity extends AppCompatActivity {
             Toast.makeText(this, "Đã chọn: Giá thấp lên cao", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
 
-            if (!currentQuery.isEmpty()) viewModel.search(currentQuery, currentFilter);
+//            if (!currentQuery.isEmpty())
+                viewModel.search(currentQuery, currentFilter);
         });
 
         dialog.show();
@@ -196,19 +200,26 @@ public class SearchProductActivity extends AppCompatActivity {
             android.util.Log.d("SearchActivity", "🔍 Current query: " + currentQuery);
 
             dialog.dismiss();
-            if (!currentQuery.isEmpty()) {
-                viewModel.search(currentQuery, currentFilter);
-            } else {
-                Toast.makeText(this, "Nhập từ khoá trước khi áp dụng bộ lọc", Toast.LENGTH_SHORT).show();
-            }
-        });
+            viewModel.search(currentQuery, currentFilter);
+
+//            if (!currentQuery.isEmpty()) {
+//                viewModel.search(currentQuery, currentFilter);
+//            }
+//            else {
+//                Toast.makeText(this, "Nhập từ khoá trước khi áp dụng bộ lọc", Toast.LENGTH_SHORT).show();
+//            }
+        }
+        );
 
         dialog.show();
     }
 
     private void doSearch() {
         String q = edtQuery.getText() != null ? edtQuery.getText().toString().trim() : "";
-        if (q.isEmpty()) return;
+        if (q.isEmpty()) {
+            Toast.makeText(this, "Nhập từ khóa trước khi tìm kiếm", Toast.LENGTH_SHORT).show();
+        return;
+        };
         currentQuery = q;
         viewModel.search(currentQuery, currentFilter);
     }
