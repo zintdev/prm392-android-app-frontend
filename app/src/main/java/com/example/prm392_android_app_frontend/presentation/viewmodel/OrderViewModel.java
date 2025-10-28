@@ -18,6 +18,7 @@ public class OrderViewModel extends AndroidViewModel {
     private static final String TAG = "OrderViewModel_DEBUG";
     private final OrderRepository orderRepository;
     private MutableLiveData<Resource<List<OrderDto>>> orders = new MutableLiveData<>();
+    private MutableLiveData<Resource<OrderDto>> updateOrderStatusResult = new MutableLiveData<>();
 
     public OrderViewModel(@NonNull Application application) {
         super(application);
@@ -31,6 +32,10 @@ public class OrderViewModel extends AndroidViewModel {
         return orders;
     }
 
+    public LiveData<Resource<OrderDto>> getUpdateOrderStatusResult() {
+        return updateOrderStatusResult;
+    }
+
     public void refreshOrders() {
         fetchOrders();
     }
@@ -39,5 +44,18 @@ public class OrderViewModel extends AndroidViewModel {
         Log.d(TAG, "fetchOrders: Fetching from repository.");
         orders.postValue(Resource.loading(null));
         orderRepository.getAllOrders().observeForever(newOrders -> orders.postValue(newOrders));
+    }
+
+    public void updateOrderStatus(int orderId, String newStatus) {
+        Log.d(TAG, "updateOrderStatus: Updating status for orderId " + orderId);
+        updateOrderStatusResult.postValue(Resource.loading(null));
+        orderRepository.updateOrderStatus(orderId, newStatus).observeForever(result -> {
+            updateOrderStatusResult.postValue(result);
+            // If the update was successful, refresh the list of orders
+            if (result.isSuccess()) {
+                Log.d(TAG, "updateOrderStatus: Successfully updated, refreshing orders list.");
+                fetchOrders();
+            }
+        });
     }
 }

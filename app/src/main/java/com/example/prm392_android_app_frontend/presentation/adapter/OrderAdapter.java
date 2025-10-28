@@ -3,6 +3,7 @@ package com.example.prm392_android_app_frontend.presentation.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.order.OrderDto;
+import com.google.android.material.button.MaterialButton;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +21,16 @@ import java.util.List;
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
     private List<OrderDto> orders = new ArrayList<>();
+    private OnUpdateClickListener onUpdateClickListener;
+
+    // Interface to handle click events
+    public interface OnUpdateClickListener {
+        void onUpdateClick(OrderDto order);
+    }
+
+    public OrderAdapter(OnUpdateClickListener listener) {
+        this.onUpdateClickListener = listener;
+    }
 
     @NonNull
     @Override
@@ -30,7 +42,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         OrderDto order = orders.get(position);
-        holder.bind(order);
+        holder.bind(order, onUpdateClickListener);
     }
 
     @Override
@@ -51,6 +63,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         private final TextView orderDateTextView;
         private final TextView shipmentMethodTextView;
         private final TextView orderTotalTextView;
+        private final MaterialButton buttonUpdateStatus;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,15 +73,18 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             orderDateTextView = itemView.findViewById(R.id.orderDateTextView);
             shipmentMethodTextView = itemView.findViewById(R.id.shipmentMethodTextView);
             orderTotalTextView = itemView.findViewById(R.id.orderTotalTextView);
+            buttonUpdateStatus = itemView.findViewById(R.id.button_update_status);
         }
 
-        public void bind(OrderDto order) {
+        public void bind(final OrderDto order, final OnUpdateClickListener listener) {
             orderIdTextView.setText("Order ID: " + order.getId());
             orderStatusTextView.setText(order.getOrderStatus());
             customerNameTextView.setText("Customer: " + order.getShippingFullName());
             orderDateTextView.setText("Date: " + formatDate(order.getOrderDate()));
             shipmentMethodTextView.setText("Method: " + order.getShipmentMethod());
             orderTotalTextView.setText(String.format("%,.0f VND", order.getGrandTotal()));
+
+            buttonUpdateStatus.setOnClickListener(v -> listener.onUpdateClick(order));
         }
 
         private String formatDate(String dateString) {
