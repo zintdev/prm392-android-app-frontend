@@ -72,7 +72,19 @@
 
             <!-- Form nhập thông tin giao hàng -->
             <include
-                layout="@layout/include_shipping_address_form"
+                layout="@layout/item_order_shipping_address_method"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Phương thức giao hàng -->
+            <include
+                layout="@layout/item_order_shipment_method"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Phương thức thanh toán -->
+            <include
+                layout="@layout/item_order_payment_method"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

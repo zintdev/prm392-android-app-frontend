@@ -80,6 +80,33 @@
         <activity
             android:name=".presentation.activity.OrderCreateActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".presentation.activity.OrderSuccessActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.VNPayPaymentActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <activity
+            android:name=".presentation.activity.PaymentProcessingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.PaymentSuccessActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.PaymentFailedActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
 </manifest>

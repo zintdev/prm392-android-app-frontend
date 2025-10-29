@@ -23,6 +23,11 @@
     <color name="accent_blue">#2196F3</color>
     <color name="accent_orange">#FF9800</color>
     
+    <!-- Status Colors -->
+    <color name="success_color">#4CAF50</color>
+    <color name="error_color">#F44336</color>
+    <color name="info_background">#E3F2FD</color>
+    
     <!-- Add other colors as needed -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

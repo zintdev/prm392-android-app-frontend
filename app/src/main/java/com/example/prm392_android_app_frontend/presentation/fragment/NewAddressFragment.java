@@ -218,23 +218,23 @@ public class NewAddressFragment extends Fragment {
     }
 
     public String getAddressLine1() {
-
-        return editTextAddressLine1 != null ? editTextAddressLine1.getText().toString().trim() : "";
+        // Địa chỉ chi tiết + Phường/Xã
+        String address = editTextAddressLine1 != null ? editTextAddressLine1.getText().toString().trim() : "";
+        String ward = selWard != null ? selWard.getName() : "";
+        
+        if (!address.isEmpty() && !ward.isEmpty()) {
+            return address + ", " + ward;
+        } else if (!address.isEmpty()) {
+            return address;
+        } else if (!ward.isEmpty()) {
+            return ward;
+        }
+        return "";
     }
 
     public String getAddressLine2() {
-
-        String ward = selWard != null ? selWard.getName() : "";
-        String district = selDistrict != null ? selDistrict.getName() : "";
-        
-        StringBuilder addressLine2 = new StringBuilder();
-        if (!ward.isEmpty()) addressLine2.append(ward);
-        if (!district.isEmpty()) {
-            if (addressLine2.length() > 0) addressLine2.append(", ");
-            addressLine2.append(district);
-        }
-        
-        return addressLine2.toString();
+        // Quận/Huyện
+        return selDistrict != null ? selDistrict.getName() : "";
     }
 
     public String getCityState() {

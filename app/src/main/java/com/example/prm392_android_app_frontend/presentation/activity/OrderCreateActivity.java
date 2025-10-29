@@ -24,6 +24,7 @@ import com.example.prm392_android_app_frontend.presentation.adapter.OrderItemAda
 import com.example.prm392_android_app_frontend.presentation.fragment.NewAddressFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.SavedAddressesFragment;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.OrderViewModel;
+import com.example.prm392_android_app_frontend.presentation.viewmodel.PaymentViewModel;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -50,10 +51,17 @@ public class OrderCreateActivity extends AppCompatActivity {
     private ViewPager2 viewPagerAddress;
     private AddressPagerAdapter addressPagerAdapter;
     private RadioGroup radioGroupShipment;
+    private RadioGroup radioGroupPayment;
 
     private OrderViewModel orderViewModel;
+    private PaymentViewModel paymentViewModel;
     private List<CartItemDto> selectedItems;
     private double totalAmount;
+    
+    private int currentOrderId;
+    private int currentPaymentId;
+    
+    private static final int VNPAY_REQUEST_CODE = 1001;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,6 +97,7 @@ public class OrderCreateActivity extends AppCompatActivity {
         tabLayoutAddress = findViewById(R.id.tab_layout_address);
         viewPagerAddress = findViewById(R.id.view_pager_address);
         radioGroupShipment = findViewById(R.id.radio_group_shipment);
+        radioGroupPayment = findViewById(R.id.radio_group_payment);
 
         buttonPlaceOrder.setOnClickListener(v -> placeOrder());
     }
@@ -130,22 +139,97 @@ public class OrderCreateActivity extends AppCompatActivity {
 
     private void setupViewModel() {
         orderViewModel = new ViewModelProvider(this).get(OrderViewModel.class);
+        paymentViewModel = new ViewModelProvider(this).get(PaymentViewModel.class);
 
+        // Observe khi order được tạo thành công
         orderViewModel.getOrderLiveData().observe(this, order -> {
-            hideLoading();
             if (order != null) {
-                Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
-                // Có thể chuyển về trang chủ hoặc trang đơn hàng
-                finish();
+                currentOrderId = order.getId();
+                android.util.Log.d("OrderCreateActivity", "Order created successfully with ID: " + currentOrderId);
+                
+                // Kiểm tra phương thức thanh toán
+                String paymentMethod = getSelectedPaymentMethod();
+                
+                if ("COD".equals(paymentMethod)) {
+                    // Thanh toán COD - chuyển thẳng sang màn hình thành công
+                    hideLoading();
+                    navigateToOrderSuccess(order.getId());
+                } else {
+                    // Thanh toán VNPay - tạo payment
+                    createPaymentForOrder(order);
+                }
             }
         });
 
         orderViewModel.getErrorMessage().observe(this, error -> {
             hideLoading();
             if (error != null && !error.isEmpty()) {
-                Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Lỗi tạo đơn hàng: " + error, Toast.LENGTH_LONG).show();
             }
         });
+
+        // Observe khi payment được tạo thành công
+        paymentViewModel.getPaymentLiveData().observe(this, payment -> {
+            if (payment != null) {
+                currentPaymentId = payment.getId();
+                android.util.Log.d("OrderCreateActivity", "Payment created successfully with ID: " + currentPaymentId);
+                
+                // Sau khi có paymentId, gọi API để lấy VNPay URL
+                String orderDescription = "Thanh toán đơn hàng #" + payment.getOrderId();
+                paymentViewModel.createVNPayUrl(currentPaymentId, totalAmount, orderDescription);
+            }
+        });
+
+        paymentViewModel.getErrorMessage().observe(this, error -> {
+            hideLoading();
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(this, "Lỗi tạo thanh toán: " + error, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Observe khi VNPay URL được tạo thành công
+        paymentViewModel.getVnpayUrlLiveData().observe(this, vnpayUrl -> {
+            hideLoading();
+            if (vnpayUrl != null && !vnpayUrl.isEmpty()) {
+                android.util.Log.d("OrderCreateActivity", "VNPay URL: " + vnpayUrl);
+                // Mở WebView để thanh toán
+                openVNPayWebView(vnpayUrl);
+            }
+        });
+    }
+
+    private void openVNPayWebView(String paymentUrl) {
+        Intent intent = new Intent(this, VNPayPaymentActivity.class);
+        intent.putExtra("payment_url", paymentUrl);
+        intent.putExtra("order_id", currentOrderId);
+        intent.putExtra("payment_id", currentPaymentId);
+        intent.putExtra("amount", totalAmount);
+        startActivityForResult(intent, VNPAY_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == VNPAY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // Thanh toán thành công
+                Toast.makeText(this, "Đặt hàng và thanh toán thành công!", Toast.LENGTH_LONG).show();
+                finish();
+            } else {
+                // Thanh toán thất bại hoặc bị hủy
+                Toast.makeText(this, "Thanh toán chưa hoàn tất. Vui lòng kiểm tra đơn hàng của bạn.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void createPaymentForOrder(OrderDTO order) {
+        // Sử dụng phương thức thanh toán VNPAY (hoặc lấy từ UI nếu có)
+        String paymentMethod = "VNPAY";
+        double amount = totalAmount;
+        
+        android.util.Log.d("OrderCreateActivity", "Creating payment for order " + order.getId() + " with amount: " + amount);
+        paymentViewModel.createPayment(order.getId(), paymentMethod, amount);
     }
 
     private void placeOrder() {
@@ -247,6 +331,24 @@ public class OrderCreateActivity extends AppCompatActivity {
         } else {
             return "PICKUP";
         }
+    }
+
+    private String getSelectedPaymentMethod() {
+        int selectedId = radioGroupPayment.getCheckedRadioButtonId();
+        if (selectedId == R.id.radio_payment_cod) {
+            return "COD";
+        } else {
+            return "VNPAY";
+        }
+    }
+
+    private void navigateToOrderSuccess(int orderId) {
+        Intent intent = new Intent(this, OrderSuccessActivity.class);
+        intent.putExtra("order_id", String.valueOf(orderId));
+        intent.putExtra("total_amount", totalAmount);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void updateTotalPrice() {
