@@ -58,13 +58,22 @@ public class PaymentFailedActivity extends AppCompatActivity {
     }
 
     private void loadDataFromIntent() {
-        orderId = getIntent().getIntExtra("order_id", 0);
-        paymentId = getIntent().getIntExtra("payment_id", 0);
+        String orderIdStr = getIntent().getStringExtra("order_id");
+        String paymentIdStr = getIntent().getStringExtra("payment_id");
         amount = getIntent().getDoubleExtra("amount", 0.0);
         String errorReason = getIntent().getStringExtra("error_reason");
+        
+        // Parse to int for later use
+        try {
+            orderId = orderIdStr != null ? Integer.parseInt(orderIdStr) : 0;
+            paymentId = paymentIdStr != null ? Integer.parseInt(paymentIdStr) : 0;
+        } catch (NumberFormatException e) {
+            orderId = 0;
+            paymentId = 0;
+        }
 
         // Display data
-        textOrderId.setText("#" + orderId);
+        textOrderId.setText("#" + (orderIdStr != null ? orderIdStr : "0"));
         
         DecimalFormat formatter = new DecimalFormat("###,###,###");
         textAmount.setText(formatter.format(amount) + "đ");

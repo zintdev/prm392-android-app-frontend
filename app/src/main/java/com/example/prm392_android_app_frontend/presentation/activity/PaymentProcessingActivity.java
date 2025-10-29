@@ -6,13 +6,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prm392_android_app_frontend.R;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class PaymentProcessingActivity extends AppCompatActivity {
 
@@ -24,11 +32,21 @@ public class PaymentProcessingActivity extends AppCompatActivity {
     private String paymentId;
     private double amount;
     private String returnUrl;
+    
+    // VNPay response parameters
+    private String vnpResponseCode;
+    private String vnpTransactionNo;
+    private String vnpBankTranNo;
+    
+    private OkHttpClient httpClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_processing);
+
+        // Initialize HTTP client
+        httpClient = new OkHttpClient();
 
         // Initialize views
         tvOrderIdValue = findViewById(R.id.tvOrderIdValue);
@@ -70,18 +88,94 @@ public class PaymentProcessingActivity extends AppCompatActivity {
         // Parse the return URL to check payment status
         if (returnUrl != null && !returnUrl.isEmpty()) {
             Uri uri = Uri.parse(returnUrl);
-            String responseCode = uri.getQueryParameter("vnp_ResponseCode");
+            vnpResponseCode = uri.getQueryParameter("vnp_ResponseCode");
+            String transactionStatus = uri.getQueryParameter("vnp_TransactionStatus");
+            vnpTransactionNo = uri.getQueryParameter("vnp_TransactionNo");
+            vnpBankTranNo = uri.getQueryParameter("vnp_BankTranNo");
+            
+            // Log payment result details
+            android.util.Log.d("PaymentProcessing", "=== VNPay Callback ===");
+            android.util.Log.d("PaymentProcessing", "Response Code: " + vnpResponseCode);
+            android.util.Log.d("PaymentProcessing", "Transaction Status: " + transactionStatus);
+            android.util.Log.d("PaymentProcessing", "Transaction No: " + vnpTransactionNo);
+            android.util.Log.d("PaymentProcessing", "Bank Trans No: " + vnpBankTranNo);
+            android.util.Log.d("PaymentProcessing", "Full URL: " + returnUrl);
 
-            if ("00".equals(responseCode)) {
-                // Payment successful
-                navigateToSuccess();
+            // Kiểm tra cả ResponseCode và TransactionStatus
+            // Cả 2 đều phải là "00" mới được coi là thành công
+            if ("00".equals(vnpResponseCode) && "00".equals(transactionStatus)) {
+                android.util.Log.d("PaymentProcessing", "Payment SUCCESS");
+                // Gọi callback URL về BE trước khi navigate
+                notifyBackendPaymentResult();
             } else {
-                // Payment failed
-                navigateToFailed(responseCode);
+                android.util.Log.d("PaymentProcessing", "Payment FAILED - Code: " + vnpResponseCode);
+                // Gọi callback URL về BE trước khi navigate
+                notifyBackendPaymentResult();
             }
         } else {
             // No return URL, treat as failed
+            android.util.Log.e("PaymentProcessing", "No return URL received");
             navigateToFailed(null);
+        }
+    }
+
+    /**
+     * Gọi HTTP GET request đến BE callback URL để BE cập nhật trạng thái thanh toán
+     */
+    private void notifyBackendPaymentResult() {
+        if (returnUrl == null || returnUrl.isEmpty()) {
+            android.util.Log.e("PaymentProcessing", "Return URL is null, skipping backend notification");
+            proceedToResultScreen();
+            return;
+        }
+
+        android.util.Log.d("PaymentProcessing", "Notifying backend: " + returnUrl);
+
+        Request request = new Request.Builder()
+                .url(returnUrl)
+                .get()
+                .build();
+
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                android.util.Log.e("PaymentProcessing", "Failed to notify backend: " + e.getMessage());
+                runOnUiThread(() -> {
+                    Toast.makeText(PaymentProcessingActivity.this, 
+                            "Không thể kết nối với server. Vui lòng kiểm tra lại đơn hàng.", 
+                            Toast.LENGTH_SHORT).show();
+                    // Vẫn tiếp tục navigate dù gọi API thất bại
+                    proceedToResultScreen();
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body() != null ? response.body().string() : "";
+                android.util.Log.d("PaymentProcessing", "Backend response code: " + response.code());
+                android.util.Log.d("PaymentProcessing", "Backend response body: " + responseBody);
+
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        android.util.Log.d("PaymentProcessing", "Backend notified successfully");
+                    } else {
+                        android.util.Log.w("PaymentProcessing", "Backend returned error: " + response.code());
+                    }
+                    // Navigate dù response thành công hay thất bại
+                    proceedToResultScreen();
+                });
+            }
+        });
+    }
+
+    /**
+     * Tiến hành navigate đến màn hình kết quả dựa trên response code
+     */
+    private void proceedToResultScreen() {
+        if ("00".equals(vnpResponseCode)) {
+            navigateToSuccess();
+        } else {
+            navigateToFailed(vnpResponseCode);
         }
     }
 
@@ -90,6 +184,9 @@ public class PaymentProcessingActivity extends AppCompatActivity {
         intent.putExtra("order_id", orderId);
         intent.putExtra("payment_id", paymentId);
         intent.putExtra("amount", amount);
+        intent.putExtra("payment_method", "VNPay");
+        intent.putExtra("vnp_transaction_no", vnpTransactionNo);
+        intent.putExtra("vnp_bank_tran_no", vnpBankTranNo);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

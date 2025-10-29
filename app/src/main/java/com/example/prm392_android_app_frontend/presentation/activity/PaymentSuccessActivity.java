@@ -55,14 +55,22 @@ public class PaymentSuccessActivity extends AppCompatActivity {
     }
 
     private void loadDataFromIntent() {
-        int orderId = getIntent().getIntExtra("order_id", 0);
-        int paymentId = getIntent().getIntExtra("payment_id", 0);
+        String orderId = getIntent().getStringExtra("order_id");
+        String paymentId = getIntent().getStringExtra("payment_id");
         double amount = getIntent().getDoubleExtra("amount", 0.0);
         String paymentMethod = getIntent().getStringExtra("payment_method");
+        String vnpTransactionNo = getIntent().getStringExtra("vnp_transaction_no");
+        String vnpBankTranNo = getIntent().getStringExtra("vnp_bank_tran_no");
 
         // Display data
-        textOrderId.setText("#" + orderId);
-        textPaymentId.setText("PAY" + paymentId);
+        textOrderId.setText("#" + (orderId != null ? orderId : "0"));
+        
+        // Hiển thị số giao dịch VNPay nếu có, nếu không thì hiển thị payment ID
+        if (vnpTransactionNo != null && !vnpTransactionNo.isEmpty()) {
+            textPaymentId.setText("VNP" + vnpTransactionNo);
+        } else {
+            textPaymentId.setText("PAY" + (paymentId != null ? paymentId : "0"));
+        }
         
         DecimalFormat formatter = new DecimalFormat("###,###,###");
         textAmount.setText(formatter.format(amount) + "đ");
@@ -71,6 +79,12 @@ public class PaymentSuccessActivity extends AppCompatActivity {
         
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         textPaymentTime.setText(sdf.format(new Date()));
+        
+        // Log transaction details for debugging
+        android.util.Log.d("PaymentSuccess", "Order ID: " + orderId);
+        android.util.Log.d("PaymentSuccess", "Payment ID: " + paymentId);
+        android.util.Log.d("PaymentSuccess", "VNPay Transaction No: " + vnpTransactionNo);
+        android.util.Log.d("PaymentSuccess", "VNPay Bank Tran No: " + vnpBankTranNo);
     }
 
     private void setupButtons() {
