@@ -8,6 +8,7 @@ import com.example.prm392_android_app_frontend.data.dto.CreateOrderRequestDto;
 import com.example.prm392_android_app_frontend.data.dto.OrderDTO;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
 import com.example.prm392_android_app_frontend.data.remote.api.OrderApi;
+import com.example.prm392_android_app_frontend.data.repository.OrderRepository;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,10 +20,11 @@ public class OrderViewModel extends ViewModel {
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
-    private final OrderApi orderApi;
+    private final OrderRepository orderRepository;
 
     public OrderViewModel() {
-        orderApi = ApiClient.get().create(OrderApi.class);
+        OrderApi orderApi = ApiClient.get().create(OrderApi.class);
+        orderRepository = new OrderRepository(orderApi);
     }
 
     public LiveData<OrderDTO> getOrderLiveData() {
@@ -41,8 +43,7 @@ public class OrderViewModel extends ViewModel {
         isLoading.setValue(true);
         errorMessage.setValue(null);
 
-        Call<OrderDTO> call = orderApi.placeOrder(request);
-        call.enqueue(new Callback<OrderDTO>() {
+        orderRepository.placeOrder(request, new Callback<OrderDTO>() {
             @Override
             public void onResponse(Call<OrderDTO> call, Response<OrderDTO> response) {
                 isLoading.setValue(false);

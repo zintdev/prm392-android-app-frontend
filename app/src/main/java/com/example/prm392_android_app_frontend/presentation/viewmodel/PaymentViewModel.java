@@ -4,13 +4,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.prm392_android_app_frontend.data.dto.PaymentDTO;
 import com.example.prm392_android_app_frontend.data.dto.PaymentResponseDTO;
-import com.example.prm392_android_app_frontend.data.dto.VNPayRequestDTO;
 import com.example.prm392_android_app_frontend.data.dto.VNPayResponseDTO;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
 import com.example.prm392_android_app_frontend.data.remote.api.PaymentApi;
 import com.example.prm392_android_app_frontend.data.remote.api.VNPayApi;
+import com.example.prm392_android_app_frontend.data.repository.PaymentRepository;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,12 +22,12 @@ public class PaymentViewModel extends ViewModel {
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
-    private final PaymentApi paymentApi;
-    private final VNPayApi vnPayApi;
+    private final PaymentRepository paymentRepository;
 
     public PaymentViewModel() {
-        paymentApi = ApiClient.get().create(PaymentApi.class);
-        vnPayApi = ApiClient.get().create(VNPayApi.class);
+        PaymentApi paymentApi = ApiClient.get().create(PaymentApi.class);
+        VNPayApi vnPayApi = ApiClient.get().create(VNPayApi.class);
+        paymentRepository = new PaymentRepository(paymentApi, vnPayApi);
     }
 
     public LiveData<PaymentResponseDTO> getPaymentLiveData() {
@@ -51,10 +50,7 @@ public class PaymentViewModel extends ViewModel {
         isLoading.setValue(true);
         errorMessage.setValue(null);
 
-        PaymentDTO paymentDTO = new PaymentDTO(orderId, method, amount);
-        Call<PaymentResponseDTO> call = paymentApi.createPayment(paymentDTO);
-        
-        call.enqueue(new Callback<PaymentResponseDTO>() {
+        paymentRepository.createPayment(orderId, method, amount, new Callback<PaymentResponseDTO>() {
             @Override
             public void onResponse(Call<PaymentResponseDTO> call, Response<PaymentResponseDTO> response) {
                 isLoading.setValue(false);
@@ -77,10 +73,7 @@ public class PaymentViewModel extends ViewModel {
         isLoading.setValue(true);
         errorMessage.setValue(null);
 
-        VNPayRequestDTO request = new VNPayRequestDTO(paymentId, amount, orderDescription);
-        Call<VNPayResponseDTO> call = vnPayApi.createPaymentUrl(request);
-        
-        call.enqueue(new Callback<VNPayResponseDTO>() {
+        paymentRepository.createVNPayUrl(paymentId, amount, orderDescription, new Callback<VNPayResponseDTO>() {
             @Override
             public void onResponse(Call<VNPayResponseDTO> call, Response<VNPayResponseDTO> response) {
                 isLoading.setValue(false);
