@@ -58,19 +58,7 @@ public class VNPayPaymentActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-        toolbar.setNavigationOnClickListener(v -> {
-            // Xác nhận trước khi thoát
-            new androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle("Hủy thanh toán")
-                    .setMessage("Bạn có chắc muốn hủy giao dịch này?")
-                    .setPositiveButton("Có", (dialog, which) -> finish())
-                    .setNegativeButton("Không", null)
-                    .show();
-        });
+        // Không hiển thị nút back
     }
 
     private void setupWebView() {
@@ -139,15 +127,7 @@ public class VNPayPaymentActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (webViewVNPay.canGoBack()) {
-            webViewVNPay.goBack();
-        } else {
-            new androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle("Hủy thanh toán")
-                    .setMessage("Bạn có chắc muốn hủy giao dịch này?")
-                    .setPositiveButton("Có", (dialog, which) -> super.onBackPressed())
-                    .setNegativeButton("Không", null)
-                    .show();
-        }
+        // Vô hiệu hóa nút back - người dùng phải hoàn tất thanh toán
+        // Không cho phép thoát ra giữa chừng
     }
 }

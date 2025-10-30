@@ -11,12 +11,12 @@
         android:background="@color/primaryColor"
         android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Thanh toán VNPay"
         app:titleTextColor="@android:color/white"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:navigationIconTint="@android:color/white" />
+        app:titleCentered="true" />
 
     <ProgressBar
         android:id="@+id/progress_bar_vnpay"

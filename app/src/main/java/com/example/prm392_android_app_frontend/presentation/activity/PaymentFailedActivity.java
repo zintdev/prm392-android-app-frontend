@@ -23,7 +23,6 @@ public class PaymentFailedActivity extends AppCompatActivity {
     private TextView textAmount;
     private TextView textErrorReason;
     private TextView textFailedTime;
-    private MaterialButton buttonRetryPayment;
     private MaterialButton buttonViewOrder;
     private MaterialButton buttonBackHome;
 
@@ -48,7 +47,6 @@ public class PaymentFailedActivity extends AppCompatActivity {
         textAmount = findViewById(R.id.text_amount);
         textErrorReason = findViewById(R.id.text_error_reason);
         textFailedTime = findViewById(R.id.text_failed_time);
-        buttonRetryPayment = findViewById(R.id.button_retry_payment);
         buttonViewOrder = findViewById(R.id.button_view_order);
         buttonBackHome = findViewById(R.id.button_back_home);
     }
@@ -85,17 +83,6 @@ public class PaymentFailedActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        buttonRetryPayment.setOnClickListener(v -> {
-            // Return to payment with order info to retry
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("retry_payment", true);
-            resultIntent.putExtra("order_id", orderId);
-            resultIntent.putExtra("payment_id", paymentId);
-            resultIntent.putExtra("amount", amount);
-            setResult(RESULT_OK, resultIntent);
-            finish();
-        });
-
         buttonViewOrder.setOnClickListener(v -> {
             // Navigate to Cart
             navigateToCart();
