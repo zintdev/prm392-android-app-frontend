@@ -5,4 +5,15 @@ public class ArtistDto {
     public String artistType;
     public String artistName;
     public Integer debutYear;
+
+    public String getArtistName(){return artistName; }
+
+    public Integer getId(){return id; }
+
+
+
+
+
+
+
 }

@@ -2,6 +2,7 @@ package com.example.prm392_android_app_frontend.presentation.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,9 @@ import com.bumptech.glide.Glide;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
 import com.example.prm392_android_app_frontend.presentation.activity.AdminProductActivity;
+import com.example.prm392_android_app_frontend.presentation.fragment.admin.AddAndUpdateProductFragment;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,10 +111,22 @@ public class ProductManageAdapter extends RecyclerView.Adapter<ProductManageAdap
             // Nút Edit - chỉ hiển thị trong admin mode
             if (buttonEditProduct != null) {
                 buttonEditProduct.setOnClickListener(v -> {
-                    // Gọi callback để mở dialog edit
-                    if (adapter != null && adapter.onEditClickListener != null) {
-                        adapter.onEditClickListener.onEditClick(product);
+                    Context context = itemView.getContext();
+
+                    // Nếu adapter này nằm trong Fragment
+                    if (context instanceof androidx.fragment.app.FragmentActivity) {
+                        androidx.fragment.app.FragmentActivity activity =
+                                (androidx.fragment.app.FragmentActivity) context;
+
+                        AddAndUpdateProductFragment editDialog = new AddAndUpdateProductFragment();
+
+                        Bundle args = new Bundle();
+                        args.putSerializable("product_to_edit", (Serializable) product);
+                        editDialog.setArguments(args);
+
+                        editDialog.show(activity.getSupportFragmentManager(), "edit_product");
                     }
+
                 });
             }
 

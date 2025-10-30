@@ -46,6 +46,7 @@ dependencies {
     implementation libs.navigation.runtime
     implementation libs.firebase.auth
     implementation libs.firebase.database
+    implementation libs.navigation.fragment
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
 

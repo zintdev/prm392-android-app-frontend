@@ -60,7 +60,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
             <Button
                 android:id="@+id/button_view_details"
@@ -77,13 +78,17 @@
                 android:text="Sửa"
                 android:textColor="?attr/colorPrimary" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_delete_product"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Xóa"
-                android:textColor="@android:color/holo_red_dark" />
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="Xóa sản phẩm"
+                app:icon="@drawable/ic_trash_can"
+                app:iconTint="@android:color/holo_red_dark"
+                app:iconGravity="textEnd"
+                app:iconPadding="0dp" />
 
         </LinearLayout>
 

@@ -69,7 +69,7 @@ public class ProductManagementFragment extends Fragment {
 
         binding.fabAddProduct.setOnClickListener(v -> {
             // Mở DialogFragment để thêm sản phẩm
-            AddProductFragment dialog = new AddProductFragment();
+            AddAndUpdateProductFragment dialog = new AddAndUpdateProductFragment();
             dialog.show(getParentFragmentManager(), "AddProductDialog");
         });
     }

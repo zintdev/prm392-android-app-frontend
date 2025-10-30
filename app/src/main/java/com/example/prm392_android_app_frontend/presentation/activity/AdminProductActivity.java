@@ -41,6 +41,8 @@ public class AdminProductActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private MaterialButton buttonUpdateImage;
 
+    private MaterialButton buttonEditProduct;
+
     private int productId;
     private ProductDto currentProduct;
 
