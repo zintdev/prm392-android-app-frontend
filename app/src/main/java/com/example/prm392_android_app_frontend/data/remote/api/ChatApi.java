@@ -2,9 +2,11 @@ package com.example.prm392_android_app_frontend.data.remote.api;
 
 // Import DTOs từ package DTO chính xác của bạn
 import com.example.prm392_android_app_frontend.data.dto.chat.ConversationDto;
+import com.example.prm392_android_app_frontend.data.dto.chat.ConversationSummaryDto;
 import com.example.prm392_android_app_frontend.data.dto.chat.MessageDto;
 import com.example.prm392_android_app_frontend.data.dto.chat.ReadReceiptRequest;
 import com.example.prm392_android_app_frontend.data.dto.chat.SendMessageRequest;
+import com.example.prm392_android_app_frontend.data.dto.chat.SpringPage;
 import com.example.prm392_android_app_frontend.data.dto.chat.TypingEventRequest;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Interface mới, định nghĩa các API endpoint cho tính năng Chat.
@@ -78,4 +81,18 @@ public interface ChatApi {
      */
     @GET("chat/unread-count/{conversationId}")
     Call<Integer> getUnreadCount(@Path("conversationId") Integer conversationId);
+
+    /**
+     * Lấy danh sách hội thoại cho Admin
+     */
+    /**
+     * Định nghĩa API call khớp với @GetMapping("/admin/conversations") của bạn
+     */
+    @GET("chat/admin/conversations")
+    Call<SpringPage<ConversationSummaryDto>> getConversations(
+            @Query("page") int page,
+            @Query("size") int size,
+            @Query("sort") String sort
+    );
+
 }

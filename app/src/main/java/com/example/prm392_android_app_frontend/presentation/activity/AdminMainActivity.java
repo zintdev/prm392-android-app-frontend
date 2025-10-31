@@ -2,6 +2,7 @@ package com.example.prm392_android_app_frontend.presentation.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View; // Import View
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,10 +16,13 @@ import com.example.prm392_android_app_frontend.presentation.fragment.admin.Admin
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+// Import FloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class AdminMainActivity extends AppCompatActivity {
 
     private BottomNavigationView nav;
+    private FloatingActionButton fabAddStore; // Khai báo FAB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +34,31 @@ public class AdminMainActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+        // Đảm bảo tên layout này là chính xác
         setContentView(R.layout.activity_admin_main_page);
+
         nav = findViewById(R.id.bottomNavAdmin);
         MaterialToolbar toolbar = findViewById(R.id.toolbarAdmin);
+
+        // --- BẮT ĐẦU CODE THÊM MỚI ---
+
+        // 1. Ánh xạ FAB từ layout
+        // (Phải chắc chắn ID này tồn tại trong R.layout.activity_admin_main_page)
+        fabAddStore = findViewById(R.id.fab_add_store);
+
+        // 2. Đặt sự kiện click cho FAB
+        fabAddStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 3. Mở AddStoreActivity
+                Intent intent = new Intent(AdminMainActivity.this, AddStoreActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // --- KẾT THÚC CODE THÊM MỚI ---
+
 
         if (toolbar != null) {
             toolbar.setTitle("Admin");

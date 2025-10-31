@@ -10,10 +10,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.prm392_android_app_frontend.data.dto.chat.ConversationDto;
+import com.example.prm392_android_app_frontend.data.dto.chat.ConversationSummaryDto;
 import com.example.prm392_android_app_frontend.data.dto.chat.MessageDto;
 import com.example.prm392_android_app_frontend.data.dto.chat.FirebaseTypingEvent;
 import com.example.prm392_android_app_frontend.data.dto.chat.ReadReceiptRequest;
 import com.example.prm392_android_app_frontend.data.dto.chat.SendMessageRequest;
+import com.example.prm392_android_app_frontend.data.dto.chat.SpringPage;
 import com.example.prm392_android_app_frontend.data.dto.chat.TypingEventRequest;
 import com.example.prm392_android_app_frontend.data.remote.api.ChatApi;
 import com.google.firebase.database.ChildEventListener;
@@ -54,6 +56,9 @@ public class ChatRepository {
     private final Map<DatabaseReference, ValueEventListener> valueListeners = new HashMap<>();
     private final MutableLiveData<MessageDto> newMessageData = new MutableLiveData<>();
     private final MutableLiveData<MessageDto> readReceiptData = new MutableLiveData<>();
+
+    private final MutableLiveData<ConversationSummaryDto> updatedSummaryData = new MutableLiveData<>();
+    private final Map<DatabaseReference, ChildEventListener> adminInboxListeners = new HashMap<>();
 
     public ChatRepository(Application application) {
         this.chatApi = ApiClient.getAuthClient(application).create(ChatApi.class);
@@ -315,20 +320,6 @@ public class ChatRepository {
         }
     }
 
-    // --- DỌN DẸP ---
-    // Phương thức này RẤT QUAN TRỌNG, được gọi bởi ViewModel khi nó bị hủy
-    public void cleanUpAllListeners() {
-        Log.d(TAG, "Cleaning up all Firebase listeners...");
-        for (Map.Entry<DatabaseReference, ChildEventListener> entry : childListeners.entrySet()) {
-            entry.getKey().removeEventListener(entry.getValue());
-        }
-        for (Map.Entry<DatabaseReference, ValueEventListener> entry : valueListeners.entrySet()) {
-            entry.getKey().removeEventListener(entry.getValue());
-        }
-        childListeners.clear();
-        valueListeners.clear();
-    }
-
     private void startRealtimeListeners(Integer conversationId, long lastMessageTimestamp) {
         // --- 1. New Message Listener ---
         DatabaseReference msgRef = firebaseDatabase.getReference("messages").child(String.valueOf(conversationId));
@@ -463,6 +454,79 @@ public class ChatRepository {
         });
 
         return unreadCountData;
+    }
+
+    public Call<SpringPage<ConversationSummaryDto>> getAdminConversations(int page, int size) {
+        // Sắp xếp theo "lastMessageAt" mới nhất
+        String sort = "lastMessageAt,desc";
+        return chatApi.getConversations(page, size, sort);
+    }
+
+
+    /**
+     * THÊM MỚI: Hàm lắng nghe cập nhật cho Admin Inbox
+     */
+    public LiveData<ConversationSummaryDto> getAdminUpdatesListener(Integer adminId) {
+        DatabaseReference ref = firebaseDatabase.getReference("admin_inbox_updates")
+                .child(String.valueOf(adminId));
+
+        ChildEventListener listener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Được gọi khi tải ban đầu VÀ khi có conversation mới
+                try {
+                    ConversationSummaryDto summary = snapshot.getValue(ConversationSummaryDto.class);
+                    updatedSummaryData.postValue(summary);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse admin update (added)", e);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Được gọi khi một conversation có tin nhắn mới (quan trọng nhất)
+                try {
+                    ConversationSummaryDto summary = snapshot.getValue(ConversationSummaryDto.class);
+                    updatedSummaryData.postValue(summary);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse admin update (changed)", e);
+                }
+            }
+
+            @Override public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
+            @Override public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+            @Override public void onCancelled(@NonNull DatabaseError error) {
+                Log.w(TAG, "adminInboxListener:onCancelled", error.toException());
+            }
+        };
+
+        // Sắp xếp theo "lastMessageAt" để lấy các tin mới nhất trước
+        ref.orderByChild("lastMessageAt").addChildEventListener(listener);
+        adminInboxListeners.put(ref, listener); // Lưu lại để dọn dẹp
+
+        return updatedSummaryData;
+    }
+
+
+    // --- SỬA ĐỔI: Thêm vào hàm dọn dẹp ---
+    public void cleanUpAllListeners() {
+        Log.d(TAG, "Cleaning up all Firebase listeners...");
+        for (Map.Entry<DatabaseReference, ChildEventListener> entry : childListeners.entrySet()) {
+            entry.getKey().removeEventListener(entry.getValue());
+        }
+        for (Map.Entry<DatabaseReference, ValueEventListener> entry : valueListeners.entrySet()) {
+            entry.getKey().removeEventListener(entry.getValue());
+        }
+
+        // --- THÊM MỚI ---
+        for (Map.Entry<DatabaseReference, ChildEventListener> entry : adminInboxListeners.entrySet()) {
+            entry.getKey().removeEventListener(entry.getValue());
+        }
+        adminInboxListeners.clear();
+        // --- KẾT THÚC THÊM MỚI ---
+
+        childListeners.clear();
+        valueListeners.clear();
     }
 
 }
