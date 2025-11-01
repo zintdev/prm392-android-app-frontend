@@ -462,6 +462,15 @@ public class ChatRepository {
         return chatApi.getConversations(page, size, sort);
     }
 
+    /**
+     * Tìm kiếm conversations theo tên khách hàng
+     */
+    public Call<SpringPage<ConversationSummaryDto>> searchAdminConversations(String customerName, int page, int size) {
+        // Sắp xếp theo "lastMessageAt" mới nhất
+        String sort = "lastMessageAt,desc";
+        return chatApi.searchConversations(customerName, page, size, sort);
+    }
+
 
     /**
      * THÊM MỚI: Hàm lắng nghe cập nhật cho Admin Inbox

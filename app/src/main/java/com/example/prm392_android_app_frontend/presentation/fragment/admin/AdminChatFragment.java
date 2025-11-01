@@ -1,7 +1,11 @@
 package com.example.prm392_android_app_frontend.presentation.fragment.admin; // (Package của bạn)
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +29,9 @@ public class AdminChatFragment extends Fragment implements ConversationListAdapt
     private FragmentAdminChatBinding binding;
     private ConversationListAdapter conversationAdapter;
     private AdminChatViewModel viewModel; // <-- Thêm ViewModel
+    private Handler searchHandler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
+    private static final long SEARCH_DELAY_MS = 500; // Debounce delay 500ms
 
     @Nullable
     @Override
@@ -92,7 +99,34 @@ public class AdminChatFragment extends Fragment implements ConversationListAdapt
     }
 
     private void setupSearchListener() {
-        // TODO: Thêm logic tìm kiếm
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Hủy search request trước đó nếu có
+                if (searchRunnable != null) {
+                    searchHandler.removeCallbacks(searchRunnable);
+                }
+
+                // Tạo search request mới với debounce delay
+                String query = s.toString();
+                searchRunnable = () -> {
+                    if (viewModel != null) {
+                        viewModel.searchConversations(query);
+                    }
+                };
+                searchHandler.postDelayed(searchRunnable, SEARCH_DELAY_MS);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Không cần xử lý
+            }
+        });
     }
 
     @Override
@@ -109,6 +143,10 @@ public class AdminChatFragment extends Fragment implements ConversationListAdapt
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Hủy search handler để tránh memory leak
+        if (searchRunnable != null) {
+            searchHandler.removeCallbacks(searchRunnable);
+        }
         binding = null;
     }
 }

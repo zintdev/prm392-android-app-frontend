@@ -32,13 +32,24 @@ public class ConversationSummaryDto {
 
     // Getters và Setters
     public Integer getConversationId() { return conversationId; }
+    public void setConversationId(Integer conversationId) { this.conversationId = conversationId; }
+    
     public MessageDto getLastMessage() { return lastMessage; }
+    public void setLastMessage(MessageDto lastMessage) { this.lastMessage = lastMessage; }
+    
     public Long getLastMessageAt() { return lastMessageAt; }
+    public void setLastMessageAt(Long lastMessageAt) { this.lastMessageAt = lastMessageAt; }
+    
     public Integer getCustomerId() { return customerId; }
+    public void setCustomerId(Integer customerId) { this.customerId = customerId; }
+    
     public String getCustomerName() { return customerName; }
+    public void setCustomerName(String customerName) { this.customerName = customerName; }
 
     // --- THÊM GETTER NÀY ---
     public String getCustomerAvatarUrl() { return customerAvatarUrl; }
+    public void setCustomerAvatarUrl(String customerAvatarUrl) { this.customerAvatarUrl = customerAvatarUrl; }
 
     public Integer getUnreadCount() { return unreadCount; }
+    public void setUnreadCount(Integer unreadCount) { this.unreadCount = unreadCount; }
 }
