@@ -95,4 +95,18 @@ public interface ChatApi {
             @Query("sort") String sort
     );
 
+    /**
+     * Tìm kiếm conversations theo tên khách hàng cho Admin
+     * Tương ứng: @GetMapping("/search") trong admin controller
+     * Nếu backend controller là @RequestMapping("/chat/admin"), thì full path là /api/chat/admin/search
+     * Nếu vẫn lỗi 404, có thể endpoint ở controller khác với path khác
+     */
+    @GET("chat/search")
+    Call<SpringPage<ConversationSummaryDto>> searchConversations(
+            @Query("customerName") String customerName,
+            @Query("page") int page,
+            @Query("size") int size,
+            @Query("sort") String sort
+    );
+
 }

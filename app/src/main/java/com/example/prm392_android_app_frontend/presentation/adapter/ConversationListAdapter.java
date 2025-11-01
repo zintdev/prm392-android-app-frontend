@@ -70,11 +70,20 @@ public class ConversationListAdapter extends ListAdapter<ConversationUiData, Con
         }
 
         void bind(ConversationUiData conversation, OnConversationClickListener listener) {
-            tvName.setText(conversation.getParticipantName());
+            // Đảm bảo participantName không null
+            String participantName = conversation.getParticipantName();
+            if (participantName == null || participantName.trim().isEmpty()) {
+                participantName = "Khách hàng";
+            }
+            tvName.setText(participantName);
 
             // Xử lý tin nhắn cuối
+            String lastMessage = conversation.getLastMessage();
+            if (lastMessage == null) {
+                lastMessage = "[Chưa có tin nhắn]";
+            }
             String lastMessagePrefix = conversation.isLastMessageFromAdmin() ? "Bạn: " : "";
-            tvLastMessage.setText(lastMessagePrefix + conversation.getLastMessage());
+            tvLastMessage.setText(lastMessagePrefix + lastMessage);
 
             // Xử lý thời gian
             tvTime.setText(timeFormat.format(new Date(conversation.getLastMessageTimestamp())));

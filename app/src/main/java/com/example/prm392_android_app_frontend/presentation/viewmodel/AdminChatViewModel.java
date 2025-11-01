@@ -81,6 +81,52 @@ public class AdminChatViewModel extends AndroidViewModel {
     }
 
     /**
+     * Hàm tìm kiếm conversations theo tên khách hàng
+     */
+    public void searchConversations(String customerName) {
+        if (customerName == null || customerName.trim().isEmpty()) {
+            // Nếu tìm kiếm rỗng, tải lại danh sách ban đầu
+            fetchConversations();
+            return;
+        }
+
+        _isLoading.setValue(true);
+        chatRepository.searchAdminConversations(customerName.trim(), 0, 20).enqueue(new Callback<SpringPage<ConversationSummaryDto>>() {
+            @Override
+            public void onResponse(Call<SpringPage<ConversationSummaryDto>> call, Response<SpringPage<ConversationSummaryDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<ConversationSummaryDto> dtos = response.body().getContent();
+                    if (dtos != null) {
+                        // Log để debug
+                        for (ConversationSummaryDto dto : dtos) {
+                            Log.d("AdminChatViewModel", "Search result - conversationId: " + dto.getConversationId() 
+                                    + ", customerName: " + dto.getCustomerName() + ", customerId: " + dto.getCustomerId());
+                        }
+                        
+                        List<ConversationUiData> uiData = mapDtosToUiData(dtos);
+                        Log.d("AdminChatViewModel", "Search success, UI data size: " + uiData.size());
+                        _conversationList.postValue(uiData);
+                    } else {
+                        Log.d("AdminChatViewModel", "Search returned empty results");
+                        _conversationList.postValue(new ArrayList<>());
+                    }
+                } else {
+                    Log.e("AdminChatViewModel", "Search failed: " + response.message() + ", code: " + response.code());
+                    _errorMessage.postValue("Lỗi khi tìm kiếm: " + response.message());
+                }
+                _isLoading.postValue(false);
+            }
+
+            @Override
+            public void onFailure(Call<SpringPage<ConversationSummaryDto>> call, Throwable t) {
+                Log.e("AdminChatViewModel", "Search failure: " + t.getMessage(), t);
+                _errorMessage.postValue("Lỗi mạng: " + t.getMessage());
+                _isLoading.postValue(false);
+            }
+        });
+    }
+
+    /**
      * Lắng nghe các cập nhật real-time
      */
     public LiveData<ConversationSummaryDto> getUpdateListener() {
@@ -159,13 +205,20 @@ public class AdminChatViewModel extends AndroidViewModel {
             isLastMessageRead = (lastMessage.getReadAt() != null);
         }
 
+        // Xử lý customerName - đảm bảo không null
+        String customerName = dto.getCustomerName();
+        if (customerName == null || customerName.trim().isEmpty()) {
+            customerName = "Khách hàng"; // Fallback nếu không có tên
+            Log.w("AdminChatViewModel", "Warning: customerName is null or empty for conversationId: " + dto.getConversationId());
+        }
+
         // DTO của bạn có "customerAvatarUrl" không? (Dựa trên log JSON thì không)
         // Nếu có, hãy thay "null" bằng dto.getCustomerAvatarUrl()
         return new ConversationUiData(
                 dto.getConversationId(),
                 dto.getCustomerId(),
-                dto.getCustomerName(),
-                null, // <-- dto.getCustomerAvatarUrl() nếu có
+                customerName, // Đảm bảo không null
+                dto.getCustomerAvatarUrl(), // Có thể là null
                 lastMessageContent,
                 lastMessageTimestamp,
                 dto.getUnreadCount() != null ? dto.getUnreadCount() : 0,
