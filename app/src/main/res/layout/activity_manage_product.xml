@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.fragment.admin.ProductManagementFragment">
+    tools:context=".presentation.activity.ProductManagementActivity">
 
     <!-- AppBar với Back Button -->
     <com.google.android.material.appbar.AppBarLayout
@@ -20,9 +20,9 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/nogi_main"
             app:title="Quản lý đĩa CD"
-            app:titleTextColor="#FFFFFF"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="#FFFFFF" />
+            app:titleTextColor="@color/white"
+            app:titleCentered="true"
+            app:navigationIcon="@drawable/ic_arrow_back" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

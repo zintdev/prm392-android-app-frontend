@@ -13,7 +13,6 @@ import com.example.prm392_android_app_frontend.presentation.fragment.admin.Admin
 import com.example.prm392_android_app_frontend.presentation.fragment.admin.AdminOrdersFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.admin.AdminChatFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.admin.AdminSettingFragment;
-import com.example.prm392_android_app_frontend.presentation.fragment.admin.ProductManagementFragment;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -42,23 +41,23 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
         nav = findViewById(R.id.bottomNavAdmin);
         MaterialToolbar toolbar = findViewById(R.id.toolbarAdmin);
 
-        // --- BẮT ĐẦU CODE THÊM MỚI ---
-
-        // 1. Ánh xạ FAB từ layout
-        // (Phải chắc chắn ID này tồn tại trong R.layout.activity_admin_main_page)
-        fabAddStore = findViewById(R.id.fab_add_store);
-
-        // 2. Đặt sự kiện click cho FAB
-        fabAddStore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 3. Mở AddStoreActivity
-                Intent intent = new Intent(AdminMainActivity.this, AddStoreActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // --- KẾT THÚC CODE THÊM MỚI ---
+//        // --- BẮT ĐẦU CODE THÊM MỚI ---
+//
+//        // 1. Ánh xạ FAB từ layout
+//        // (Phải chắc chắn ID này tồn tại trong R.layout.activity_admin_main_page)
+//        fabAddStore = findViewById(R.id.fab_add_store);
+//
+//        // 2. Đặt sự kiện click cho FAB
+//        fabAddStore.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // 3. Mở AddStoreActivity
+//                Intent intent = new Intent(AdminMainActivity.this, AddStoreActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//
+//        // --- KẾT THÚC CODE THÊM MỚI ---
 
 
         if (toolbar != null) {
@@ -112,10 +111,8 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
 
     @Override
     public void navigateToProductManagement() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentAdminContainer, new ProductManagementFragment())
-                .addToBackStack(null) // Thêm vào back stack để người dùng có thể quay lại
-                .commit();
+        Intent intent = new Intent(this, ProductManagementActivity.class);
+        startActivity(intent);
     }
 
     @Override

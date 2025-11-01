@@ -11,9 +11,4 @@ public class ArtistDto {
     public Integer getId(){return id; }
 
 
-
-
-
-
-
 }

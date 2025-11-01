@@ -73,6 +73,19 @@
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etProductReleaseDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Ngày phát hành (yyyy-MM-dd)"
+                android:inputType="date" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Spinner Category với TextInputLayout style -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutCategory"
