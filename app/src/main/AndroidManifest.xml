@@ -71,6 +71,17 @@
             android:name=".presentation.activity.AdminProductActivity"
             android:exported="false" />
 
+        <!-- THÊM DÒNG CODE NÀY VÀO -->
+<!--        <activity-->
+<!--            android:name=".presentation.activity.AddStoreActivity"-->
+<!--            android:exported="false"-->
+<!--            android:label="Thêm cửa hàng mới" />-->
+
+        <!-- Chat Activity -->
+        <activity
+            android:name=".presentation.activity.ChatActivity"
+            android:exported="false"
+            android:label="Chat" />
 
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
