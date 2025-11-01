@@ -27,8 +27,9 @@ public class AddressRepository {
         this.api = ApiClient.getAuthClient(ctx).create(AddressApi.class);
     }
 
-    /** Tạo địa chỉ mới */
     public void createAddress(int userId,
+                              String fullName,
+                              String phoneNumber,
                               String shippingAddressLine1,
                               String shippingAddressLine2,
                               String shippingCityState,
@@ -36,6 +37,8 @@ public class AddressRepository {
 
         CreateAddressRequest req = new CreateAddressRequest();
         req.userId = userId;
+        req.fullName = fullName;
+        req.phoneNumber = phoneNumber;
         req.shippingAddressLine1 = shippingAddressLine1;
         req.shippingAddressLine2 = shippingAddressLine2;
         req.shippingCityState = shippingCityState;
@@ -53,10 +56,12 @@ public class AddressRepository {
             }
         });
     }
-    public void updateAddress(int id, int userId, String line1, String line2, String cityState,
+    public void updateAddress(int id, int userId, String fullName, String phoneNumber, String line1, String line2, String cityState,
                               CallbackResult<AddressDto> cb) {
         UpdateAddressRequest req = new UpdateAddressRequest();
         req.userId = userId;
+        req.fullName = fullName;
+        req.phoneNumber = phoneNumber;
         req.shippingAddressLine1 = line1;
         req.shippingAddressLine2 = line2;
         req.shippingCityState = cityState;

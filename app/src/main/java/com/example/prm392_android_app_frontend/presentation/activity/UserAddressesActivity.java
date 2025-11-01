@@ -132,10 +132,14 @@
         // Sửa
         private void showEditDialog(AddressDto a) {
             View content = getLayoutInflater().inflate(R.layout.dialog_edit_address, null, false);
+            TextInputEditText edtFullName = content.findViewById(R.id.edtFullName);
+            TextInputEditText edtPhoneNumber = content.findViewById(R.id.edtPhoneNumber);
             TextInputEditText edtLine1 = content.findViewById(R.id.edtLine1);
             TextInputEditText edtLine2 = content.findViewById(R.id.edtLine2);
             TextInputEditText edtCityState = content.findViewById(R.id.edtCityState);
 
+            edtFullName.setText(a.fullName);
+            edtPhoneNumber.setText(a.phoneNumber);
             edtLine1.setText(a.shippingAddressLine1);
             edtLine2.setText(a.shippingAddressLine2);
             edtCityState.setText(a.shippingCityState);
@@ -146,17 +150,19 @@
                     .setNegativeButton("Huỷ", null)
                     .setPositiveButton("Lưu", (d, w) -> {
                         int userId = TokenStore.getUserId(this);
+                        String fullName = textOf(edtFullName);
+                        String phoneNumber = textOf(edtPhoneNumber);
                         String line1 = textOf(edtLine1);
                         String line2 = textOf(edtLine2);
                         String cs    = textOf(edtCityState);
 
-                        if (line1.isEmpty() || cs.isEmpty()) {
-                            Toast.makeText(this, "Line1 và Tỉnh/Thành không được trống", Toast.LENGTH_SHORT).show();
+                        if (fullName.isEmpty() || phoneNumber.isEmpty() || line1.isEmpty() || cs.isEmpty()) {
+                            Toast.makeText(this, "Họ tên, số điện thoại, Line1 và Tỉnh/Thành không được trống", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         showLoading(true);
-                        addressRepository.updateAddress(a.id, userId, line1, line2, cs,
+                        addressRepository.updateAddress(a.id, userId, fullName, phoneNumber, line1, line2, cs,
                                 new AddressRepository.CallbackResult<AddressDto>() {
                                     @Override public void onSuccess(AddressDto data) {
                                         showLoading(false);

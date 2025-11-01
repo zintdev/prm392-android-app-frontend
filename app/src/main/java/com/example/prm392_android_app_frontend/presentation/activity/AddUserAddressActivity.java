@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prm392_android_app_frontend.R;
+import com.example.prm392_android_app_frontend.data.dto.address.AddressDto;
 import com.example.prm392_android_app_frontend.data.dto.address.DistrictDto;
 import com.example.prm392_android_app_frontend.data.dto.address.ProvinceDto;
 import com.example.prm392_android_app_frontend.data.dto.address.WardDto;
@@ -25,7 +26,7 @@ import java.util.List;
 
 public class AddUserAddressActivity extends AppCompatActivity {
 
-    private TextInputEditText edtAddress;
+    private TextInputEditText edtFullName, edtPhoneNumber, edtAddress;
     private AutoCompleteTextView ddProvince, ddDistrict, ddWard;
     private MaterialButton btnConfirm;
     private View progress;
@@ -51,6 +52,8 @@ public class AddUserAddressActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
+        edtFullName = findViewById(R.id.edtFullName);
+        edtPhoneNumber = findViewById(R.id.edtPhoneNumber);
         edtAddress  = findViewById(R.id.edtAddress);
         ddProvince  = findViewById(R.id.ddProvince);
         ddDistrict  = findViewById(R.id.ddDistrict);
@@ -136,11 +139,15 @@ public class AddUserAddressActivity extends AppCompatActivity {
     }
 
     private void submitAddress() {
+        String fullName = edtFullName.getText() == null ? "" : edtFullName.getText().toString().trim();
+        String phoneNumber = edtPhoneNumber.getText() == null ? "" : edtPhoneNumber.getText().toString().trim();
         String address = edtAddress.getText() == null ? "" : edtAddress.getText().toString().trim();
         String ward    = selWard != null ? selWard.name : "";
         String district= selDistrict != null ? selDistrict.name : "";
         String province= selProvince != null ? selProvince.name : "";
 
+        if (fullName.isEmpty()) { toast("Vui lòng nhập họ tên người nhận"); return; }
+        if (phoneNumber.isEmpty()) { toast("Vui lòng nhập số điện thoại"); return; }
         if (address.isEmpty()) { toast("Vui lòng nhập số nhà, tên đường"); return; }
         if (province.isEmpty()) { toast("Vui lòng chọn Tỉnh/Thành phố"); return; }
         if (ward.isEmpty())     { toast("Vui lòng chọn Phường/Xã"); return; }
@@ -153,8 +160,8 @@ public class AddUserAddressActivity extends AppCompatActivity {
         int userId = TokenStore.getUserId(this);
 
         showLoading(true);
-        addressRepo.createAddress(userId, line1, line2, cityState,
-                new AddressRepository.CallbackResult<com.example.prm392_android_app_frontend.data.dto.address.AddressDto>() {
+        addressRepo.createAddress(userId, fullName, phoneNumber, line1, line2, cityState,
+                new AddressRepository.CallbackResult<AddressDto>() {
                     @Override public void onSuccess(com.example.prm392_android_app_frontend.data.dto.address.AddressDto data) {
                         showLoading(false);
                         toast("Đã thêm địa chỉ thành công");

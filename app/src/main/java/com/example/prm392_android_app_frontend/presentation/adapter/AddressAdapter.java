@@ -66,9 +66,11 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
     public void onBindViewHolder(@NonNull AddressViewHolder h, int pos) {
         AddressDto a = list.get(pos);
 
-//        String recipient = (a.recipientName != null && !a.recipientName.isEmpty())
-////                ? a.recipientName : "Người nhận";
-//        h.tvRecipient.setText(recipient);
+        String recipient = (a.fullName != null && !a.fullName.isEmpty())
+                ? a.fullName : "Người nhận";
+        String phone = (a.phoneNumber != null && !a.phoneNumber.isEmpty())
+                ? " - " + a.phoneNumber : "";
+        h.tvRecipient.setText(recipient + phone);//Này chat nó để thế chứ chả biết recipent là j , mạ định ng nhận đi
 
         String line1 = a.shippingAddressLine1 != null ? a.shippingAddressLine1 : "";
         String line2 = a.shippingAddressLine2 != null && !a.shippingAddressLine2.isEmpty()
