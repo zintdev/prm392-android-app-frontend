@@ -90,8 +90,29 @@ public class SavedAddressesFragment extends Fragment implements SavedAddressAdap
 
     private void setupRecyclerView() {
         addressAdapter = new SavedAddressAdapter(null, this);
-        recyclerViewSavedAddresses.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewSavedAddresses.setLayoutManager(layoutManager);
         recyclerViewSavedAddresses.setAdapter(addressAdapter);
+        
+        // Cho phép RecyclerView xử lý touch events khi scroll ngang
+        recyclerViewSavedAddresses.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull android.view.MotionEvent e) {
+                int action = e.getAction();
+                if (action == android.view.MotionEvent.ACTION_MOVE) {
+                    rv.getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull android.view.MotionEvent e) {
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            }
+        });
     }
 
     private void loadAddresses() {
@@ -134,6 +155,17 @@ public class SavedAddressesFragment extends Fragment implements SavedAddressAdap
     @Override
     public void onAddressSelected(AddressDto address, int position) {
         selectedAddress = address;
+        
+        // Tự động điền thông tin từ địa chỉ đã chọn
+        if (address != null) {
+            if (address.fullName != null && !address.fullName.isEmpty()) {
+                editTextFullName.setText(address.fullName);
+            }
+            if (address.phoneNumber != null && !address.phoneNumber.isEmpty()) {
+                editTextPhone.setText(address.phoneNumber);
+            }
+        }
+        
         Toast.makeText(getContext(), "Đã chọn địa chỉ", Toast.LENGTH_SHORT).show();
     }
 

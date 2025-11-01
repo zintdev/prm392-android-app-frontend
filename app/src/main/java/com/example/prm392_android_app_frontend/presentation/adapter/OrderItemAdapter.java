@@ -12,16 +12,35 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.CartItemDto;
+import com.example.prm392_android_app_frontend.data.dto.OrderItemDTO;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderItemAdapter extends RecyclerView.Adapter<OrderItemAdapter.OrderItemViewHolder> {
 
-    private List<CartItemDto> orderItems;
+    private List<CartItemDto> cartItems;
+    private List<OrderItemDTO> orderItems;
+    private boolean isCartMode = true;
 
-    public OrderItemAdapter(List<CartItemDto> orderItems) {
-        this.orderItems = orderItems;
+    // Constructor for cart items
+    public OrderItemAdapter(List<CartItemDto> cartItems) {
+        this.cartItems = cartItems;
+        this.isCartMode = true;
+    }
+
+    // Default constructor for order items
+    public OrderItemAdapter() {
+        this.orderItems = new ArrayList<>();
+        this.isCartMode = false;
+    }
+
+    // Method to set order items
+    public void setItems(List<OrderItemDTO> items) {
+        this.orderItems = items != null ? items : new ArrayList<>();
+        this.isCartMode = false;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -34,13 +53,22 @@ public class OrderItemAdapter extends RecyclerView.Adapter<OrderItemAdapter.Orde
 
     @Override
     public void onBindViewHolder(@NonNull OrderItemViewHolder holder, int position) {
-        CartItemDto item = orderItems.get(position);
-        holder.bind(item);
+        if (isCartMode) {
+            CartItemDto item = cartItems.get(position);
+            holder.bindCartItem(item);
+        } else {
+            OrderItemDTO item = orderItems.get(position);
+            holder.bindOrderItem(item);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return orderItems != null ? orderItems.size() : 0;
+        if (isCartMode) {
+            return cartItems != null ? cartItems.size() : 0;
+        } else {
+            return orderItems != null ? orderItems.size() : 0;
+        }
     }
 
     static class OrderItemViewHolder extends RecyclerView.ViewHolder {
@@ -59,7 +87,7 @@ public class OrderItemAdapter extends RecyclerView.Adapter<OrderItemAdapter.Orde
             textViewOrderItemTotal = itemView.findViewById(R.id.text_view_order_item_total);
         }
 
-        public void bind(CartItemDto item) {
+        public void bindCartItem(CartItemDto item) {
             // Set product name
             textViewOrderItemName.setText(item.getProductName());
 
@@ -87,6 +115,37 @@ public class OrderItemAdapter extends RecyclerView.Adapter<OrderItemAdapter.Orde
             // Calculate and set total price for this item
             double totalPrice = item.getUnitPrice() * item.getQuantity();
             String totalPriceText = "Tổng: " + formatter.format(totalPrice) + "đ";
+            textViewOrderItemTotal.setText(totalPriceText);
+        }
+
+        public void bindOrderItem(OrderItemDTO item) {
+            // Set product name
+            textViewOrderItemName.setText(item.getProductName());
+
+            // Set product image
+            if (item.getProductImageUrl() != null && !item.getProductImageUrl().isEmpty()) {
+                Glide.with(imageViewOrderItem.getContext())
+                        .load(item.getProductImageUrl())
+                        .placeholder(R.drawable.ic_placeholder)
+                        .error(R.drawable.ic_placeholder)
+                        .into(imageViewOrderItem);
+            } else {
+                imageViewOrderItem.setImageResource(R.drawable.ic_placeholder);
+            }
+
+            // Format prices
+            DecimalFormat formatter = new DecimalFormat("###,###,###");
+
+            // Set unit price - dùng unitPrice từ API
+            String unitPriceText = formatter.format(item.getUnitPrice()) + "đ";
+            textViewOrderItemPrice.setText(unitPriceText);
+
+            // Set quantity
+            textViewOrderItemQuantity.setText("Số lượng: " + item.getQuantity());
+
+            // Set total price - tính từ unitPrice * quantity
+            double total = item.getUnitPrice() * item.getQuantity();
+            String totalPriceText = "Tổng: " + formatter.format(total) + "đ";
             textViewOrderItemTotal.setText(totalPriceText);
         }
     }

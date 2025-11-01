@@ -41,6 +41,9 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
     public void onBindViewHolder(@NonNull AddressViewHolder holder, int position) {
         AddressDto address = addresses.get(position);
         holder.bind(address, position);
+        
+        // Set radio button state based on selected position
+        holder.radioSelectAddress.setChecked(position == selectedPosition);
     }
 
     @Override
@@ -58,11 +61,28 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
     public void updateAddresses(List<AddressDto> newAddresses) {
         this.addresses = newAddresses;
         selectedPosition = -1;
+        
+        // Tự động chọn địa chỉ có isDefault = true
+        if (newAddresses != null) {
+            for (int i = 0; i < newAddresses.size(); i++) {
+                if (newAddresses.get(i).isDefault) {
+                    selectedPosition = i;
+                    // Notify listener về địa chỉ mặc định được chọn
+                    if (listener != null) {
+                        listener.onAddressSelected(newAddresses.get(i), i);
+                    }
+                    break;
+                }
+            }
+        }
+        
         notifyDataSetChanged();
     }
 
     class AddressViewHolder extends RecyclerView.ViewHolder {
         private MaterialRadioButton radioSelectAddress;
+        private TextView textViewFullName;
+        private TextView textViewPhoneNumber;
         private TextView textViewAddressLine1;
         private TextView textViewAddressLine2;
         private TextView textViewCityState;
@@ -70,6 +90,8 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
         public AddressViewHolder(@NonNull View itemView) {
             super(itemView);
             radioSelectAddress = itemView.findViewById(R.id.radio_select_address);
+            textViewFullName = itemView.findViewById(R.id.text_view_full_name);
+            textViewPhoneNumber = itemView.findViewById(R.id.text_view_phone_number);
             textViewAddressLine1 = itemView.findViewById(R.id.text_view_address_line1);
             textViewAddressLine2 = itemView.findViewById(R.id.text_view_address_line2);
             textViewCityState = itemView.findViewById(R.id.text_view_city_state);
@@ -90,22 +112,39 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
         }
 
         private void selectAddress(int position) {
-            int previousSelected = selectedPosition;
+            if (selectedPosition == position) {
+                return; // Đã chọn rồi, không cần làm gì
+            }
+            
             selectedPosition = position;
             
-            // Update UI
-            if (previousSelected != -1) {
-                notifyItemChanged(previousSelected);
-            }
-            notifyItemChanged(selectedPosition);
+            // Notify toàn bộ dataset để đảm bảo tất cả radio buttons được update
+            notifyDataSetChanged();
 
             // Notify listener
-            if (listener != null) {
+            if (listener != null && addresses != null && position < addresses.size()) {
                 listener.onAddressSelected(addresses.get(position), position);
             }
         }
 
         public void bind(AddressDto address, int position) {
+            // Set personal info
+            if (address.fullName != null && !address.fullName.trim().isEmpty()) {
+                textViewFullName.setText(address.fullName);
+                textViewFullName.setVisibility(View.VISIBLE);
+            } else {
+                textViewFullName.setText("Chưa có tên");
+                textViewFullName.setVisibility(View.VISIBLE);
+            }
+            
+            if (address.phoneNumber != null && !address.phoneNumber.trim().isEmpty()) {
+                textViewPhoneNumber.setText(address.phoneNumber);
+                textViewPhoneNumber.setVisibility(View.VISIBLE);
+            } else {
+                textViewPhoneNumber.setText("Chưa có số điện thoại");
+                textViewPhoneNumber.setVisibility(View.VISIBLE);
+            }
+            
             // Set address data
             textViewAddressLine1.setText(address.shippingAddressLine1);
             
@@ -118,8 +157,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
             
             textViewCityState.setText(address.shippingCityState);
 
-            // Set radio button state
-            radioSelectAddress.setChecked(position == selectedPosition);
+            // Radio button state sẽ được set trong onBindViewHolder
         }
     }
 }

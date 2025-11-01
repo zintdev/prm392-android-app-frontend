@@ -107,6 +107,16 @@
             android:exported="false"
             android:theme="@style/Theme.MyApplication" />
 
+        <activity
+            android:name=".presentation.activity.OrderViewListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.OrderViewDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
 </manifest>

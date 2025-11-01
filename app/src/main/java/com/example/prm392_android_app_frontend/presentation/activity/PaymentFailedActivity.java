@@ -84,8 +84,12 @@ public class PaymentFailedActivity extends AppCompatActivity {
 
     private void setupButtons() {
         buttonViewOrder.setOnClickListener(v -> {
-            // Navigate to Cart
-            navigateToCart();
+            // Navigate to Order List - Tất cả đơn hàng (tab 0)
+            Intent intent = new Intent(this, OrderViewListActivity.class);
+            intent.putExtra("selected_tab", 0); // Tab "Tất cả"
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         });
 
         buttonBackHome.setOnClickListener(v -> {

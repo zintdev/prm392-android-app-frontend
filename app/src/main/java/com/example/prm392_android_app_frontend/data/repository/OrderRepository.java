@@ -4,6 +4,8 @@ import com.example.prm392_android_app_frontend.data.dto.CreateOrderRequestDto;
 import com.example.prm392_android_app_frontend.data.dto.OrderDTO;
 import com.example.prm392_android_app_frontend.data.remote.api.OrderApi;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -21,7 +23,8 @@ public class OrderRepository {
 
     /**
      * Tạo đơn hàng mới
-     * @param request Thông tin đơn hàng (userId, shipmentMethod, địa chỉ giao hàng, etc.)
+     *
+     * @param request  Thông tin đơn hàng (userId, shipmentMethod, địa chỉ giao hàng, etc.)
      * @param callback Callback xử lý kết quả
      */
     public void placeOrder(CreateOrderRequestDto request, Callback<OrderDTO> callback) {
@@ -30,38 +33,14 @@ public class OrderRepository {
     }
 
     /**
-     * Lấy thông tin đơn hàng theo ID
-     * Chưa implement vì chưa có API endpoint
-     */
-    // public void getOrderById(int orderId, Callback<OrderDTO> callback) {
-    //     Call<OrderDTO> call = orderApi.getOrderById(orderId);
-    //     call.enqueue(callback);
-    // }
-
-    /**
      * Lấy danh sách đơn hàng của user
-     * Chưa implement vì chưa có API endpoint
+     *
+     * @param userId   ID của user
+     * @param status   Trạng thái đơn hàng (null để lấy tất cả)
+     * @param callback Callback xử lý kết quả
      */
-    // public void getUserOrders(int userId, Callback<List<OrderDTO>> callback) {
-    //     Call<List<OrderDTO>> call = orderApi.getUserOrders(userId);
-    //     call.enqueue(callback);
-    // }
-
-    /**
-     * Cập nhật trạng thái đơn hàng
-     * Chưa implement vì chưa có API endpoint
-     */
-    // public void updateOrderStatus(int orderId, String status, Callback<OrderDTO> callback) {
-    //     Call<OrderDTO> call = orderApi.updateOrderStatus(orderId, status);
-    //     call.enqueue(callback);
-    // }
-
-    /**
-     * Hủy đơn hàng
-     * Chưa implement vì chưa có API endpoint
-     */
-    // public void cancelOrder(int orderId, Callback<OrderDTO> callback) {
-    //     Call<OrderDTO> call = orderApi.cancelOrder(orderId);
-    //     call.enqueue(callback);
-    // }
+    public void getOrdersByUserId(int userId, String status, Callback<List<OrderDTO>> callback) {
+        Call<List<OrderDTO>> call = orderApi.getOrdersByUserId(userId, status);
+        call.enqueue(callback);
+    }
 }

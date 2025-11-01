@@ -64,11 +64,13 @@ public class OrderSuccessActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        // View Order button
+        // View Order button - Chuyển đến trang danh sách đơn hàng với tab "Đã thanh toán"
         btnViewOrderCod.setOnClickListener(v -> {
-            // TODO: Navigate to order details
-            // For now, just go to MainActivity
-            navigateToCart();
+            Intent intent = new Intent(this, OrderViewListActivity.class);
+            intent.putExtra("selected_tab", 1); // Tab "Đã thanh toán" (PAID)
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         });
 
         // Cart button
