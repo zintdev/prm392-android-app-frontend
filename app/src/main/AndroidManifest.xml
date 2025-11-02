@@ -72,10 +72,14 @@
             android:exported="false" />
 
         <activity
-            android:name=".presentation.activity.ProductManagementActivity"
+            android:name=".presentation.activity.ProductManageActivity"
             android:exported="false"
             android:label="Quản lý đĩa CD" />
 
+        <activity
+            android:name=".presentation.activity.ArtistManageActivity"
+            android:exported="false"
+            android:label="Quản lý tác giả" />
         <!-- THÊM DÒNG CODE NÀY VÀO -->
 <!--        <activity-->
 <!--            android:name=".presentation.activity.AddStoreActivity"-->

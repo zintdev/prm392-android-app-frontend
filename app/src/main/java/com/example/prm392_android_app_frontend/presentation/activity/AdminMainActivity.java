@@ -111,8 +111,24 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
 
     @Override
     public void navigateToProductManagement() {
-        Intent intent = new Intent(this, ProductManagementActivity.class);
+        Intent intent = new Intent(this, ProductManageActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void navigateToPublisherManagement() {
+
+    }
+
+    @Override
+    public void navigateToAuthorManagement() {
+        Intent intent = new Intent(this, ArtistManageActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void navigateToCategoryManagement() {
+
     }
 
     @Override

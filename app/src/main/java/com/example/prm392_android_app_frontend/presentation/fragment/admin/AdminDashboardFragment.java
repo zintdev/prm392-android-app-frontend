@@ -19,6 +19,9 @@ public class AdminDashboardFragment extends Fragment {
     // 1. Tạo Interface
     public interface AdminDashboardListener {
         void navigateToProductManagement();
+        void navigateToPublisherManagement();
+        void navigateToAuthorManagement();
+        void navigateToCategoryManagement();
     }
 
     private FragmentAdminDashboardBinding binding;
@@ -59,7 +62,9 @@ public class AdminDashboardFragment extends Fragment {
         });
 
         binding.buttonAuthorManagement.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Chuẩn bị gọi API Quản lý Tác giả", Toast.LENGTH_SHORT).show();
+            if (listener != null) {
+                listener.navigateToAuthorManagement();
+            }
         });
 
         binding.buttonCategoryManagement.setOnClickListener(v -> {

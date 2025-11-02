@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- File: item_admin_artist.xml -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeColor="#E0E0E0"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Artist Icon -->
+        <ImageView
+            android:id="@+id/artist_icon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:contentDescription="Artist icon"
+            android:padding="12dp"
+            android:src="@drawable/ic_music_artist"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#8E24AA" />
+
+        <!-- Artist Name -->
+        <TextView
+            android:id="@+id/artist_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="#1A237E"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintEnd_toStartOf="@id/button_edit_artist"
+            app:layout_constraintStart_toEndOf="@id/artist_icon"
+            app:layout_constraintTop_toTopOf="@id/artist_icon"
+            tools:text="Nogizaka46" />
+
+        <!-- Artist Info Row -->
+        <LinearLayout
+            android:id="@+id/artist_info_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintEnd_toStartOf="@id/button_edit_artist"
+            app:layout_constraintStart_toEndOf="@id/artist_icon"
+            app:layout_constraintTop_toBottomOf="@id/artist_name">
+
+            <!-- Artist Type Badge -->
+            <TextView
+                android:id="@+id/artist_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:textColor="#8E24AA"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="Band" />
+
+            <!-- Debut Year -->
+            <TextView
+                android:id="@+id/artist_debut_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="#666666"
+                android:textSize="16sp"
+                tools:text="Thành Lập: 2011" />
+
+        </LinearLayout>
+
+        <!-- Edit Button -->
+        <Button
+            android:id="@+id/button_edit_artist"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="Sửa"
+            android:textColor="#42A5F5"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_delete_artist"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Delete Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_delete_artist"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="Xóa nghệ sĩ"
+            app:icon="@drawable/ic_trash_can"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconTint="@android:color/holo_red_dark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

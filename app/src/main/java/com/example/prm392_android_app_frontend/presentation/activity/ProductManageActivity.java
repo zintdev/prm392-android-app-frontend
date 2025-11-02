@@ -16,7 +16,7 @@ import com.example.prm392_android_app_frontend.presentation.viewmodel.ProductVie
 import com.example.prm392_android_app_frontend.data.dto.ProductDto;
 import com.google.android.material.appbar.MaterialToolbar;
 
-public class ProductManagementActivity extends AppCompatActivity {
+public class ProductManageActivity extends AppCompatActivity {
 
     private ActivityManageProductBinding binding;
     private ProductViewModel productViewModel;
