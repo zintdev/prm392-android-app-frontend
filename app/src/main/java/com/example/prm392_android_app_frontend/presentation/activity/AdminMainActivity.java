@@ -19,7 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 // Import FloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class AdminMainActivity extends AppCompatActivity {
+public class AdminMainActivity extends AppCompatActivity implements AdminDashboardFragment.AdminDashboardListener {
 
     private BottomNavigationView nav;
     private FloatingActionButton fabAddStore; // Khai báo FAB
@@ -41,23 +41,23 @@ public class AdminMainActivity extends AppCompatActivity {
         nav = findViewById(R.id.bottomNavAdmin);
         MaterialToolbar toolbar = findViewById(R.id.toolbarAdmin);
 
-        // --- BẮT ĐẦU CODE THÊM MỚI ---
-
-        // 1. Ánh xạ FAB từ layout
-        // (Phải chắc chắn ID này tồn tại trong R.layout.activity_admin_main_page)
-        fabAddStore = findViewById(R.id.fab_add_store);
-
-        // 2. Đặt sự kiện click cho FAB
-        fabAddStore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 3. Mở AddStoreActivity
-                Intent intent = new Intent(AdminMainActivity.this, AddStoreActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // --- KẾT THÚC CODE THÊM MỚI ---
+//        // --- BẮT ĐẦU CODE THÊM MỚI ---
+//
+//        // 1. Ánh xạ FAB từ layout
+//        // (Phải chắc chắn ID này tồn tại trong R.layout.activity_admin_main_page)
+//        fabAddStore = findViewById(R.id.fab_add_store);
+//
+//        // 2. Đặt sự kiện click cho FAB
+//        fabAddStore.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // 3. Mở AddStoreActivity
+//                Intent intent = new Intent(AdminMainActivity.this, AddStoreActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//
+//        // --- KẾT THÚC CODE THÊM MỚI ---
 
 
         if (toolbar != null) {
@@ -107,6 +107,28 @@ public class AdminMainActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.fragmentAdminContainer, fragment)
                 .commit();
+    }
+
+    @Override
+    public void navigateToProductManagement() {
+        Intent intent = new Intent(this, ProductManageActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void navigateToPublisherManagement() {
+
+    }
+
+    @Override
+    public void navigateToAuthorManagement() {
+        Intent intent = new Intent(this, ArtistManageActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void navigateToCategoryManagement() {
+
     }
 
     @Override

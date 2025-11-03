@@ -159,6 +159,7 @@ public class AccountFragment extends Fragment {
                         }
                     }
 
+
                     // GỬI DỮ LIỆU ĐÚNG (KHÔNG CÒN HARDCODE)
                     chatIntent.putExtra("RECEIVER_ID", actualAdminId); // Người nhận là Admin (từ API)
                     chatIntent.putExtra("CONVERSATION_ID", conversationDto.getConversationId()); // ID động từ API
