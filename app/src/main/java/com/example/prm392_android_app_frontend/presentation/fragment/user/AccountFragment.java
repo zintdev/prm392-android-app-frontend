@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.repository.ChatRepository;
 import com.example.prm392_android_app_frontend.presentation.activity.ChangePasswordActivity;
+import com.example.prm392_android_app_frontend.presentation.activity.ChatActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.EditProfileActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.MainActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.AddUserAddressActivity;
@@ -54,6 +56,7 @@ public class AccountFragment extends Fragment {
         txtFPoint = v.findViewById(R.id.txtFPoint);
         txtFreeship = v.findViewById(R.id.txtFreeship);
         rowLogout = v.findViewById(R.id.rowLogout);
+        rowProfile = v.findViewById(R.id.rowProfile);
 
         chatRepository = new ChatRepository(requireActivity().getApplication());
 
@@ -64,8 +67,10 @@ public class AccountFragment extends Fragment {
         txtName.setText(username);
 
         // Setup row Profile
-        ((TextView) rowProfile.findViewById(R.id.title)).setText("Hồ sơ cá nhân");
-        ((ImageView) rowProfile.findViewById(R.id.icon)).setImageResource(R.drawable.ic_person);
+        if (rowProfile != null) {
+            ((TextView) rowProfile.findViewById(R.id.title)).setText("Hồ sơ cá nhân");
+            ((ImageView) rowProfile.findViewById(R.id.icon)).setImageResource(R.drawable.ic_person);
+        }
 
         // --- XÓA 2 DÒNG GÂY CRASH ---
         // rowChat (là Button) không có title hay icon bên trong nó
@@ -78,12 +83,6 @@ public class AccountFragment extends Fragment {
         ((ImageView) rowLogout.findViewById(R.id.icon)).setImageResource(R.drawable.ic_logout);
 
 
-        // Click: mở trang cập nhật hồ sơ
-        rowProfile.setOnClickListener(v12 -> {
-            if (!TokenStore.isLoggedIn(requireContext())) {
-                Snackbar.make(v12, "Bạn cần đăng nhập", Snackbar.LENGTH_SHORT).show();
-                startActivity(new Intent(requireContext(), LoginActivity.class));
-                return;
         rowUpdateProfile = v.findViewById(R.id.rowUpdateProfile);
         rowChangePassword = v.findViewById(R.id.rowChangePassword);
         rowUserAddress = v.findViewById(R.id.rowUserAddress);
@@ -93,13 +92,25 @@ public class AccountFragment extends Fragment {
         
         userId = TokenStore.getUserId(requireContext());
         vm = new ViewModelProvider(this).get(UserViewModel.class);
+        
+        // Click: mở trang cập nhật hồ sơ
+        if (rowProfile != null) {
+            rowProfile.setOnClickListener(v12 -> {
+                if (!TokenStore.isLoggedIn(requireContext())) {
+                    Snackbar.make(v12, "Bạn cần đăng nhập", Snackbar.LENGTH_SHORT).show();
+                    startActivity(new Intent(requireContext(), LoginActivity.class));
+                    return;
+                }
+                Intent i = new Intent(requireContext(), ProfileActivity.class);
+                i.putExtra("userId", TokenStore.getUserId(requireContext()));
+                startActivity(i);
+            });
+        }
+        
         vm.user.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
                 txtName.setText(user.username != null ? user.username : "");
             }
-            Intent i = new Intent(requireContext(), ProfileActivity.class);
-            i.putExtra("userId", TokenStore.getUserId(requireContext()));
-            startActivity(i);
         });
 
         // --- LOGIC CLICK CHO ROW CHAT (Đã đúng) ---
