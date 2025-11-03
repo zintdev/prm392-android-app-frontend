@@ -41,6 +41,12 @@
             android:name=".presentation.activity.MapsActivity"
             android:exported="true"/>
 
+        <!-- Location Picker -->
+        <activity
+            android:name=".presentation.activity.LocationPickerActivity"
+            android:exported="false"
+            android:label="Chọn địa chỉ" />
+
         <!-- login&regis -->
         <activity
             android:name=".presentation.activity.LoginActivity"
@@ -133,11 +139,10 @@
             android:exported="false"
             android:theme="@style/Theme.MyApplication" />
 
-        <!-- THÊM DÒNG CODE NÀY VÀO -->
-<!--        <activity-->
-<!--            android:name=".presentation.activity.AddStoreActivity"-->
-<!--            android:exported="false"-->
-<!--            android:label="Thêm cửa hàng mới" />-->
+        <activity
+            android:name=".presentation.activity.AddStoreActivity"
+            android:exported="false"
+            android:label="Thêm cửa hàng mới" />
 
         <!-- Chat Activity -->
         <activity
