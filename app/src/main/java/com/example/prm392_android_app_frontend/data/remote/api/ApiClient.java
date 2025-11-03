@@ -5,8 +5,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
-
 import java.util.concurrent.TimeUnit;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import okhttp3.Interceptor;
@@ -17,9 +15,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class ApiClient {
-//    public static String BASE_URL = "https://plowable-nonlevel-sharie.ngrok-free.dev/api/";
-    public static String BASE_URL= "http://10.0.2.2:8080/api/";
-//    public static String BASE_URL= "http://localhost:8080/api/";
+    public static String BASE_URL = "https://plowable-nonlevel-sharie.ngrok-free.dev/api/";
+    // public static String BASE_URL= "http://172.20.10.5:8080/api/";
+    // public static String BASE_URL= "http://10.0.2.2:8080/api/";
+
     private static volatile Retrofit retrofit;
     private static volatile Retrofit retrofitAuth;
     private static volatile OkHttpClient baseClient;
