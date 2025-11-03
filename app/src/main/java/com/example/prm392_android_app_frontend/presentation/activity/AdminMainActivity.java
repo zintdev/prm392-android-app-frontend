@@ -42,21 +42,21 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
         MaterialToolbar toolbar = findViewById(R.id.toolbarAdmin);
 
 //        // --- BẮT ĐẦU CODE THÊM MỚI ---
-//
-//        // 1. Ánh xạ FAB từ layout
-//        // (Phải chắc chắn ID này tồn tại trong R.layout.activity_admin_main_page)
-//        fabAddStore = findViewById(R.id.fab_add_store);
-//
-//        // 2. Đặt sự kiện click cho FAB
-//        fabAddStore.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // 3. Mở AddStoreActivity
-//                Intent intent = new Intent(AdminMainActivity.this, AddStoreActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//
+
+        // 1. Ánh xạ FAB từ layout
+        // (Phải chắc chắn ID này tồn tại trong R.layout.activity_admin_main_page)
+        fabAddStore = findViewById(R.id.fab_add_store);
+
+        // 2. Đặt sự kiện click cho FAB
+        fabAddStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 3. Mở AddStoreActivity
+                Intent intent = new Intent(AdminMainActivity.this, AddStoreActivity.class);
+                startActivity(intent);
+            }
+        });
+
 //        // --- KẾT THÚC CODE THÊM MỚI ---
 
 
