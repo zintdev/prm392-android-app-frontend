@@ -13,9 +13,13 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.drawable.Drawable;
 
 import com.example.prm392_android_app_frontend.presentation.viewmodel.ChatViewModel;
 import com.github.dhaval2404.imagepicker.ImagePicker;
@@ -89,6 +93,12 @@ public class ChatActivity extends AppCompatActivity {
         // Sửa: Dùng receiverId thật
         toolbar.setTitle("Hỗ trợ (Admin)"); // Hiển thị "Hỗ trợ" thay vì ID
 
+        // Thêm nút back để quay về profile
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         recyclerView = findViewById(R.id.recycler_view_messages);
         etMessage = findViewById(R.id.edit_text_message);
         btnSend = findViewById(R.id.button_send);
@@ -98,6 +108,22 @@ public class ChatActivity extends AppCompatActivity {
         adapter = new ChatAdapter(this, new ArrayList<>(), currentUserId);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        
+        // Đổi màu nút back thành trắng (sau khi toolbar đã được setup)
+        toolbar.post(() -> {
+            Drawable upArrow = toolbar.getNavigationIcon();
+            if (upArrow != null) {
+                upArrow = DrawableCompat.wrap(upArrow.mutate());
+                DrawableCompat.setTint(upArrow, ContextCompat.getColor(this, android.R.color.white));
+                toolbar.setNavigationIcon(upArrow);
+            }
+        });
+    }
+    
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void setupObservers() {

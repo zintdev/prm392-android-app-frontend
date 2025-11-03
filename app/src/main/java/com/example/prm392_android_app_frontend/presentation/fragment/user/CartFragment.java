@@ -1,5 +1,6 @@
 package com.example.prm392_android_app_frontend.presentation.fragment.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.prm392_android_app_frontend.data.dto.CartDto;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.CartItemDto;
@@ -22,7 +24,9 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class CartFragment extends Fragment implements CartAdapter.OnCartItemActionListener {
 
@@ -99,10 +103,26 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
 
 
             if (currentCart != null && currentCart.getItems() != null && !currentCart.getItems().isEmpty()) {
-                Toast.makeText(getContext(), "Chuyển đến màn hình thanh toán...", Toast.LENGTH_SHORT).show();
-                android.content.Intent intent = new android.content.Intent(getActivity(), com.example.prm392_android_app_frontend.presentation.activity.CheckoutActivity.class);
+                // Lấy danh sách items đã được chọn
+                List<CartItemDto> selectedItems = new ArrayList<>();
+                double totalAmount = 0;
 
-                startActivity(intent);
+                for (CartItemDto item : currentCart.getItems()) {
+                    if (cartAdapter.isItemChecked(item.getCartItemId())) {
+                        selectedItems.add(item);
+                        totalAmount += item.getUnitPrice() * item.getQuantity();
+                    }
+                }
+
+                if (!selectedItems.isEmpty()) {
+                    // Chuyển sang trang tạo đơn hàng
+                    Intent intent = new Intent(getActivity(), com.example.prm392_android_app_frontend.presentation.activity.OrderCreateActivity.class);
+                    intent.putParcelableArrayListExtra("selected_items", new ArrayList<>(selectedItems));
+                    intent.putExtra("total_amount", totalAmount);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getContext(), "Vui lòng chọn ít nhất một sản phẩm để thanh toán!", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(getContext(), "Giỏ hàng của bạn đang trống!", Toast.LENGTH_SHORT).show();
             }

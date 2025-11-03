@@ -187,6 +187,9 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
 
             buttonIncrease.setOnClickListener(v -> {
                 listener.onIncreaseQuantity(item);
+                // Cập nhật UI ngay lập tức
+                textViewQuantity.setText(String.valueOf(item.getQuantity()));
+                buttonDecrease.setEnabled(item.getQuantity() > 1);
                 // Nếu item đang được chọn, cập nhật lại tổng tiền
                 if (((CartAdapter) getBindingAdapter()).checkedItems.contains(item.getCartItemId())) {
                     listener.onItemCheckedChanged(item, true);
@@ -195,6 +198,9 @@ public class CartAdapter extends ListAdapter<CartItemDto, CartAdapter.CartViewHo
 
             buttonDecrease.setOnClickListener(v -> {
                 listener.onDecreaseQuantity(item);
+                // Cập nhật UI ngay lập tức
+                textViewQuantity.setText(String.valueOf(item.getQuantity()));
+                buttonDecrease.setEnabled(item.getQuantity() > 1);
                 // Nếu item đang được chọn, cập nhật lại tổng tiền
                 if (((CartAdapter) getBindingAdapter()).checkedItems.contains(item.getCartItemId())) {
                     listener.onItemCheckedChanged(item, true);

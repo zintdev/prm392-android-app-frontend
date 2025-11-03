@@ -1,6 +1,6 @@
 package com.example.prm392_android_app_frontend.data.repository;
 
-import android.util.Log;
+import      android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -26,7 +26,7 @@ public class ProductRepository {
     public void getAllProducts(Callback<List<ProductDto>> callback) {
         productApi.getAllProducts().enqueue(callback);
     }
-
+    
     // Phương thức nhận callback để xử lý bất đồng bộ
     public void getProductById(int productId, Callback<ProductDto> callback) {
         productApi.getProductById(productId).enqueue(callback);

@@ -15,7 +15,7 @@
         android:id="@+id/iv_customer_avatar"
         android:layout_width="52dp"
         android:layout_height="52dp"
-        android:src="@drawable/ic_music_cd" app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/ic_profile" app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 

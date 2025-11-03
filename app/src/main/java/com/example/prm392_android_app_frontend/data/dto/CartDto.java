@@ -24,9 +24,6 @@ public class CartDto {
     @SerializedName("items")
     private List<CartItemDto> items;
 
-    // --- Getters and Setters ---
-    // (Tạo getters và setters cho tất cả các trường)
-
     public int getCartId() { return cartId; }
     public String getStatus() { return status; }
     public double getSubtotal() { return subtotal; }

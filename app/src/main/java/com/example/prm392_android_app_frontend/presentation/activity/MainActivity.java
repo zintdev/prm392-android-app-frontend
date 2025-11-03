@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         navMgr = new NavbarManager(
                 this,
                 getSupportFragmentManager(),
-                R.id.fragment_container,   // ID container fragment trong activity_main_page.xml
+                R.id.fragment_container,
                 nav,
                 toolbar
         );
