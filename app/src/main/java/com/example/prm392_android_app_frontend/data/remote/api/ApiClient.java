@@ -18,6 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class ApiClient {
 //    public static String BASE_URL = "https://plowable-nonlevel-sharie.ngrok-free.dev/api/";
+//public static String BASE_URL= "http://172.20.10.5:8080/api/";
     public static String BASE_URL= "http://10.0.2.2:8080/api/";
 //    public static String BASE_URL= "http://localhost:8080/api/";
     private static volatile Retrofit retrofit;
