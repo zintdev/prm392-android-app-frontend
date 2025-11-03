@@ -154,7 +154,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 messageText.setVisibility(View.GONE);
                 messageImage.setVisibility(View.VISIBLE);
                 Glide.with(context)
-                        .load(normalizeUrl(message.getContent())) // Tải URL ảnh
+                        .load(normalizeUrl(message.getContent()))
+                        .placeholder(R.drawable.ic_placeholder)
+                        .error(R.drawable.ic_placeholder)
+                        .thumbnail(0.25f)
                         .into(messageImage);
 
                 // Xem full-screen ảnh
@@ -215,7 +218,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 messageText.setVisibility(View.GONE);
                 messageImage.setVisibility(View.VISIBLE);
                 Glide.with(context)
-                        .load(normalizeUrl(message.getContent())) // Tải URL ảnh
+                        .load(normalizeUrl(message.getContent()))
+                        .placeholder(R.drawable.ic_placeholder)
+                        .error(R.drawable.ic_placeholder)
+                        .thumbnail(0.25f)
                         .into(messageImage);
 
                 // Xem full-screen ảnh

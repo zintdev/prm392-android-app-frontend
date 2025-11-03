@@ -106,7 +106,10 @@ public class ChatActivity extends AppCompatActivity {
 
         // Sửa: Dùng currentUserId thật
         adapter = new ChatAdapter(this, new ArrayList<>(), currentUserId);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(20);
         recyclerView.setAdapter(adapter);
         
         // Đổi màu nút back thành trắng (sau khi toolbar đã được setup)
