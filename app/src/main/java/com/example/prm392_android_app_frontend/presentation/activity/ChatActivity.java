@@ -133,7 +133,11 @@ public class ChatActivity extends AppCompatActivity {
                 adapter.setMessageList(historyList);
                 if (!historyList.isEmpty()) {
                     recyclerView.scrollToPosition(historyList.size() - 1);
-                    viewModel.notifyMessageRead(historyList.get(historyList.size() - 1));
+                    // Đánh dấu TẤT CẢ tin nhắn chưa đọc (của người khác) là đã đọc khi vào chat
+                    // Lặp từ cuối lên để đánh dấu tin nhắn mới nhất trước
+                    for (int i = historyList.size() - 1; i >= 0; i--) {
+                        viewModel.notifyMessageRead(historyList.get(i));
+                    }
                 }
             }
         });
@@ -160,6 +164,27 @@ public class ChatActivity extends AppCompatActivity {
         viewModel.getReadReceipt().observe(this, readMessage -> {
             if (readMessage != null) {
                 adapter.updateMessageReadStatus(readMessage);
+            }
+        });
+        
+        // 4.5. Quan sát TRẠNG THÁI UPLOAD ẢNH
+        viewModel.getIsUploading().observe(this, isUploading -> {
+            if (isUploading != null) {
+                btnAttach.setEnabled(!isUploading);
+                btnAttach.setAlpha(isUploading ? 0.5f : 1.0f);
+            }
+        });
+        
+        // 4.6. Quan sát KẾT QUẢ UPLOAD
+        viewModel.getUploadSuccess().observe(this, success -> {
+            if (success != null && success) {
+                Toast.makeText(this, "Đã gửi ảnh", Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        viewModel.getUploadError().observe(this, error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
             }
         });
     }

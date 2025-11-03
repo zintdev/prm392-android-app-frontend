@@ -92,8 +92,13 @@ public class AdminChatFragment extends Fragment implements ConversationListAdapt
         // Lắng nghe các cập nhật real-time
         viewModel.getUpdateListener().observe(getViewLifecycleOwner(), updatedDto -> {
             if (updatedDto != null) {
-                Log.d("AdminChatFragment", "Real-time update received!");
+                Log.d("AdminChatFragment", "Real-time update received! - conversationId: " + updatedDto.getConversationId() 
+                        + ", customerName: " + updatedDto.getCustomerName()
+                        + ", unreadCount: " + updatedDto.getUnreadCount()
+                        + ", lastMessageAt: " + updatedDto.getLastMessageAt());
                 viewModel.processSingleUpdate(updatedDto);
+            } else {
+                Log.w("AdminChatFragment", "Real-time update received but DTO is null");
             }
         });
     }
@@ -138,6 +143,15 @@ public class AdminChatFragment extends Fragment implements ConversationListAdapt
         chatIntent.putExtra("RECEIVER_ID", conversation.getCustomerId()); // người nhận là customer
         chatIntent.putExtra("CONVERSATION_ID", conversation.getConversationId());
         startActivity(chatIntent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh danh sách conversation khi quay lại để cập nhật unreadCount
+        if (viewModel != null) {
+            viewModel.fetchConversations();
+        }
     }
 
     @Override

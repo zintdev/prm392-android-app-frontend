@@ -40,4 +40,13 @@
         android:visibility="gone" />
 
 </FrameLayout>
+
+    <TextView
+        android:id="@+id/text_view_time_received"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:layout_marginTop="2dp"
+        android:textColor="#8E8E93"
+        android:visibility="gone" />
 </LinearLayout>
