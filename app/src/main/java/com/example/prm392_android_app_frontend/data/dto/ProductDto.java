@@ -2,7 +2,9 @@ package com.example.prm392_android_app_frontend.data.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ProductDto {
+import java.io.Serializable;
+
+public class ProductDto implements Serializable {
     // Sử dụng @SerializedName nếu tên biến khác với tên key trong JSON
     @SerializedName("id")
     private int id; // ID là kiểu số nguyên (int)
@@ -36,6 +38,9 @@ public class ProductDto {
 
     @SerializedName("createdAt")
     private String createdAt;
+    private Integer categoryId;
+    private Integer artistId;
+    private Integer publisherId;
 
     // --- Thêm getters cho tất cả các trường ---
 
@@ -79,4 +84,80 @@ public class ProductDto {
         return releaseDate;
     }
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    // --- Thêm setters cho tất cả các trường ---
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public void setPublisherName(String publisherName) {
+        this.publisherName = publisherName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    // Getter & Setter cho categoryId
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    // Getter & Setter cho artistId
+    public Integer getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(Integer artistId) {
+        this.artistId = artistId;
+    }
+
+    // Getter & Setter cho publisherId
+    public Integer getPublisherId() {
+        return publisherId;
+    }
+
+    public void setPublisherId(Integer publisherId) {
+        this.publisherId = publisherId;
+    }
 }

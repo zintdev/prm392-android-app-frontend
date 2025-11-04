@@ -6,4 +6,16 @@ public class DistrictDto {
     public int code;
     public String name;
     public List<WardDto> wards;
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<WardDto> getWards() {
+        return wards;
+    }
 }

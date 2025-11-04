@@ -6,10 +6,12 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
+    <!-- cấp quyền cho preview ảnh -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -26,7 +28,7 @@
 
         <!-- Launcher: mở MainActivity với BottomNavigation trước -->
         <activity
-            android:name=".presentation.activity.MainActivity"
+            android:name=".presentation.activity.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -38,6 +40,12 @@
         <activity
             android:name=".presentation.activity.MapsActivity"
             android:exported="true"/>
+
+        <!-- Location Picker -->
+        <activity
+            android:name=".presentation.activity.LocationPickerActivity"
+            android:exported="false"
+            android:label="Chọn địa chỉ" />
 
         <!-- login&regis -->
         <activity
@@ -54,7 +62,7 @@
             android:exported="true"
             android:label="Admin" />
 
-        <activity android:name=".presentation.activity.SplashActivity"
+        <activity android:name=".presentation.activity.MainActivity"
             android:exported="true"
             android:label="User" />
             
@@ -66,6 +74,19 @@
             android:name=".presentation.activity.SearchProductActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".presentation.activity.AdminProductActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".presentation.activity.ProductManageActivity"
+            android:exported="false"
+            android:label="Quản lý đĩa CD" />
+
+        <activity
+            android:name=".presentation.activity.ArtistManageActivity"
+            android:exported="false"
+            android:label="Quản lý tác giả" />
         <activity android:name=".presentation.activity.ChangePasswordActivity"
             />
         
@@ -77,6 +98,63 @@
 
         <activity android:name=".presentation.activity.UserAddressesActivity"
             android:exported="false"/>
+
+        <activity
+            android:name=".presentation.activity.OrderCreateActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".presentation.activity.OrderSuccessActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.VNPayPaymentActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <activity
+            android:name=".presentation.activity.PaymentProcessingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.PaymentSuccessActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.PaymentFailedActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.OrderViewListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.OrderViewDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
+
+        <activity
+            android:name=".presentation.activity.AddStoreActivity"
+            android:exported="false"
+            android:label="Thêm cửa hàng mới" />
+
+        <!-- Chat Activity -->
+        <activity
+            android:name=".presentation.activity.ChatActivity"
+            android:exported="false"
+            android:label="Chat" />
+
+        <activity
+            android:name=".presentation.activity.FullscreenImageActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
 </manifest>

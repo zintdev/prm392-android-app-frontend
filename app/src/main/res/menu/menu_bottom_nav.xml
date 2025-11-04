@@ -5,5 +5,5 @@
     <item android:id="@+id/nav_blog"     android:title="Tin tức"    android:icon="@drawable/ic_nav_blog"/>
     <item android:id="@+id/nav_notification" android:title=" Thông báo"  android:icon="@drawable/ic_nav_noti"/>
     <item android:id="@+id/nav_cart" android:title="Giỏ Hàng"  android:icon="@drawable/ic_nav_cart"/>
-    <item android:id="@+id/nav_setting"  android:title="Cài đặt"  android:icon="@drawable/ic_navbar_setting"/>
+<!--    <item android:id="@+id/nav_setting"  android:title="Cài đặt"  android:icon="@drawable/ic_navbar_setting"/>-->
 </menu>

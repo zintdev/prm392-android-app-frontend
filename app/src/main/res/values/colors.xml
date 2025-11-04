@@ -8,6 +8,7 @@
     <!-- Light Theme Colors -->
     <color name="background_light">#FAFAFA</color>
     <color name="surface_light">#FFFFFF</color>
+    <color name="surface_variant_light">#F5F5F5</color>
     <color name="text_primary_light">#212121</color>
     <color name="text_secondary_light">#757575</color>
     <color name="divider_light">#E0E0E0</color>
@@ -22,6 +23,15 @@
     <!-- Accent Colors -->
     <color name="accent_blue">#2196F3</color>
     <color name="accent_orange">#FF9800</color>
+    
+    <!-- Status Colors -->
+    <color name="success_color">#4CAF50</color>
+    <color name="success_light">#C8E6C9</color>
+    <color name="error_color">#F44336</color>
+    <color name="error_light">#FFCDD2</color>
+    <color name="warning_light">#FFF9C4</color>
+    <color name="info_light">#B3E5FC</color>
+    <color name="info_background">#E3F2FD</color>
     
     <!-- Add other colors as needed -->
     <color name="black">#FF000000</color>

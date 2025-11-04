@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.example.prm392_android_app_frontend.data.dto.address.AddressDto;
 import com.example.prm392_android_app_frontend.data.dto.address.CreateAddressRequest;
+import com.example.prm392_android_app_frontend.data.dto.address.UpdateAddressRequest;
 import com.example.prm392_android_app_frontend.data.remote.api.AddressApi;
 import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
 
@@ -26,8 +27,9 @@ public class AddressRepository {
         this.api = ApiClient.getAuthClient(ctx).create(AddressApi.class);
     }
 
-    /** Tạo địa chỉ mới */
     public void createAddress(int userId,
+                              String fullName,
+                              String phoneNumber,
                               String shippingAddressLine1,
                               String shippingAddressLine2,
                               String shippingCityState,
@@ -35,6 +37,8 @@ public class AddressRepository {
 
         CreateAddressRequest req = new CreateAddressRequest();
         req.userId = userId;
+        req.fullName = fullName;
+        req.phoneNumber = phoneNumber;
         req.shippingAddressLine1 = shippingAddressLine1;
         req.shippingAddressLine2 = shippingAddressLine2;
         req.shippingCityState = shippingCityState;
@@ -52,4 +56,37 @@ public class AddressRepository {
             }
         });
     }
+    public void updateAddress(int id, int userId, String fullName, String phoneNumber, String line1, String line2, String cityState,
+                              CallbackResult<AddressDto> cb) {
+        UpdateAddressRequest req = new UpdateAddressRequest();
+        req.userId = userId;
+        req.fullName = fullName;
+        req.phoneNumber = phoneNumber;
+        req.shippingAddressLine1 = line1;
+        req.shippingAddressLine2 = line2;
+        req.shippingCityState = cityState;
+
+        api.updateAddress(id, req).enqueue(new Callback<AddressDto>() {
+            @Override public void onResponse(@NonNull Call<AddressDto> call, @NonNull Response<AddressDto> res) {
+                if (res.isSuccessful() && res.body()!=null) cb.onSuccess(res.body());
+                else cb.onError("Cập nhật địa chỉ thất bại", res.code());
+            }
+            @Override public void onFailure(@NonNull Call<AddressDto> call, @NonNull Throwable t) {
+                cb.onError(t.getMessage(), -1);
+            }
+        });
+    }
+
+    public void deleteAddress(int id, CallbackResult<Boolean> cb) {
+        api.deleteAddress(id).enqueue(new Callback<Void>() {
+            @Override public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> res) {
+                if (res.isSuccessful()) cb.onSuccess(true);
+                else cb.onError("Xoá địa chỉ thất bại", res.code());
+            }
+            @Override public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                cb.onError(t.getMessage(), -1);
+            }
+        });
+    }
 }
+
