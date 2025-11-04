@@ -4,25 +4,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Toast;
+// import android.widget.ArrayAdapter;
+// import android.widget.AutoCompleteTextView;
+// import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+// import androidx.lifecycle.ViewModelProvider;
 
 import com.example.prm392_android_app_frontend.R;
-import com.example.prm392_android_app_frontend.data.dto.address.DistrictDto;
-import com.example.prm392_android_app_frontend.data.dto.address.ProvinceDto;
-import com.example.prm392_android_app_frontend.data.dto.address.WardDto;
-import com.example.prm392_android_app_frontend.presentation.viewmodel.AddressViewModel;
+// import com.example.prm392_android_app_frontend.data.dto.address.DistrictDto;
+// import com.example.prm392_android_app_frontend.data.dto.address.ProvinceDto;
+// import com.example.prm392_android_app_frontend.data.dto.address.WardDto;
+// import com.example.prm392_android_app_frontend.presentation.viewmodel.AddressViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.util.ArrayList;
-import java.util.List;
+// import java.util.ArrayList;
+// import java.util.List;
 
 public class NewAddressFragment extends Fragment {
 
@@ -35,11 +35,18 @@ public class NewAddressFragment extends Fragment {
 
     private TextInputEditText editTextFullName;
     private TextInputEditText editTextPhone;
+    // --- Fields mới cho nhập tay ---
+    private TextInputEditText editTextProvince;
+    private TextInputEditText editTextDistrict;
+    private TextInputEditText editTextWard;
+    private TextInputEditText editTextAddressLine1;
+
+    // --- Code cũ cho dropdown - ĐÃ COMMENT LẠI ---
+    /*
     private TextInputEditText editTextCountry;
     private AutoCompleteTextView dropdownProvince;
     private AutoCompleteTextView dropdownDistrict;
     private AutoCompleteTextView dropdownWard;
-    private TextInputEditText editTextAddressLine1;
 
     private AddressViewModel addressViewModel;
     private List<ProvinceDto> provinces = new ArrayList<>();
@@ -53,6 +60,7 @@ public class NewAddressFragment extends Fragment {
     private ArrayAdapter<String> provinceAdapter;
     private ArrayAdapter<String> districtAdapter;
     private ArrayAdapter<String> wardAdapter;
+    */
 
     @Nullable
     @Override
@@ -64,10 +72,13 @@ public class NewAddressFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initViews(view);
+        // --- Code cũ - ĐÃ COMMENT LẠI ---
+        /*
         setupViewModel();
         setupAdapters();
         setupListeners();
         loadProvinces();
+        */
     }
 
     private void initViews(View view) {
@@ -80,13 +91,24 @@ public class NewAddressFragment extends Fragment {
 
         editTextFullName = view.findViewById(R.id.edit_text_full_name);
         editTextPhone = view.findViewById(R.id.edit_text_phone);
+        editTextAddressLine1 = view.findViewById(R.id.edit_text_address_line1);
+
+        // --- Lấy view cho các trường nhập tay mới ---
+        editTextProvince = view.findViewById(R.id.edit_text_province);
+        editTextDistrict = view.findViewById(R.id.edit_text_district);
+        editTextWard = view.findViewById(R.id.edit_text_ward);
+
+        // --- Code cũ - ĐÃ COMMENT LẠI ---
+        /*
         editTextCountry = view.findViewById(R.id.edit_text_country);
         dropdownProvince = view.findViewById(R.id.dropdown_province);
         dropdownDistrict = view.findViewById(R.id.dropdown_district);
         dropdownWard = view.findViewById(R.id.dropdown_ward);
-        editTextAddressLine1 = view.findViewById(R.id.edit_text_address_line1);
+        */
     }
-
+    
+    // --- Toàn bộ code logic cho dropdown đã được comment lại ---
+    /*
     private void setupViewModel() {
         addressViewModel = new ViewModelProvider(this).get(AddressViewModel.class);
         
@@ -117,7 +139,6 @@ public class NewAddressFragment extends Fragment {
                 districts.clear();
                 districts.addAll(districtList);
                 updateDistrictAdapter();
-                // Clear district and ward selections only after districts are loaded
                 dropdownDistrict.setText("");
                 dropdownWard.setText("");
                 selDistrict = null;
@@ -132,7 +153,6 @@ public class NewAddressFragment extends Fragment {
                 wards.clear();
                 wards.addAll(wardList);
                 updateWardAdapter();
-                // Clear ward selection only after wards are loaded
                 dropdownWard.setText("");
                 selWard = null;
             }
@@ -150,64 +170,31 @@ public class NewAddressFragment extends Fragment {
     }
 
     private void setupListeners() {
-        // Province selection listener
         dropdownProvince.setOnItemClickListener((parent, view, position, id) -> {
             selProvince = provinces.get(position);
-            android.util.Log.d("NewAddressFragment", "Selected province: " + selProvince.getName() + " (code: " + selProvince.getCode() + ")");
-            // Load districts for selected province (don't clear yet, will be cleared when data arrives)
             addressViewModel.loadDistricts(selProvince.getCode());
         });
 
-        // District selection listener
         dropdownDistrict.setOnItemClickListener((parent, view, position, id) -> {
             selDistrict = districts.get(position);
-            android.util.Log.d("NewAddressFragment", "Selected district: " + selDistrict.getName() + " (code: " + selDistrict.getCode() + ")");
-            // Load wards for selected district (don't clear yet, will be cleared when data arrives)
             addressViewModel.loadWards(selDistrict.getCode());
         });
 
-        // Ward selection listener
         dropdownWard.setOnItemClickListener((parent, view, position, id) -> {
             selWard = wards.get(position);
-            android.util.Log.d("NewAddressFragment", "Selected ward: " + selWard.getName());
         });
     }
 
     private void loadProvinces() {
-        android.util.Log.d("NewAddressFragment", "Loading provinces...");
         addressViewModel.loadProvinces();
     }
 
-    private void updateProvinceAdapter() {
-        List<String> provinceNames = new ArrayList<>();
-        for (ProvinceDto province : provinces) {
-            provinceNames.add(province.getName());
-        }
-        provinceAdapter.clear();
-        provinceAdapter.addAll(provinceNames);
-        provinceAdapter.notifyDataSetChanged();
-    }
+    private void updateProvinceAdapter() { ... }
+    private void updateDistrictAdapter() { ... }
+    private void updateWardAdapter() { ... }
+    */
 
-    private void updateDistrictAdapter() {
-        List<String> districtNames = new ArrayList<>();
-        for (DistrictDto district : districts) {
-            districtNames.add(district.getName());
-        }
-        districtAdapter.clear();
-        districtAdapter.addAll(districtNames);
-        districtAdapter.notifyDataSetChanged();
-    }
-
-    private void updateWardAdapter() {
-        List<String> wardNames = new ArrayList<>();
-        for (WardDto ward : wards) {
-            wardNames.add(ward.getName());
-        }
-        wardAdapter.clear();
-        wardAdapter.addAll(wardNames);
-        wardAdapter.notifyDataSetChanged();
-        android.util.Log.d("NewAddressFragment", "Updated ward adapter with " + wardNames.size() + " wards");
-    }
+    // --- Các phương thức lấy dữ liệu đã được cập nhật ---
 
     public String getFullName() {
         return editTextFullName != null ? editTextFullName.getText().toString().trim() : "";
@@ -218,60 +205,31 @@ public class NewAddressFragment extends Fragment {
     }
 
     public String getAddressLine1() {
-        // Địa chỉ chi tiết + Phường/Xã
-        String address = editTextAddressLine1 != null ? editTextAddressLine1.getText().toString().trim() : "";
-        String ward = selWard != null ? selWard.getName() : "";
-        
-        if (!address.isEmpty() && !ward.isEmpty()) {
-            return address + ", " + ward;
-        } else if (!address.isEmpty()) {
-            return address;
-        } else if (!ward.isEmpty()) {
-            return ward;
-        }
-        return "";
+        return editTextAddressLine1 != null ? editTextAddressLine1.getText().toString().trim() : "";
     }
 
     public String getAddressLine2() {
-        // Quận/Huyện
-        return selDistrict != null ? selDistrict.getName() : "";
+        String ward = editTextWard != null ? editTextWard.getText().toString().trim() : "";
+        String district = editTextDistrict != null ? editTextDistrict.getText().toString().trim() : "";
+        
+        if (!ward.isEmpty() && !district.isEmpty()) {
+            return ward + ", " + district;
+        } else if (!ward.isEmpty()) {
+            return ward;
+        } else {
+            return district;
+        }
     }
 
     public String getCityState() {
- 
-        return selProvince != null ? selProvince.getName() : "";
+        return editTextProvince != null ? editTextProvince.getText().toString().trim() : "";
     }
 
-    public String getFullAddress() {
- 
-        String address = editTextAddressLine1 != null ? editTextAddressLine1.getText().toString().trim() : "";
-        String ward = selWard != null ? selWard.getName() : "";
-        String district = selDistrict != null ? selDistrict.getName() : "";
-        String province = selProvince != null ? selProvince.getName() : "";
-        
-        StringBuilder fullAddress = new StringBuilder();
-        if (!address.isEmpty()) fullAddress.append(address);
-        if (!ward.isEmpty()) {
-            if (fullAddress.length() > 0) fullAddress.append(", ");
-            fullAddress.append(ward);
-        }
-        if (!district.isEmpty()) {
-            if (fullAddress.length() > 0) fullAddress.append(", ");
-            fullAddress.append(district);
-        }
-        if (!province.isEmpty()) {
-            if (fullAddress.length() > 0) fullAddress.append(", ");
-            fullAddress.append(province);
-        }
-        
-        return fullAddress.toString();
-    }
+    // --- Phương thức kiểm tra dữ liệu đã được cập nhật ---
 
-    // Validation methods
     public boolean validateInputs() {
         boolean isValid = true;
 
-        // Validate tên
         if (getFullName().isEmpty()) {
             inputLayoutFullName.setError("Vui lòng nhập họ tên");
             isValid = false;
@@ -279,7 +237,6 @@ public class NewAddressFragment extends Fragment {
             inputLayoutFullName.setError(null);
         }
 
-        // Validate số điện thoại
         String phone = getPhone();
         if (phone.isEmpty()) {
             inputLayoutPhone.setError("Vui lòng nhập số điện thoại");
@@ -291,22 +248,22 @@ public class NewAddressFragment extends Fragment {
             inputLayoutPhone.setError(null);
         }
 
-        if (selProvince == null) {
-            inputLayoutProvince.setError("Vui lòng chọn tỉnh/thành phố");
+        if (getCityState().isEmpty()) {
+            inputLayoutProvince.setError("Vui lòng nhập Tỉnh/Thành phố");
             isValid = false;
         } else {
             inputLayoutProvince.setError(null);
         }
 
-        if (selDistrict == null) {
-            inputLayoutDistrict.setError("Vui lòng chọn quận/huyện");
+        if ((editTextDistrict != null ? editTextDistrict.getText().toString().trim() : "").isEmpty()) {
+            inputLayoutDistrict.setError("Vui lòng nhập Quận/Huyện");
             isValid = false;
         } else {
             inputLayoutDistrict.setError(null);
         }
 
-        if (selWard == null) {
-            inputLayoutWard.setError("Vui lòng chọn phường/xã");
+        if ((editTextWard != null ? editTextWard.getText().toString().trim() : "").isEmpty()) {
+            inputLayoutWard.setError("Vui lòng nhập Phường/Xã");
             isValid = false;
         } else {
             inputLayoutWard.setError(null);

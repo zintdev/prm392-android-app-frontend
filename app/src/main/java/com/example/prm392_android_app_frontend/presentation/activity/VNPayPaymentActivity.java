@@ -22,10 +22,6 @@ public class VNPayPaymentActivity extends AppCompatActivity {
     private WebView webViewVNPay;
     private ProgressBar progressBar;
     private MaterialToolbar toolbar;
-    
-    private int orderId;
-    private int paymentId;
-    private double amount;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,10 +32,7 @@ public class VNPayPaymentActivity extends AppCompatActivity {
         setupToolbar();
 
         String paymentUrl = getIntent().getStringExtra("payment_url");
-        orderId = getIntent().getIntExtra("order_id", 0);
-        paymentId = getIntent().getIntExtra("payment_id", 0);
-        amount = getIntent().getDoubleExtra("amount", 0.0);
-        
+
         if (paymentUrl == null || paymentUrl.isEmpty()) {
             Toast.makeText(this, "Lỗi: Không có URL thanh toán", Toast.LENGTH_SHORT).show();
             finish();
@@ -58,7 +51,11 @@ public class VNPayPaymentActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         setSupportActionBar(toolbar);
-        // Không hiển thị nút back
+        toolbar.setNavigationOnClickListener(v -> {
+            // Khi người dùng nhấn nút back trên toolbar, coi như là hủy thanh toán
+            setResult(RESULT_CANCELED);
+            finish();
+        });
     }
 
     private void setupWebView() {
@@ -72,11 +69,6 @@ public class VNPayPaymentActivity extends AppCompatActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 progressBar.setVisibility(View.VISIBLE);
-                
-                // Kiểm tra return URL
-                if (url.contains("/api/vnpay/return")) {
-                    handlePaymentReturn(url);
-                }
             }
 
             @Override
@@ -87,11 +79,12 @@ public class VNPayPaymentActivity extends AppCompatActivity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.contains("/api/vnpay/return")) {
+                // Bắt các URL đặc biệt của VNPay
+                if (url.contains("vnp_ResponseCode")) {
                     handlePaymentReturn(url);
-                    return true;
+                    return true; // Ngăn WebView tự điều hướng
                 }
-                return false;
+                return false; // Cho phép WebView tải các URL khác
             }
         });
 
@@ -113,21 +106,28 @@ public class VNPayPaymentActivity extends AppCompatActivity {
 
     private void handlePaymentReturn(String url) {
         android.util.Log.d("VNPayPaymentActivity", "Payment return URL: " + url);
+        Uri uri = Uri.parse(url);
+        String responseCode = uri.getQueryParameter("vnp_ResponseCode");
+
+        Intent resultIntent = new Intent();
         
-        // Chuyển sang màn hình Processing với hiệu ứng loading
-        Intent intent = new Intent(this, PaymentProcessingActivity.class);
-        intent.putExtra("order_id", String.valueOf(orderId));
-        intent.putExtra("payment_id", String.valueOf(paymentId));
-        intent.putExtra("amount", amount);
-        intent.putExtra("return_url", url);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        // Mã "00" là thanh toán thành công
+        if ("00".equals(responseCode)) {
+            android.util.Log.d("VNPayPaymentActivity", "Payment SUCCESS");
+            setResult(RESULT_OK, resultIntent);
+        } else {
+            android.util.Log.d("VNPayPaymentActivity", "Payment FAILED or CANCELED. Code: " + responseCode);
+            setResult(RESULT_CANCELED, resultIntent);
+        }
+        
+        // Đóng Activity và trả kết quả về cho OrderCreateActivity
         finish();
     }
 
     @Override
     public void onBackPressed() {
-        // Vô hiệu hóa nút back - người dùng phải hoàn tất thanh toán
-        // Không cho phép thoát ra giữa chừng
+        // Khi người dùng nhấn nút back cứng, coi như là hủy thanh toán
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
     }
 }

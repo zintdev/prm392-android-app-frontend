@@ -22,7 +22,6 @@ import com.example.prm392_android_app_frontend.data.remote.api.NominatimApiServi
 import com.example.prm392_android_app_frontend.data.remote.api.StoreApi;
 import com.example.prm392_android_app_frontend.data.dto.store.NominatimPlace;
 import com.example.prm392_android_app_frontend.data.dto.store.StoreLocationRequest;
-import com.example.prm392_android_app_frontend.data.remote.api.StoreApiService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -62,7 +61,6 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
     private TextView tvSelectedAddressInfo;
 
     private NominatimApiService nominatimService;
-    private StoreApiService storeApiService; // Service backend của bạn
     private StoreApi storeApi; // API để lấy danh sách cửa hàng
 
     private NominatimPlace foundPlace = null;
@@ -117,7 +115,7 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
         // TODO: Khởi tạo service cho backend của bạn
         // (Bạn phải tự cung cấp Retrofit client cho API backend)
         // Ví dụ:
-        // storeApiService = ApiClient.getClient().create(StoreApiService.class);
+        // storeApi = ApiClient.getClient().create(StoreApiService.class);
 
 
         btnSearchAddress.setOnClickListener(v -> searchAddress());
@@ -344,7 +342,7 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
             return;
         }
 
-        storeApiService = ApiClient.get().create(StoreApiService.class);
+        storeApi = ApiClient.get().create(StoreApi.class);
 
         // Lấy dữ liệu từ kết quả tìm kiếm (OpenStreetMap)
         BigDecimal latitude = new BigDecimal(foundPlace.getLat());
@@ -357,17 +355,17 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
         btnSaveStore.setEnabled(false);
         btnSaveStore.setText("Đang lưu...");
 
-        // TODO: Đảm bảo 'storeApiService' đã được khởi tạo
-        if (storeApiService == null) {
-            Toast.makeText(this, "Lỗi: storeApiService chưa được khởi tạo", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "storeApiService is null. Bạn đã khởi tạo nó trong onCreate() chưa?");
+        // TODO: Đảm bảo 'storeApi' đã được khởi tạo
+        if (storeApi == null) {
+            Toast.makeText(this, "Lỗi: storeApi chưa được khởi tạo", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "storeApi is null. Bạn đã khởi tạo nó trong onCreate() chưa?");
             btnSaveStore.setEnabled(true);
             btnSaveStore.setText("Lưu cửa hàng");
             return;
         }
 
         // --- BẮT ĐẦU GỌI API BACKEND THẬT ---
-        storeApiService.create(requestToSend).enqueue(new Callback<StoreLocationResponse>() {
+        storeApi.create(requestToSend).enqueue(new Callback<StoreLocationResponse>() {
             @Override
             public void onResponse(Call<StoreLocationResponse> call, Response<StoreLocationResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

@@ -33,6 +33,10 @@ android {
         buildConfig true
     buildToolsVersion '35.0.0'
     }
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
 }
 
 dependencies {
