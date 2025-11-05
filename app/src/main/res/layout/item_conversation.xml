@@ -73,13 +73,22 @@
 
         <TextView
             android:id="@+id/tv_unread_count"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:background="@drawable/bg_unread_badge" android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="20dp"
+            android:minHeight="20dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_unread_badge"
+            android:gravity="center"
             android:textColor="@android:color/white"
             android:textSize="12sp"
             android:textStyle="bold"
-            android:visibility="gone" tools:text="1"
+            android:visibility="gone"
+            tools:text="9+"
             tools:visibility="visible" />
     </FrameLayout>
 

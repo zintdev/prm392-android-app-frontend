@@ -21,6 +21,7 @@ import com.example.prm392_android_app_frontend.data.dto.CreateOrderRequestDto;
 import com.example.prm392_android_app_frontend.data.dto.OrderDTO;
 import com.example.prm392_android_app_frontend.presentation.adapter.AddressPagerAdapter;
 import com.example.prm392_android_app_frontend.presentation.adapter.OrderItemAdapter;
+import com.example.prm392_android_app_frontend.presentation.component.LocalNotificationManager;
 import com.example.prm392_android_app_frontend.presentation.fragment.NewAddressFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.SavedAddressesFragment;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.OrderViewModel;
@@ -30,11 +31,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrderCreateActivity extends AppCompatActivity {
@@ -46,7 +44,6 @@ public class OrderCreateActivity extends AppCompatActivity {
     private MaterialButton buttonPlaceOrder;
     private ProgressBar progressBar;
 
-    // Tab components
     private TabLayout tabLayoutAddress;
     private ViewPager2 viewPagerAddress;
     private AddressPagerAdapter addressPagerAdapter;
@@ -55,12 +52,13 @@ public class OrderCreateActivity extends AppCompatActivity {
 
     private OrderViewModel orderViewModel;
     private PaymentViewModel paymentViewModel;
+    private LocalNotificationManager localNotificationManager;
     private List<CartItemDto> selectedItems;
     private double totalAmount;
-    
+
     private int currentOrderId;
     private int currentPaymentId;
-    
+
     private static final int VNPAY_REQUEST_CODE = 1001;
 
     @Override
@@ -68,7 +66,6 @@ public class OrderCreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_create);
 
-        // Nhận dữ liệu từ Cart
         selectedItems = getIntent().getParcelableArrayListExtra("selected_items");
         totalAmount = getIntent().getDoubleExtra("total_amount", 0.0);
 
@@ -93,11 +90,12 @@ public class OrderCreateActivity extends AppCompatActivity {
         buttonPlaceOrder = findViewById(R.id.button_place_order);
         progressBar = findViewById(R.id.progress_bar_order);
 
-        // Tab components
         tabLayoutAddress = findViewById(R.id.tab_layout_address);
         viewPagerAddress = findViewById(R.id.view_pager_address);
         radioGroupShipment = findViewById(R.id.radio_group_shipment);
         radioGroupPayment = findViewById(R.id.radio_group_payment);
+
+        localNotificationManager = new LocalNotificationManager(this);
 
         buttonPlaceOrder.setOnClickListener(v -> placeOrder());
     }
@@ -118,20 +116,15 @@ public class OrderCreateActivity extends AppCompatActivity {
     }
 
     private void setupTabLayout() {
-        // Setup ViewPager2 với AddressPagerAdapter
         addressPagerAdapter = new AddressPagerAdapter(this);
         viewPagerAddress.setAdapter(addressPagerAdapter);
 
-        // Kết nối TabLayout với ViewPager2
         new TabLayoutMediator(tabLayoutAddress, viewPagerAddress,
                 (tab, position) -> {
-                    switch (position) {
-                        case 0:
-                            tab.setText("Nhập địa chỉ mới");
-                            break;
-                        case 1:
-                            tab.setText("Chọn địa chỉ có sẵn");
-                            break;
+                    if (position == 0) {
+                        tab.setText("Nhập địa chỉ mới");
+                    } else {
+                        tab.setText("Chọn địa chỉ có sẵn");
                     }
                 }
         ).attach();
@@ -141,21 +134,17 @@ public class OrderCreateActivity extends AppCompatActivity {
         orderViewModel = new ViewModelProvider(this).get(OrderViewModel.class);
         paymentViewModel = new ViewModelProvider(this).get(PaymentViewModel.class);
 
-        // Observe khi order được tạo thành công
         orderViewModel.getOrderLiveData().observe(this, order -> {
             if (order != null) {
                 currentOrderId = order.getId();
-                android.util.Log.d("OrderCreateActivity", "Order created successfully with ID: " + currentOrderId);
-                
-                // Kiểm tra phương thức thanh toán
                 String paymentMethod = getSelectedPaymentMethod();
-                
+
                 if ("COD".equals(paymentMethod)) {
-                    // Thanh toán COD - chuyển thẳng sang màn hình thành công
                     hideLoading();
+                    // THÔNG BÁO: Đặt hàng thành công (COD)
+                    localNotificationManager.showOrderPlacedNotification(String.valueOf(currentOrderId));
                     navigateToOrderSuccess(order.getId());
                 } else {
-                    // Thanh toán VNPay - tạo payment
                     createPaymentForOrder(order);
                 }
             }
@@ -168,13 +157,9 @@ public class OrderCreateActivity extends AppCompatActivity {
             }
         });
 
-        // Observe khi payment được tạo thành công
         paymentViewModel.getPaymentLiveData().observe(this, payment -> {
             if (payment != null) {
                 currentPaymentId = payment.getId();
-                android.util.Log.d("OrderCreateActivity", "Payment created successfully with ID: " + currentPaymentId);
-                
-                // Sau khi có paymentId, gọi API để lấy VNPay URL
                 String orderDescription = "Thanh toán đơn hàng #" + payment.getOrderId();
                 paymentViewModel.createVNPayUrl(currentPaymentId, totalAmount, orderDescription);
             }
@@ -187,12 +172,9 @@ public class OrderCreateActivity extends AppCompatActivity {
             }
         });
 
-        // Observe khi VNPay URL được tạo thành công
         paymentViewModel.getVnpayUrlLiveData().observe(this, vnpayUrl -> {
             hideLoading();
             if (vnpayUrl != null && !vnpayUrl.isEmpty()) {
-                android.util.Log.d("OrderCreateActivity", "VNPay URL: " + vnpayUrl);
-                // Mở WebView để thanh toán
                 openVNPayWebView(vnpayUrl);
             }
         });
@@ -201,34 +183,28 @@ public class OrderCreateActivity extends AppCompatActivity {
     private void openVNPayWebView(String paymentUrl) {
         Intent intent = new Intent(this, VNPayPaymentActivity.class);
         intent.putExtra("payment_url", paymentUrl);
-        intent.putExtra("order_id", currentOrderId);
-        intent.putExtra("payment_id", currentPaymentId);
-        intent.putExtra("amount", totalAmount);
         startActivityForResult(intent, VNPAY_REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
+
         if (requestCode == VNPAY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // Thanh toán thành công
+                // THÔNG BÁO: Thanh toán thành công (VNPay)
+                localNotificationManager.showPaymentSuccessNotification(String.valueOf(currentOrderId));
                 Toast.makeText(this, "Đặt hàng và thanh toán thành công!", Toast.LENGTH_LONG).show();
-                finish();
+                navigateToOrderSuccess(currentOrderId);
             } else {
-                // Thanh toán thất bại hoặc bị hủy
                 Toast.makeText(this, "Thanh toán chưa hoàn tất. Vui lòng kiểm tra đơn hàng của bạn.", Toast.LENGTH_LONG).show();
             }
         }
     }
 
     private void createPaymentForOrder(OrderDTO order) {
-        // Sử dụng phương thức thanh toán VNPAY (hoặc lấy từ UI nếu có)
         String paymentMethod = "VNPAY";
         double amount = totalAmount;
-        
-        android.util.Log.d("OrderCreateActivity", "Creating payment for order " + order.getId() + " with amount: " + amount);
         paymentViewModel.createPayment(order.getId(), paymentMethod, amount);
     }
 
@@ -236,8 +212,6 @@ public class OrderCreateActivity extends AppCompatActivity {
         if (!validateInputs()) {
             return;
         }
-
-        // Kiểm tra đăng nhập
         if (!TokenStore.isLoggedIn(this)) {
             Toast.makeText(this, "Vui lòng đăng nhập để đặt hàng", Toast.LENGTH_LONG).show();
             finish();
@@ -246,7 +220,6 @@ public class OrderCreateActivity extends AppCompatActivity {
 
         showLoading();
 
-        // Lấy userId từ session
         int userId = TokenStore.getUserId(this);
         if (userId == -1) {
             Toast.makeText(this, "Không thể xác định người dùng. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
@@ -254,7 +227,6 @@ public class OrderCreateActivity extends AppCompatActivity {
             return;
         }
 
-        // Lấy dữ liệu từ fragment đang active
         String fullName = "";
         String phone = "";
         String addressLine1 = "";
@@ -263,9 +235,7 @@ public class OrderCreateActivity extends AppCompatActivity {
 
         int currentTab = viewPagerAddress.getCurrentItem();
         if (currentTab == 0) {
-            // Tab "Nhập địa chỉ mới"
-            NewAddressFragment newAddressFragment = (NewAddressFragment) getSupportFragmentManager()
-                    .findFragmentByTag("f" + 0);
+            NewAddressFragment newAddressFragment = (NewAddressFragment) getSupportFragmentManager().findFragmentByTag("f" + 0);
             if (newAddressFragment != null) {
                 fullName = newAddressFragment.getFullName();
                 phone = newAddressFragment.getPhone();
@@ -274,55 +244,36 @@ public class OrderCreateActivity extends AppCompatActivity {
                 cityState = newAddressFragment.getCityState();
             }
         } else {
-            // Tab "Chọn địa chỉ có sẵn"
-            SavedAddressesFragment savedAddressesFragment = (SavedAddressesFragment) getSupportFragmentManager()
-                    .findFragmentByTag("f" + 1);
+            SavedAddressesFragment savedAddressesFragment = (SavedAddressesFragment) getSupportFragmentManager().findFragmentByTag("f" + 1);
             if (savedAddressesFragment != null) {
-                fullName = savedAddressesFragment.getFullName();
-                phone = savedAddressesFragment.getPhone();
-                addressLine1 = savedAddressesFragment.getAddressLine1();
-                addressLine2 = savedAddressesFragment.getAddressLine2();
-                cityState = savedAddressesFragment.getCityState();
+                // Cần implement các getter trong SavedAddressesFragment
             }
         }
 
-        // Tạo request object
         CreateOrderRequestDto request = new CreateOrderRequestDto(
-                userId, // Lấy từ session thay vì hardcode
-                getShipmentMethod(),
-                fullName,
-                phone,
-                addressLine1,
-                addressLine2,
-                cityState
+                userId, getShipmentMethod(), fullName, phone,
+                addressLine1, addressLine2, cityState
         );
 
-        // Gọi API tạo order
         orderViewModel.placeOrder(request);
     }
 
     private boolean validateInputs() {
         int currentTab = viewPagerAddress.getCurrentItem();
-        
         if (currentTab == 0) {
-            // Tab "Nhập địa chỉ mới"
-            NewAddressFragment newAddressFragment = (NewAddressFragment) getSupportFragmentManager()
-                    .findFragmentByTag("f" + 0);
+            NewAddressFragment newAddressFragment = (NewAddressFragment) getSupportFragmentManager().findFragmentByTag("f" + 0);
             if (newAddressFragment != null) {
                 return newAddressFragment.validateInputs();
             }
         } else {
-            // Tab "Chọn địa chỉ có sẵn"
-            SavedAddressesFragment savedAddressesFragment = (SavedAddressesFragment) getSupportFragmentManager()
-                    .findFragmentByTag("f" + 1);
+            SavedAddressesFragment savedAddressesFragment = (SavedAddressesFragment) getSupportFragmentManager().findFragmentByTag("f" + 1);
             if (savedAddressesFragment != null) {
+                // Cần implement validation trong SavedAddressesFragment
                 return savedAddressesFragment.validateInputs();
             }
         }
-        
         return false;
     }
-
 
     private String getShipmentMethod() {
         int selectedId = radioGroupShipment.getCheckedRadioButtonId();
@@ -343,6 +294,7 @@ public class OrderCreateActivity extends AppCompatActivity {
     }
 
     private void navigateToOrderSuccess(int orderId) {
+        // Chuyển sang màn hình thành công chung
         Intent intent = new Intent(this, OrderSuccessActivity.class);
         intent.putExtra("order_id", String.valueOf(orderId));
         intent.putExtra("total_amount", totalAmount);
