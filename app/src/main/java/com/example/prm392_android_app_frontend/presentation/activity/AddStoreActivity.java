@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -59,6 +61,8 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
     private Button btnSearchAddress, btnSaveStore;
     private com.google.android.material.button.MaterialButton btnPickOnMap;
     private TextView tvSelectedAddressInfo;
+    private LinearLayout llAddressContainer;
+    private ImageButton btnZoomToAddress;
 
     private NominatimApiService nominatimService;
     private StoreApi storeApi; // API để lấy danh sách cửa hàng
@@ -85,6 +89,8 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
         btnPickOnMap = findViewById(R.id.btn_pick_on_map);
         btnSaveStore = findViewById(R.id.btn_save_store);
         tvSelectedAddressInfo = findViewById(R.id.tv_selected_address_info);
+        llAddressContainer = findViewById(R.id.ll_address_container);
+        btnZoomToAddress = findViewById(R.id.btn_zoom_to_address);
 
         // --- HTTP CLIENT CHO NOMINATIM (GIỮ NGUYÊN) ---
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -121,6 +127,7 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
         btnSearchAddress.setOnClickListener(v -> searchAddress());
         btnPickOnMap.setOnClickListener(v -> openLocationPicker());
         btnSaveStore.setOnClickListener(v -> callCreateStoreApi());
+        btnZoomToAddress.setOnClickListener(v -> zoomToSelectedAddress());
 
         // Initialize map
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -300,19 +307,18 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
 
         btnSearchAddress.setEnabled(false);
         btnSaveStore.setEnabled(false);
-        tvSelectedAddressInfo.setVisibility(View.GONE);
+        llAddressContainer.setVisibility(View.GONE);
 
-        nominatimService.search(query, "json", 1).enqueue(new Callback<List<NominatimPlace>>() {
+        nominatimService.search(query, "json", 1, "vn").enqueue(new Callback<List<NominatimPlace>>() {
             @Override
             public void onResponse(Call<List<NominatimPlace>> call, Response<List<NominatimPlace>> response) {
                 btnSearchAddress.setEnabled(true);
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     foundPlace = response.body().get(0);
 
-                    String info = "Địa chỉ tìm thấy: " + foundPlace.getDisplayName() + "\n" +
-                            "Tọa độ: " + foundPlace.getLat() + ", " + foundPlace.getLon();
+                    String info = "Địa chỉ: " + formatAddress(foundPlace.getDisplayName());
                     tvSelectedAddressInfo.setText(info);
-                    tvSelectedAddressInfo.setVisibility(View.VISIBLE);
+                    llAddressContainer.setVisibility(View.VISIBLE);
                     btnSaveStore.setEnabled(true);
                     
                     // Update map markers
@@ -398,6 +404,49 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
         // --- KẾT THÚC GỌI API ---
     }
 
+    private String formatAddress(String address) {
+        if (address == null) return "";
+        String trimmed = address.trim();
+        int maxLen = 80; // hiển thị gọn, tránh quá dài
+        if (trimmed.length() <= maxLen) return trimmed;
+        return trimmed.substring(0, maxLen - 1) + "…";
+    }
+
+    /**
+     * Phóng to vào địa chỉ đã chọn trên bản đồ
+     */
+    private void zoomToSelectedAddress() {
+        if (foundPlace == null || googleMap == null) {
+            Toast.makeText(this, "Chưa có địa chỉ được chọn", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double lat = Double.parseDouble(foundPlace.getLat());
+            double lon = Double.parseDouble(foundPlace.getLon());
+            LatLng selectedLocation = new LatLng(lat, lon);
+
+            // Zoom vào vị trí đã chọn với mức zoom cao
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedLocation, 18f));
+
+            // Đảm bảo marker được hiển thị và hiển thị info window
+            if (selectedLocationMarker != null) {
+                selectedLocationMarker.showInfoWindow();
+            } else {
+                // Tạo marker nếu chưa có
+                selectedLocationMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(selectedLocation)
+                        .title("Địa điểm đã chọn")
+                        .snippet(foundPlace.getDisplayName())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                selectedLocationMarker.showInfoWindow();
+            }
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Invalid coordinates", e);
+            Toast.makeText(this, "Tọa độ không hợp lệ", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * Mở LocationPickerActivity để chọn vị trí trên bản đồ
      */
@@ -430,10 +479,9 @@ public class AddStoreActivity extends AppCompatActivity implements OnMapReadyCal
                     // Cập nhật UI
                     etAddressInput.setText(address);
                     
-                    String info = "Địa chỉ đã chọn: " + address + "\n" +
-                            "Tọa độ: " + lat + ", " + lon;
+                    String info = "Địa chỉ: " + formatAddress(address);
                     tvSelectedAddressInfo.setText(info);
-                    tvSelectedAddressInfo.setVisibility(View.VISIBLE);
+                    llAddressContainer.setVisibility(View.VISIBLE);
                     btnSaveStore.setEnabled(true);
                     
                     // Update map markers

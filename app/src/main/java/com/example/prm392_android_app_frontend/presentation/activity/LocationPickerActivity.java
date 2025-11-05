@@ -74,8 +74,11 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
     // State
     private boolean isMapDragging = false;
     private boolean isUpdatingFromSuggestion = false;
+    private boolean isAddressProgrammaticChange = false;
     private android.os.Handler debounceHandler = new android.os.Handler();
     private Runnable debounceRunnable;
+    private double currentLatitude = 0.0;
+    private double currentLongitude = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +102,9 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
         btnConfirm = findViewById(R.id.btnConfirm);
         rvSuggestions = findViewById(R.id.rvSuggestions);
         loadingOverlay = findViewById(R.id.loadingOverlay);
+        
+        // EtLatitude và etLongitude có thể null nếu bị ẩn trong layout
+        // Lưu giá trị vào biến tạm thay vì dùng trực tiếp
 
         // Setup toolbar
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
@@ -108,6 +114,7 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setTitle("Chọn địa chỉ");
             }
+            toolbar.setNavigationOnClickListener(v -> finish());
         }
 
         // Setup RecyclerView for suggestions
@@ -169,6 +176,11 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
                     debounceHandler.removeCallbacks(debounceRunnable);
                 }
 
+                if (isAddressProgrammaticChange) {
+                    hideSuggestions();
+                    return;
+                }
+
                 String query = s.toString().trim();
                 if (query.isEmpty()) {
                     hideSuggestions();
@@ -193,10 +205,21 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
 
         showLoading(true, "Đang tìm kiếm...");
 
-        nominatimService.autocomplete(query, "json", 10).enqueue(new Callback<List<NominatimPlace>>() {
+        final String requestedQuery = query.trim();
+
+        nominatimService.autocomplete(requestedQuery, "json", 10, "vn").enqueue(new Callback<List<NominatimPlace>>() {
             @Override
             public void onResponse(Call<List<NominatimPlace>> call, Response<List<NominatimPlace>> response) {
                 showLoading(false, null);
+
+                String currentInput = etAddress.getText() != null
+                        ? etAddress.getText().toString().trim()
+                        : "";
+                if (!currentInput.equals(requestedQuery)) {
+                    hideSuggestions();
+                    return;
+                }
+
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     suggestionAdapter.updateSuggestions(response.body());
                     showSuggestions();
@@ -226,16 +249,21 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
         etAddress.clearFocus();
 
         // Update address field
+        isAddressProgrammaticChange = true;
         etAddress.setText(place.getDisplayName());
+        etAddress.setSelection(etAddress.getText() != null ? etAddress.getText().length() : 0);
+        isAddressProgrammaticChange = false;
 
         // Parse coordinates
         try {
             double lat = Double.parseDouble(place.getLat());
             double lon = Double.parseDouble(place.getLon());
 
-            // Update Lat/Long fields
-            etLatitude.setText(String.valueOf(lat));
-            etLongitude.setText(String.valueOf(lon));
+            // Update Lat/Long fields (có thể null nếu bị ẩn)
+            currentLatitude = lat;
+            currentLongitude = lon;
+            if (etLatitude != null) etLatitude.setText(String.valueOf(lat));
+            if (etLongitude != null) etLongitude.setText(String.valueOf(lon));
 
             // Enable confirm button
             btnConfirm.setEnabled(true);
@@ -335,10 +363,13 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
 
     private void updateLocationFromMap(LatLng position) {
         isUpdatingFromSuggestion = true;
+        hideSuggestions();
 
-        // Update Lat/Long fields
-        etLatitude.setText(String.valueOf(position.latitude));
-        etLongitude.setText(String.valueOf(position.longitude));
+        // Update Lat/Long fields (có thể null nếu bị ẩn)
+        currentLatitude = position.latitude;
+        currentLongitude = position.longitude;
+        if (etLatitude != null) etLatitude.setText(String.valueOf(position.latitude));
+        if (etLongitude != null) etLongitude.setText(String.valueOf(position.longitude));
 
         // Enable confirm button
         btnConfirm.setEnabled(true);
@@ -399,7 +430,10 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
                 if (response.isSuccessful() && response.body() != null) {
                     NominatimPlace place = response.body();
                     if (!isUpdatingFromSuggestion || etAddress.getText().toString().isEmpty()) {
+                        isAddressProgrammaticChange = true;
                         etAddress.setText(place.getDisplayName());
+                        etAddress.setSelection(etAddress.getText() != null ? etAddress.getText().length() : 0);
+                        isAddressProgrammaticChange = false;
                     }
                     // Update marker snippet
                     if (locationMarker != null) {
@@ -436,18 +470,24 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
     }
 
     private void confirmLocation() {
-        String latStr = etLatitude.getText().toString();
-        String lonStr = etLongitude.getText().toString();
+        String latStr = (etLatitude != null) ? etLatitude.getText().toString() : String.valueOf(currentLatitude);
+        String lonStr = (etLongitude != null) ? etLongitude.getText().toString() : String.valueOf(currentLongitude);
         String address = etAddress.getText().toString();
 
-        if (latStr.isEmpty() || lonStr.isEmpty()) {
-            showError("Vui lòng chọn một vị trí trên bản đồ");
-            return;
-        }
-
+        double lat, lon;
         try {
-            double lat = Double.parseDouble(latStr);
-            double lon = Double.parseDouble(lonStr);
+            if (latStr.isEmpty() || lonStr.isEmpty()) {
+                // Nếu không có text, dùng giá trị đã lưu
+                if (currentLatitude == 0.0 || currentLongitude == 0.0) {
+                    showError("Vui lòng chọn một vị trí trên bản đồ");
+                    return;
+                }
+                lat = currentLatitude;
+                lon = currentLongitude;
+            } else {
+                lat = Double.parseDouble(latStr);
+                lon = Double.parseDouble(lonStr);
+            }
 
             // Return result to calling activity
             android.content.Intent resultIntent = new android.content.Intent();
@@ -458,6 +498,7 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
             finish();
         } catch (NumberFormatException e) {
             showError("Tọa độ không hợp lệ");
+            Log.e(TAG, "Invalid coordinates", e);
         }
     }
 
@@ -490,8 +531,12 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (googleMap != null) {
-                    googleMap.setMyLocationEnabled(true);
-                    getCurrentLocation();
+                    // Permission đã được grant, an toàn để sử dụng
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        googleMap.setMyLocationEnabled(true);
+                        getCurrentLocation();
+                    }
                 }
             } else {
                 showError("Cần quyền vị trí để hiển thị bản đồ");
