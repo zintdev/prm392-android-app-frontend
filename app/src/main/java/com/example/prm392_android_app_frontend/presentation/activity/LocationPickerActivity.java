@@ -17,7 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.store.NominatimPlace;
+import com.example.prm392_android_app_frontend.data.dto.store.StoreNearbyDto;
 import com.example.prm392_android_app_frontend.data.remote.api.NominatimApiService;
+import com.example.prm392_android_app_frontend.data.repository.StoreRepository;
 import com.example.prm392_android_app_frontend.presentation.adapter.LocationSuggestionAdapter;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -34,7 +36,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -51,6 +55,8 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
     private static final String TAG = "LocationPickerActivity";
     private static final int REQUEST_LOCATION_PERMISSION = 101;
     private static final int AUTOCOMPLETE_DELAY_MS = 500; // Debounce delay
+    private static final Double STORE_RADIUS_KM = null; // null = server default / all
+    private static final Integer STORE_LIMIT = null; // null = server default / all
 
     // Views
     private TextInputLayout tilAddress;
@@ -65,7 +71,9 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
     // Map
     private GoogleMap googleMap;
     private Marker locationMarker;
+    private final List<Marker> storeMarkers = new ArrayList<>();
     private FusedLocationProviderClient fusedLocationClient;
+    private StoreRepository storeRepository;
 
     // Services
     private NominatimApiService nominatimService;
@@ -87,6 +95,7 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
 
         rootView = findViewById(R.id.root);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+    storeRepository = new StoreRepository();
 
         initViews();
         setupNominatimService();
@@ -272,6 +281,7 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
             LatLng position = new LatLng(lat, lon);
             moveMapToPosition(position, true);
             updateMarker(position);
+            loadNearbyStores(lat, lon);
 
             isUpdatingFromSuggestion = false;
         } catch (NumberFormatException e) {
@@ -376,6 +386,7 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
 
         // Update marker
         updateMarker(position);
+    loadNearbyStores(position.latitude, position.longitude);
 
         // Reverse geocoding to get address
         performReverseGeocoding(position.latitude, position.longitude);
@@ -414,9 +425,59 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
         if (googleMap == null) return;
 
         if (animate) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 16f));
+            // googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 16f));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLng(position));
         } else {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 16f));
+            // googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 16f));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+        }
+    }
+
+    private void loadNearbyStores(double lat, double lng) {
+        if (storeRepository == null || googleMap == null) return;
+    storeRepository.getNearby(lat, lng, STORE_RADIUS_KM, STORE_LIMIT, null, null,
+                new StoreRepository.Result<List<StoreNearbyDto>>() {
+                    @Override
+                    public void onSuccess(List<StoreNearbyDto> data) {
+                        runOnUiThread(() -> renderStoreMarkers(data));
+                    }
+
+                    @Override
+                    public void onError(String m) {
+                        Log.w(TAG, "Load stores failed: " + m);
+                        runOnUiThread(() ->
+                                Toast.makeText(LocationPickerActivity.this,
+                                        "Không tải được danh sách cửa hàng", Toast.LENGTH_SHORT).show());
+                    }
+                });
+    }
+
+    private void renderStoreMarkers(List<StoreNearbyDto> stores) {
+        if (googleMap == null) return;
+        for (Marker marker : storeMarkers) {
+            marker.remove();
+        }
+        storeMarkers.clear();
+
+        if (stores == null || stores.isEmpty()) return;
+
+        for (StoreNearbyDto store : stores) {
+            LatLng pos = new LatLng(store.latitude, store.longitude);
+            String title = (store.name != null && !store.name.trim().isEmpty())
+                    ? store.name.trim()
+                    : "Cửa hàng " + store.storeId;
+            String address = store.address != null ? store.address.trim() : "";
+        String distance = String.format(Locale.getDefault(), "~%.2f km", store.distanceKm);
+        String snippet = address.isEmpty() ? distance : address + " • " + distance;
+            Marker marker = googleMap.addMarker(new MarkerOptions()
+                    .position(pos)
+                    .title(title)
+            .snippet(snippet)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+            if (marker != null) {
+                marker.setTag(store);
+                storeMarkers.add(marker);
+            }
         }
     }
 
@@ -461,8 +522,13 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
         fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null && googleMap != null) {
                 LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                currentLatitude = myLocation.latitude;
+                currentLongitude = myLocation.longitude;
+                if (etLatitude != null) etLatitude.setText(String.valueOf(currentLatitude));
+                if (etLongitude != null) etLongitude.setText(String.valueOf(currentLongitude));
                 moveMapToPosition(myLocation, false);
-                googleMap.animateCamera(CameraUpdateFactory.zoomTo(14f));
+                loadNearbyStores(myLocation.latitude, myLocation.longitude);
+                // googleMap.animateCamera(CameraUpdateFactory.zoomTo(14f)); // Bỏ zoom cố định theo yêu cầu
             }
         }).addOnFailureListener(e -> {
             Log.e(TAG, "Failed to get location", e);
