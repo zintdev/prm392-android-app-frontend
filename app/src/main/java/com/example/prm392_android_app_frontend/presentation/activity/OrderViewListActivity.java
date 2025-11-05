@@ -167,7 +167,7 @@ public class OrderViewListActivity extends AppCompatActivity implements OrderLis
             case 3: // Đang xử lý
                 return "PROCESSING";
             case 4: // Đang giao
-                return "SHIPPING";
+                return "SHIPPED";
             case 5: // Hoàn thành
                 return "COMPLETED";
             case 6: // Đã hủy
