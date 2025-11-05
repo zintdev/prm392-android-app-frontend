@@ -35,7 +35,7 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_admin_product" />
+        tools:listitem="@layout/item_category" />
 
     <!-- FAB Add Product -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
