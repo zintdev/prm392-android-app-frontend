@@ -109,10 +109,10 @@ public class PaymentSuccessActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+//    @Override
+//    public void onBackPressed() {
+//        // Disable back button - user must choose an option
+//        navigateToCart();
+//    }
 
-    @Override
-    public void onBackPressed() {
-        // Disable back button - user must choose an option
-        navigateToCart();
-    }
 }
