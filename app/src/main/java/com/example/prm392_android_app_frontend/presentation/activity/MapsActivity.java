@@ -53,6 +53,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private StoreViewModel viewModel;
 
+    private final StoreApi storeApi = ApiClient.get().create(StoreApi.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

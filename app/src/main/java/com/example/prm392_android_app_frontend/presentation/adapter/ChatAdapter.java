@@ -12,17 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.chat.MessageDto; // (Import model DTO của bạn)
-import android.content.Intent;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.widget.Toast;
-import com.example.prm392_android_app_frontend.presentation.activity.FullscreenImageActivity;
 
 import java.util.List;
 import java.util.Objects;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -66,22 +58,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MessageDto message = messageList.get(position);
-        boolean isLast = position == getItemCount() - 1;
         if (holder.getItemViewType() == VIEW_TYPE_SENT) {
-            ((SentMessageHolder) holder).bind(message, isLast);
+            ((SentMessageHolder) holder).bind(message);
         } else {
-            ((ReceivedMessageHolder) holder).bind(message, isLast);
+            ((ReceivedMessageHolder) holder).bind(message);
         }
-    }
-
-    private String normalizeUrl(String url) {
-        if (url == null) return null;
-        String normalized = url;
-        normalized = normalized.replace("http://localhost:", "http://10.0.2.2:");
-        normalized = normalized.replace("https://localhost:", "http://10.0.2.2:");
-        normalized = normalized.replace("http://127.0.0.1:", "http://10.0.2.2:");
-        normalized = normalized.replace("https://127.0.0.1:", "http://10.0.2.2:");
-        return normalized;
     }
 
     @Override
@@ -136,7 +117,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private class SentMessageHolder extends RecyclerView.ViewHolder {
         TextView messageText, readStatusText;
         ImageView messageImage;
-        private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
         SentMessageHolder(View itemView) {
             super(itemView);
@@ -145,7 +125,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             readStatusText = itemView.findViewById(R.id.text_view_read_status);
         }
 
-        void bind(MessageDto message, boolean isLast) {
+        void bind(MessageDto message) {
             if (message.getMessageType() == MessageDto.MessageType.TEXT) {
                 messageText.setText(message.getContent());
                 messageText.setVisibility(View.VISIBLE);
@@ -154,38 +134,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 messageText.setVisibility(View.GONE);
                 messageImage.setVisibility(View.VISIBLE);
                 Glide.with(context)
-                        .load(normalizeUrl(message.getContent()))
-                        .placeholder(R.drawable.ic_placeholder)
-                        .error(R.drawable.ic_placeholder)
-                        .thumbnail(0.25f)
+                        .load(message.getContent()) // Tải URL ảnh
                         .into(messageImage);
-
-                // Xem full-screen ảnh
-                messageImage.setOnClickListener(v -> {
-                    Intent i = new Intent(context, FullscreenImageActivity.class);
-                    i.putExtra("IMAGE_URL", normalizeUrl(message.getContent()));
-                    context.startActivity(i);
-                });
             }
 
-            // Long-press copy text
-            messageText.setOnLongClickListener(v -> {
-                ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("message", message.getContent());
-                cm.setPrimaryClip(clip);
-                Toast.makeText(context, "Đã sao chép", Toast.LENGTH_SHORT).show();
-                return true;
-            });
-
-            // Chỉ hiển thị cho tin nhắn mới nhất: hiển thị giờ, KHÔNG hiển thị "Đã gửi"
-            if (isLast) {
-                Long ts = message.getCreatedAt();
-                String timeText = ts != null ? timeFormat.format(new Date(ts)) : "";
-                readStatusText.setText(timeText);
-                readStatusText.setVisibility(View.VISIBLE);
+            // Cập nhật trạng thái "Đã gửi" / "Đã xem"
+            if (message.getReadAt() != null) {
+                readStatusText.setText("Đã xem");
             } else {
-                readStatusText.setVisibility(View.GONE);
+                readStatusText.setText("Đã gửi");
             }
+            readStatusText.setVisibility(View.VISIBLE);
         }
     }
 
@@ -193,19 +152,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * ViewHolder cho tin nhắn NHẬN (của người khác)
      */
     private class ReceivedMessageHolder extends RecyclerView.ViewHolder {
-        TextView messageText, senderNameText, timeText;
+        TextView messageText, senderNameText;
         ImageView messageImage;
-        private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
         ReceivedMessageHolder(View itemView) {
             super(itemView);
             messageText = itemView.findViewById(R.id.text_view_message_content);
             messageImage = itemView.findViewById(R.id.image_view_message);
             senderNameText = itemView.findViewById(R.id.text_view_sender_name);
-            timeText = itemView.findViewById(R.id.text_view_time_received);
         }
 
-        void bind(MessageDto message, boolean isLast) {
+        void bind(MessageDto message) {
             // TODO: Lấy tên sender từ senderId (nếu là chat nhóm)
             // senderNameText.setText("Sender " + message.getSenderId());
             // senderNameText.setVisibility(View.VISIBLE); // Chỉ hiện khi là chat nhóm
@@ -218,38 +175,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 messageText.setVisibility(View.GONE);
                 messageImage.setVisibility(View.VISIBLE);
                 Glide.with(context)
-                        .load(normalizeUrl(message.getContent()))
-                        .placeholder(R.drawable.ic_placeholder)
-                        .error(R.drawable.ic_placeholder)
-                        .thumbnail(0.25f)
+                        .load(message.getContent()) // Tải URL ảnh
                         .into(messageImage);
-
-                // Xem full-screen ảnh
-                messageImage.setOnClickListener(v -> {
-                    Intent i = new Intent(context, FullscreenImageActivity.class);
-                    i.putExtra("IMAGE_URL", normalizeUrl(message.getContent()));
-                    context.startActivity(i);
-                });
-            }
-
-            // Long-press copy text
-            messageText.setOnLongClickListener(v -> {
-                ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("message", message.getContent());
-                cm.setPrimaryClip(clip);
-                Toast.makeText(context, "Đã sao chép", Toast.LENGTH_SHORT).show();
-                return true;
-            });
-
-            if (timeText != null) {
-                if (isLast) {
-                    Long ts = message.getCreatedAt();
-                    String timeStr = ts != null ? timeFormat.format(new Date(ts)) : "";
-                    timeText.setText(timeStr);
-                    timeText.setVisibility(View.VISIBLE);
-                } else {
-                    timeText.setVisibility(View.GONE);
-                }
             }
         }
     }

@@ -98,72 +98,14 @@ public class AdminChatViewModel extends AndroidViewModel {
                     List<ConversationSummaryDto> dtos = response.body().getContent();
                     if (dtos != null) {
                         // Log để debug
-                        Log.d("AdminChatViewModel", "Search returned " + dtos.size() + " results");
                         for (ConversationSummaryDto dto : dtos) {
                             Log.d("AdminChatViewModel", "Search result - conversationId: " + dto.getConversationId() 
-                                    + ", customerName: " + dto.getCustomerName() 
-                                    + ", customerId: " + dto.getCustomerId()
-                                    + ", unreadCount: " + dto.getUnreadCount());
+                                    + ", customerName: " + dto.getCustomerName() + ", customerId: " + dto.getCustomerId());
                         }
                         
-                        // Map trước
-                        List<ConversationUiData> mapped = mapDtosToUiData(dtos);
-
-                        // Merge với danh sách hiện có để tránh rơi vào fallback khi API search thiếu trường
-                        List<ConversationUiData> current = _conversationList.getValue();
-                        if (current != null && !current.isEmpty()) {
-                            List<ConversationUiData> merged = new ArrayList<>();
-                            for (ConversationUiData ui : mapped) {
-                                ConversationUiData existing = null;
-                                for (ConversationUiData it : current) {
-                                    if (it.getConversationId().equals(ui.getConversationId())) {
-                                        existing = it;
-                                        break;
-                                    }
-                                }
-
-                                if (existing == null) {
-                                    merged.add(ui);
-                                } else {
-                                    String name = ui.getParticipantName();
-                                    if (name == null || name.trim().isEmpty() || "Khách hàng".equals(name)) {
-                                        name = existing.getParticipantName();
-                                    }
-
-                                    String avatar = ui.getParticipantAvatarUrl();
-                                    if (avatar == null || avatar.trim().isEmpty()) {
-                                        avatar = existing.getParticipantAvatarUrl();
-                                    }
-
-                                    String lastMessage = ui.getLastMessage();
-                                    if (lastMessage == null || "[Chưa có tin nhắn]".equals(lastMessage)) {
-                                        lastMessage = existing.getLastMessage();
-                                    }
-
-                                    long lastTs = ui.getLastMessageTimestamp() == 0 ? existing.getLastMessageTimestamp() : ui.getLastMessageTimestamp();
-
-                                    int unread = ui.getUnreadCount() == 0 ? existing.getUnreadCount() : ui.getUnreadCount();
-
-                                    ConversationUiData mergedItem = new ConversationUiData(
-                                            ui.getConversationId(),
-                                            ui.getCustomerId(),
-                                            name,
-                                            avatar,
-                                            lastMessage,
-                                            lastTs,
-                                            unread,
-                                            ui.isLastMessageFromAdmin(),
-                                            ui.isLastMessageRead()
-                                    );
-                                    merged.add(mergedItem);
-                                }
-                            }
-                            Log.d("AdminChatViewModel", "Search success, merged size: " + merged.size());
-                            _conversationList.postValue(merged);
-                        } else {
-                            Log.d("AdminChatViewModel", "Search success, UI data size: " + mapped.size());
-                            _conversationList.postValue(mapped);
-                        }
+                        List<ConversationUiData> uiData = mapDtosToUiData(dtos);
+                        Log.d("AdminChatViewModel", "Search success, UI data size: " + uiData.size());
+                        _conversationList.postValue(uiData);
                     } else {
                         Log.d("AdminChatViewModel", "Search returned empty results");
                         _conversationList.postValue(new ArrayList<>());
@@ -198,8 +140,6 @@ public class AdminChatViewModel extends AndroidViewModel {
      * Xử lý một cập nhật real-time từ Firebase
      */
     public void processSingleUpdate(ConversationSummaryDto updatedDto) {
-        Log.d("AdminChatViewModel", "Processing real-time update for conversationId: " + updatedDto.getConversationId());
-        
         List<ConversationUiData> currentList = _conversationList.getValue();
         if (currentList == null) {
             currentList = new ArrayList<>();
@@ -209,10 +149,6 @@ public class AdminChatViewModel extends AndroidViewModel {
 
         // GỌI HÀM SỐ ÍT
         ConversationUiData updatedUiData = mapDtoToUiData(updatedDto);
-        Log.d("AdminChatViewModel", "Mapped UI data - conversationId: " + updatedUiData.getConversationId() 
-                + ", customerName: " + updatedUiData.getParticipantName() 
-                + ", unreadCount: " + updatedUiData.getUnreadCount()
-                + ", lastMessage: " + updatedUiData.getLastMessage());
 
         // Tìm và xóa item cũ
         int foundIndex = -1;
@@ -224,15 +160,11 @@ public class AdminChatViewModel extends AndroidViewModel {
         }
         if (foundIndex != -1) {
             currentList.remove(foundIndex);
-            Log.d("AdminChatViewModel", "Removed old item at index: " + foundIndex);
-        } else {
-            Log.d("AdminChatViewModel", "Item not found in current list, adding new");
         }
 
         // Thêm item mới lên đầu
         currentList.add(0, updatedUiData);
         _conversationList.postValue(currentList);
-        Log.d("AdminChatViewModel", "Updated list size: " + currentList.size());
     }
 
     // --- CÁC HÀM MAP (RẤT QUAN TRỌNG) ---
@@ -278,8 +210,6 @@ public class AdminChatViewModel extends AndroidViewModel {
         if (customerName == null || customerName.trim().isEmpty()) {
             customerName = "Khách hàng"; // Fallback nếu không có tên
             Log.w("AdminChatViewModel", "Warning: customerName is null or empty for conversationId: " + dto.getConversationId());
-        } else {
-            Log.d("AdminChatViewModel", "Customer name for conversationId " + dto.getConversationId() + ": " + customerName);
         }
 
         // DTO của bạn có "customerAvatarUrl" không? (Dựa trên log JSON thì không)

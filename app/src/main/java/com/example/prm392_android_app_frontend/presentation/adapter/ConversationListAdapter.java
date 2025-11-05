@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import android.text.TextUtils;
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.domain.model.chat.ConversationUiData;
 
@@ -90,27 +89,16 @@ public class ConversationListAdapter extends ListAdapter<ConversationUiData, Con
             tvTime.setText(timeFormat.format(new Date(conversation.getLastMessageTimestamp())));
 
             // Xử lý trạng thái chưa đọc
-            int unreadCount = conversation.getUnreadCount();
-            if (unreadCount > 0) {
-                // Hiển thị cả container và TextView
+            if (conversation.getUnreadCount() > 0) {
                 unreadBadgeContainer.setVisibility(View.VISIBLE);
-                tvUnreadCount.setVisibility(View.VISIBLE);
-                
-                // Hiển thị số lượng, nếu > 9 thì hiển thị "9+"
-                if (unreadCount > 9) {
-                    tvUnreadCount.setText("9+");
-                } else {
-                    tvUnreadCount.setText(String.valueOf(unreadCount));
-                }
+                tvUnreadCount.setText(String.valueOf(conversation.getUnreadCount()));
 
                 // In đậm nếu chưa đọc
                 tvName.setTypeface(null, Typeface.BOLD);
                 tvLastMessage.setTypeface(null, Typeface.BOLD);
                 tvLastMessage.setTextColor(context.getResources().getColor(android.R.color.black)); // Màu đậm
             } else {
-                // Ẩn cả container và TextView
                 unreadBadgeContainer.setVisibility(View.GONE);
-                tvUnreadCount.setVisibility(View.GONE);
 
                 // Trở lại bình thường nếu đã đọc
                 tvName.setTypeface(null, Typeface.NORMAL);
@@ -118,17 +106,12 @@ public class ConversationListAdapter extends ListAdapter<ConversationUiData, Con
                 tvLastMessage.setTextColor(context.getResources().getColor(R.color.gray)); // Màu xám (bạn cần định nghĩa màu này)
             }
 
-            // Tải Avatar: nếu thiếu URL thì dùng ic_profile
-            String avatarUrl = conversation.getParticipantAvatarUrl();
-            if (TextUtils.isEmpty(avatarUrl)) {
-                ivAvatar.setImageResource(R.drawable.ic_profile);
-            } else {
-                Glide.with(context)
-                        .load(avatarUrl)
-                        .placeholder(R.drawable.ic_profile)
-                        .error(R.drawable.ic_profile)
-                        .into(ivAvatar);
-            }
+            // Tải Avatar
+            Glide.with(context)
+                    .load(conversation.getParticipantAvatarUrl())
+                    .placeholder(R.drawable.ic_music_cd) // Ảnh placeholder
+                    .error(R.drawable.ic_music_cd)     // Ảnh khi lỗi
+                    .into(ivAvatar);
 
             // Bắt sự kiện click
             itemView.setOnClickListener(v -> listener.onConversationClick(conversation));

@@ -8,7 +8,6 @@ import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.prm392_android_app_frontend.data.dto.chat.ConversationSummaryDto;
 import com.example.prm392_android_app_frontend.data.dto.chat.MessageDto;
@@ -34,11 +33,6 @@ public class ChatViewModel extends AndroidViewModel {
     private LiveData<MessageDto> newMessage;
     private LiveData<String> typingStatus;
     private LiveData<MessageDto> readReceipt;
-    
-    // LiveData cho upload ảnh
-    private final MutableLiveData<Boolean> isUploading = new MutableLiveData<>(false);
-    private final MutableLiveData<String> uploadError = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> uploadSuccess = new MutableLiveData<>();
 
     // Logic xử lý typing
     private boolean isTyping = false;
@@ -70,9 +64,6 @@ public class ChatViewModel extends AndroidViewModel {
     public LiveData<MessageDto> getNewMessage() { return newMessage; }
     public LiveData<String> getTypingStatus() { return typingStatus; }
     public LiveData<MessageDto> getReadReceipt() { return readReceipt; }
-    public LiveData<Boolean> getIsUploading() { return isUploading; }
-    public LiveData<String> getUploadError() { return uploadError; }
-    public LiveData<Boolean> getUploadSuccess() { return uploadSuccess; }
 
     // --- Các hành động (Action) từ View ---
 
@@ -92,32 +83,8 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public void uploadImage(Uri imageUri) {
-        if (imageUri == null || receiverId == null) {
-            uploadError.postValue("Không thể tải ảnh. Vui lòng thử lại.");
-            return;
-        }
-        
-        // Bắt đầu upload
-        isUploading.postValue(true);
-        uploadError.postValue(null);
-        uploadSuccess.postValue(false);
-        
-        chatRepository.uploadImage(imageUri, receiverId, new ChatRepository.UploadImageCallback() {
-            @Override
-            public void onSuccess() {
-                isUploading.postValue(false);
-                uploadSuccess.postValue(true);
-                Log.d("ChatViewModel", "Image uploaded successfully");
-            }
-            
-            @Override
-            public void onError(String error) {
-                isUploading.postValue(false);
-                uploadError.postValue(error);
-                uploadSuccess.postValue(false);
-                Log.e("ChatViewModel", "Image upload failed: " + error);
-            }
-        });
+        if (imageUri == null || receiverId == null) return;
+        chatRepository.uploadImage(imageUri, receiverId);
     }
 
     public void notifyTyping(boolean isCurrentlyTyping) {

@@ -62,8 +62,7 @@ public class ChatRepository {
 
     public ChatRepository(Application application) {
         this.chatApi = ApiClient.getAuthClient(application).create(ChatApi.class);
-        // Chỉ định URL RTDB rõ ràng để tránh lệch project hoặc app default
-        this.firebaseDatabase = FirebaseDatabase.getInstance("https://prm392-android-app-front-56333-default-rtdb.firebaseio.com");
+        this.firebaseDatabase = FirebaseDatabase.getInstance();
         this.application = application;
     }
 
@@ -129,14 +128,8 @@ public class ChatRepository {
         });
     }
 
-    // Interface callback cho upload ảnh
-    public interface UploadImageCallback {
-        void onSuccess();
-        void onError(String error);
-    }
-    
     // 3. Upload ảnh
-    public void uploadImage(Uri imageUri, Integer receiverId, UploadImageCallback callback) {
+    public void uploadImage(Uri imageUri, Integer receiverId) {
         File tempFile = null;
         try {
             // 1. Get InputStream from Uri
@@ -146,9 +139,8 @@ public class ChatRepository {
             }
 
             // 2. Create a temporary file in the app's cache directory
-            // Using a more unique name with timestamp to avoid conflicts
-            String fileName = "upload_temp_image_" + System.currentTimeMillis() + ".jpg";
-            tempFile = new File(application.getCacheDir(), fileName);
+            // Using a more unique name is better, but this is an example
+            tempFile = new File(application.getCacheDir(), "upload_temp_image.jpg");
 
             // 3. Copy the InputStream to the temporary file
             try (OutputStream outputStream = new FileOutputStream(tempFile)) {
@@ -166,59 +158,37 @@ public class ChatRepository {
             if (contentType == null) {
                 contentType = "image/jpeg"; // Fallback
             }
-            final File finalTempFile = tempFile; // Final reference for use in callback
-            RequestBody requestFile = RequestBody.create(MediaType.parse(contentType), finalTempFile);
-            MultipartBody.Part body = MultipartBody.Part.createFormData("image", finalTempFile.getName(), requestFile);
+            RequestBody requestFile = RequestBody.create(MediaType.parse(contentType), tempFile);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("image", tempFile.getName(), requestFile);
             RequestBody receiverIdBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(receiverId));
 
             // 5. Make the API call
             chatApi.uploadImage(receiverIdBody, body).enqueue(new Callback<MessageDto>() {
                 @Override
                 public void onResponse(Call<MessageDto> call, Response<MessageDto> response) {
-                    // Cleanup file after upload
-                    if (finalTempFile != null && finalTempFile.exists()) {
-                        finalTempFile.delete();
-                    }
-                    
                     if (response.isSuccessful()) {
                         Log.d(TAG, "Image sent via REST, waiting for Firebase echo");
-                        if (callback != null) {
-                            callback.onSuccess();
-                        }
                     } else {
-                        String errorMsg = "Không thể gửi ảnh. Mã lỗi: " + response.code();
                         Log.e(TAG, "Failed to send image: " + response.code());
-                        if (callback != null) {
-                            callback.onError(errorMsg);
-                        }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<MessageDto> call, Throwable t) {
-                    // Cleanup file on failure
-                    if (finalTempFile != null && finalTempFile.exists()) {
-                        finalTempFile.delete();
-                    }
-                    
-                    String errorMsg = "Lỗi mạng khi gửi ảnh: " + t.getMessage();
                     Log.e(TAG, "Error sending image: " + t.getMessage());
-                    if (callback != null) {
-                        callback.onError(errorMsg);
-                    }
                 }
 
             });
 
         } catch (Exception e) {
-            String errorMsg = "Lỗi khi xử lý ảnh: " + e.getMessage();
             Log.e(TAG, "Error preparing image upload", e);
-            if (tempFile != null && tempFile.exists()) {
+            if (tempFile != null) {
                 tempFile.delete(); // Clean up on error
             }
-            if (callback != null) {
-                callback.onError(errorMsg);
-            }
+        }
+        // 6. Delete the temporary file
+        if (tempFile != null) {
+            tempFile.delete();
         }
     }
 
@@ -242,7 +212,31 @@ public class ChatRepository {
 
     // 1. Lắng nghe tin nhắn mới
     public LiveData<MessageDto> getNewMessageListener(Integer conversationId) {
-        // Trả về luồng dùng chung do startRealtimeListeners() bơm dữ liệu
+        MutableLiveData<MessageDto> newMessageData = new MutableLiveData<>();
+        DatabaseReference ref = firebaseDatabase.getReference("messages").child(String.valueOf(conversationId));
+
+        ChildEventListener listener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                try {
+                    MessageDto message = snapshot.getValue(MessageDto.class);
+                    newMessageData.postValue(message);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse new message", e);
+                }
+            }
+            // (onChildChanged, onChildRemoved, onChildMoved... có thể implement sau)
+            @Override public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+            @Override public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
+            @Override public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+            @Override public void onCancelled(@NonNull DatabaseError error) {
+                Log.w(TAG, "messagesListener:onCancelled", error.toException());
+            }
+        };
+
+        // Chỉ lắng nghe tin nhắn mới (sau khi đã load history)
+        ref.orderByChild("createdAt").startAt(System.currentTimeMillis()).addChildEventListener(listener);
+        childListeners.put(ref, listener); // Lưu lại để dọn dẹp
         return newMessageData;
     }
 
@@ -274,7 +268,43 @@ public class ChatRepository {
 
     // 3. Lắng nghe sự kiện Đã đọc
     public LiveData<MessageDto> getReadReceiptListener(Integer conversationId) {
-        // Trả về luồng dùng chung do startRealtimeListeners() bơm dữ liệu
+        MutableLiveData<MessageDto> readReceiptData = new MutableLiveData<>();
+        DatabaseReference ref = firebaseDatabase.getReference("events").child(String.valueOf(conversationId)).child("read");
+
+        ChildEventListener listener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, String previousChildName) {
+                try {
+                    MessageDto readMessage = snapshot.getValue(MessageDto.class);
+                    if (readMessage != null) {
+                        readReceiptData.postValue(readMessage);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse read receipt", e);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                try {
+                    MessageDto readMessage = snapshot.getValue(MessageDto.class);
+                    if (readMessage != null) {
+                        readReceiptData.postValue(readMessage);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse read receipt update", e);
+                }
+            }
+
+            @Override public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
+            @Override public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+            @Override public void onCancelled(@NonNull DatabaseError error) {
+                Log.w(TAG, "readReceiptListener:onCancelled", error.toException());
+            }
+        };
+
+        ref.orderByChild("readAt").startAt(System.currentTimeMillis()).addChildEventListener(listener);
+        childListeners.put(ref, listener); // Lưu lại để dọn dẹp
         return readReceiptData;
     }
 
@@ -299,12 +329,7 @@ public class ChatRepository {
                 try {
                     // Dùng DTO đã sửa (với Long createdAt)
                     MessageDto message = snapshot.getValue(MessageDto.class);
-                    if (message != null) {
-                        Long createdAt = message.getCreatedAt();
-                        if (createdAt == null || createdAt > lastMessageTimestamp) {
-                            newMessageData.postValue(message);
-                        }
-                    }
+                    newMessageData.postValue(message);
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to parse new message", e); // Lỗi sẽ hiện ở đây nếu DTO vẫn sai
                 }
@@ -317,8 +342,8 @@ public class ChatRepository {
             }
         };
 
-        // Lắng nghe toàn bộ, tự lọc theo lastMessageTimestamp để tránh mất sự kiện do lệch giờ
-        msgRef.addChildEventListener(msgListener);
+        // Chỉ lắng nghe các tin nhắn có timestamp LỚN HƠN tin cuối cùng
+        msgRef.orderByChild("createdAt").startAt(lastMessageTimestamp + 1).addChildEventListener(msgListener);
         childListeners.put(msgRef, msgListener); // Lưu lại để dọn dẹp
 
         // --- 2. Read Receipt Listener ---
@@ -339,8 +364,8 @@ public class ChatRepository {
             @Override public void onCancelled(@NonNull DatabaseError error) {}
         };
 
-        // Lắng nghe toàn bộ, UI tự quyết định hiển thị theo thời điểm
-        readRef.addChildEventListener(readListener);
+        // Chỉ lắng nghe các sự kiện "đã đọc" xảy ra từ bây giờ
+        readRef.orderByChild("readAt").startAt(System.currentTimeMillis()).addChildEventListener(readListener);
         childListeners.put(readRef, readListener); // Lưu lại để dọn dẹp
     }
     // ===================================

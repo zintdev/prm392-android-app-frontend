@@ -12,8 +12,7 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_message_sent"
-        android:layout_marginBottom="2dp">
+        android:background="@drawable/bg_message_sent">
 
         <TextView
             android:id="@+id/text_view_message_content"
