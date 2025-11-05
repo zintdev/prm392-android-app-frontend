@@ -90,11 +90,7 @@ public class PaymentSuccessActivity extends AppCompatActivity {
     private void setupButtons() {
         buttonViewOrder.setOnClickListener(v -> {
             // TODO: Navigate to Order Details
-            Intent intent = new Intent(this, OrderViewListActivity.class);
-            intent.putExtra("selected_tab", 1); // Tab "Đã thanh toán" (PAID)
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            navigateToCart();
         });
 
         buttonBackHome.setOnClickListener(v -> {

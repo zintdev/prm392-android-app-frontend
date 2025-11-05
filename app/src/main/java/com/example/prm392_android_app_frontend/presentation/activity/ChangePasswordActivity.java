@@ -1,6 +1,9 @@
 package com.example.prm392_android_app_frontend.presentation.activity;
 
+
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -8,16 +11,17 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.changePassword.ChangePasswordRequest;
-import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
-import com.example.prm392_android_app_frontend.data.remote.api.UserApi;
+import com.example.prm392_android_app_frontend.storage.TokenStore;
+import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,8 +33,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
     private MaterialButton btnChange;
     private ProgressBar progress;
 
-    private UserApi userApi;
-    private int userId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,69 +51,111 @@ public class ChangePasswordActivity extends AppCompatActivity {
         btnChange = findViewById(R.id.btnChange);
         progress = findViewById(R.id.progress);
 
-        // Nếu trong XML lỡ để enabled="false" thì bật lại:
-        btnChange.setEnabled(true);
 
-        userId = TokenStore.getUserId(this);
-        userApi = ApiClient.getAuthClient(this).create(UserApi.class);
 
-        btnChange.setOnClickListener(v -> onChangeClick());
+        TextWatcher watcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { validate(); }
+            @Override public void afterTextChanged(Editable s) {}
+        };
+        edtOld.addTextChangedListener(watcher);
+        edtNew.addTextChangedListener(watcher);
+        edtConfirm.addTextChangedListener(watcher);
+
+        btnChange.setOnClickListener(v -> submit());
     }
 
-    private void onChangeClick() {
+//    private ApiService buildApiWithAuth() {
+//        String token = TokenStore.getToken(this); "
+//        HttpLoggingInterceptor log = new HttpLoggingInterceptor();
+//        log.setLevel(HttpLoggingInterceptor.Level.BODY);
+//
+//        OkHttpClient client = ApiClient.defaultOkHttpBuilder()
+//                .addInterceptor(chain -> {
+//                    return chain.proceed(
+//                            chain.request().newBuilder()
+//                                    .addHeader("Authorization", "Bearer " + token)
+//                                    .build()
+//                    );
+//                })
+//                .addInterceptor(log)
+//                .build();
+//
+//        return ApiClient.retrofit(client).create(ApiService.class);
+//    }
+
+    private void validate() {
         String oldPw = text(edtOld);
         String newPw = text(edtNew);
-        String cfPw  = text(edtConfirm);
+        String confirm = text(edtConfirm);
 
-        // ✅ Chỉ cần rule: mật khẩu mới < 6 thì không cho đổi
-        if (newPw.length() < 6) {
-            Toast.makeText(this, "Mật khẩu mới phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show();
-            return;
+        tilOld.setError(null);
+        tilNew.setError(null);
+        tilConfirm.setError(null);
+
+        boolean ok = true;
+
+        if (oldPw.isEmpty()) {
+            tilOld.setError("Vui lòng nhập mật khẩu cũ");
+            ok = false;
         }
 
-        // (khuyến nghị) Kiểm tra confirm cho an toàn
-        if (!newPw.equals(cfPw)) {
-            Toast.makeText(this, "Xác nhận mật khẩu không khớp", Toast.LENGTH_SHORT).show();
-            return;
+
+        if (newPw.length() < 8 || !newPw.matches(".*[A-Za-z].*") || !newPw.matches(".*\\d.*")) {
+            tilNew.setError("Ít nhất 8 ký tự và gồm chữ & số");
+            ok = false;
+        } else if (newPw.equals(oldPw)) {
+            tilNew.setError("Mật khẩu mới không được trùng mật khẩu cũ");
+            ok = false;
         }
 
-        // Gọi API
-        doChangePassword(oldPw, newPw);
+        if (!confirm.equals(newPw)) {
+            tilConfirm.setError("Xác nhận không khớp");
+            ok = false;
+        }
+
+        btnChange.setEnabled(ok);
     }
 
-    private void doChangePassword(String oldPw, String newPw) {
-        showLoading(true);
-        userApi.changePassword(userId, new ChangePasswordRequest(oldPw, newPw))
-                .enqueue(new Callback<Void>() {
-                    @Override public void onResponse(Call<Void> call, Response<Void> res) {
-                        showLoading(false);
-                        if (res.isSuccessful()) {
-                            Toast.makeText(ChangePasswordActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else if (res.code() == 400) {
-                            // tuỳ backend, có thể là old password sai
-                            Toast.makeText(ChangePasswordActivity.this, "Mật khẩu cũ không đúng", Toast.LENGTH_SHORT).show();
-                        } else if (res.code() == 401) {
-                            Toast.makeText(ChangePasswordActivity.this, "Hết phiên đăng nhập. Vui lòng đăng nhập lại", Toast.LENGTH_SHORT).show();
-                            // điều hướng sang màn đăng nhập nếu cần
-                        } else {
-                            Toast.makeText(ChangePasswordActivity.this, "Lỗi máy chủ (HTTP " + res.code() + ")", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    @Override public void onFailure(Call<Void> call, Throwable t) {
-                        showLoading(false);
-                        Toast.makeText(ChangePasswordActivity.this, "Lỗi kết nối: " + (t.getMessage()==null?"":t.getMessage()), Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private void setLoading(boolean loading) {
+        progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        btnChange.setEnabled(!loading);
+        edtOld.setEnabled(!loading);
+        edtNew.setEnabled(!loading);
+        edtConfirm.setEnabled(!loading);
     }
 
-    private void showLoading(boolean b) {
-        progress.setVisibility(b ? View.VISIBLE : View.GONE);
-        // Để tránh double-click khi đang gọi API, tạm khoá nút rồi mở lại khi xong
-        btnChange.setEnabled(!b);
+    private void submit() {
+        validate();
+        if (!btnChange.isEnabled()) return;
+
+        setLoading(true);
+
+        ChangePasswordRequest body = new ChangePasswordRequest(
+                text(edtOld), text(edtNew)
+        );
+
+//        api.changePassword(body).enqueue(new Callback<Void>() {
+//            @Override public void onResponse(Call<Void> call, Response<Void> resp) {
+//                setLoading(false);
+//                if (resp.isSuccessful()) {
+//                    Toast.makeText(ChangePasswordActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_SHORT).show();
+//                    finish();
+//                } else if (resp.code() == 400 || resp.code() == 409 || resp.code() == 422) {
+//                    tilOld.setError("Mật khẩu cũ không đúng");
+//                } else {
+//                    Toast.makeText(ChangePasswordActivity.this, "Lỗi máy chủ ("+resp.code()+")", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override public void onFailure(Call<Void> call, Throwable t) {
+//                setLoading(false);
+//                Toast.makeText(ChangePasswordActivity.this, "Không thể kết nối. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
-    private static String text(TextInputEditText e) {
+    private String text(TextInputEditText e) {
         return e.getText() == null ? "" : e.getText().toString().trim();
     }
 }
