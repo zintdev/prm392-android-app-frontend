@@ -76,16 +76,17 @@
             android:layout_height="match_parent">
 
             <!-- RecyclerView cho danh sách đơn hàng -->
+
+            <!-- Progress Bar -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_orders"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="8dp"
                 android:clipToPadding="false"
+                android:padding="8dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_order" />
 
-            <!-- Progress Bar -->
             <ProgressBar
                 android:id="@+id/progress_bar"
                 android:layout_width="wrap_content"
