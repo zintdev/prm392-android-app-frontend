@@ -36,6 +36,7 @@ public class OrderViewListActivity extends AppCompatActivity implements OrderLis
     private OrderViewModel orderViewModel;
     private OrderListAdapter adapter;
     private List<OrderDTO> allOrders;
+    private int currentTabPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,11 +104,13 @@ public class OrderViewListActivity extends AppCompatActivity implements OrderLis
     private void setupTabLayout() {
         // Get selected tab from intent
         int selectedTab = getIntent().getIntExtra("selected_tab", 0);
+        currentTabPosition = selectedTab;
         
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                filterOrdersByTab(tab.getPosition());
+                currentTabPosition = tab.getPosition();
+                loadOrdersForTab(currentTabPosition);
             }
 
             @Override
@@ -118,7 +121,11 @@ public class OrderViewListActivity extends AppCompatActivity implements OrderLis
         });
 
         buttonShopNow.setOnClickListener(v -> {
-            // Navigate to home/shop
+            // Navigate to MainActivity with Home tab
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("select_tab", R.id.nav_home);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
             finish();
         });
         
@@ -138,59 +145,35 @@ public class OrderViewListActivity extends AppCompatActivity implements OrderLis
             return;
         }
 
-        int userId = TokenStore.getUserId(this);
-        if (userId != -1) {
-            orderViewModel.getOrdersByUserId(userId, null);
-        }
+        loadOrdersForTab(currentTabPosition);
     }
 
-    private void filterOrdersByTab(int position) {
-        if (allOrders == null) return;
+    private void loadOrdersForTab(int position) {
+        int userId = TokenStore.getUserId(this);
+        if (userId == -1) return;
 
-        List<OrderDTO> filteredOrders;
+        String status = getStatusForTab(position);
+        orderViewModel.getOrdersByUserId(userId, status);
+    }
+
+    private String getStatusForTab(int position) {
         switch (position) {
             case 0: // Tất cả
-                filteredOrders = allOrders;
-                break;
+                return null;
             case 1: // Chờ thanh toán
-                filteredOrders = allOrders.stream()
-                        .filter(order -> "PENDING".equalsIgnoreCase(order.getStatus()))
-                        .collect(Collectors.toList());
-                break;
+                return "PENDING";
             case 2: // Đã thanh toán
-                filteredOrders = allOrders.stream()
-                        .filter(order -> "PAID".equalsIgnoreCase(order.getStatus()))
-                        .collect(Collectors.toList());
-                break;
+                return "PAID";
             case 3: // Đang xử lý
-                filteredOrders = allOrders.stream()
-                        .filter(order -> "PROCESSING".equalsIgnoreCase(order.getStatus()))
-                        .collect(Collectors.toList());
-                break;
+                return "PROCESSING";
             case 4: // Đang giao
-                filteredOrders = allOrders.stream()
-                        .filter(order -> "SHIPPING".equalsIgnoreCase(order.getStatus()) || 
-                                       "DELIVERED".equalsIgnoreCase(order.getStatus()))
-                        .collect(Collectors.toList());
-                break;
+                return "SHIPPED";
             case 5: // Hoàn thành
-                filteredOrders = allOrders.stream()
-                        .filter(order -> "COMPLETED".equalsIgnoreCase(order.getStatus()))
-                        .collect(Collectors.toList());
-                break;
+                return "COMPLETED";
             case 6: // Đã hủy
-                filteredOrders = allOrders.stream()
-                        .filter(order -> "CANCELLED".equalsIgnoreCase(order.getStatus()))
-                        .collect(Collectors.toList());
-                break;
+                return "CANCELLED";
             default:
-                filteredOrders = allOrders;
-        }
-
-        if (filteredOrders.isEmpty()) {
-            showEmpty();
-        } else {
-            showOrders(filteredOrders);
+                return null;
         }
     }
 

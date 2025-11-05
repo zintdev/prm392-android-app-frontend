@@ -194,4 +194,8 @@ public class NavbarManager {
                 .commit();
         return true;
     }
+
+    //    public void setBottomNavVisible(boolean visible) {
+    //        bottomNav.setVisibility(visible ? View.VISIBLE : View.GONE);
+    //    }
 }

@@ -56,9 +56,10 @@ public class OrderViewModel extends ViewModel {
                 isLoading.setValue(false);
                 if (response.isSuccessful() && response.body() != null) {
                     orderLiveData.setValue(response.body());
-                } else {
-                    errorMessage.setValue("Không thể tạo đơn hàng. Vui lòng thử lại.");
                 }
+//                else {
+//                    errorMessage.setValue("Không thể tạo đơn hàng. Vui lòng thử lại.");
+//                }
             }
 
             @Override
@@ -79,9 +80,10 @@ public class OrderViewModel extends ViewModel {
                 isLoading.setValue(false);
                 if (response.isSuccessful() && response.body() != null) {
                     ordersListLiveData.setValue(response.body());
-                } else {
-                    errorMessage.setValue("Không thể tải danh sách đơn hàng. Vui lòng thử lại.");
                 }
+//                else {
+//                    errorMessage.setValue("Không thể tải danh sách đơn hàng. Vui lòng thử lại.");
+//                }
             }
 
             @Override

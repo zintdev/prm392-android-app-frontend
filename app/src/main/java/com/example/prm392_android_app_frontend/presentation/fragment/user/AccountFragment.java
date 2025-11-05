@@ -229,13 +229,13 @@ public class AccountFragment extends Fragment {
 
         btnOrderProcessing.setOnClickListener(v1 -> {
             Intent intent = new Intent(requireContext(), OrderViewListActivity.class);
-            intent.putExtra("selected_tab", 3); // Tab "Đang giao"
+            intent.putExtra("selected_tab", 4); // Tab "Đang giao"
             startActivity(intent);
         });
 
         btnOrderCompleted.setOnClickListener(v1 -> {
             Intent intent = new Intent(requireContext(), OrderViewListActivity.class);
-            intent.putExtra("selected_tab", 4); // Tab "Hoàn thành"
+            intent.putExtra("selected_tab", 5); // Tab "Hoàn thành"
             startActivity(intent);
         });
     
