@@ -13,13 +13,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="4dp">
-        <com.google.android.material.appbar.MaterialToolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            style="@style/Widget.Material3.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:title="Chọn địa chỉ" />
+            android:background="?attr/colorPrimary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:titleTextColor="@android:color/white"
+            app:subtitleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@android:color/white"
+            app:title="Chọn địa chỉ" />
     </com.google.android.material.appbar.AppBarLayout>
+
+
 
     <!-- Container chứa form và map -->
     <LinearLayout
@@ -32,15 +39,15 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardElevation="4dp"
+            android:layout_margin="12dp"
+            app:cardElevation="2dp"
             app:cardCornerRadius="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="12dp">
 
                 <!-- Address Autocomplete Input -->
                 <com.google.android.material.textfield.TextInputLayout
@@ -56,7 +63,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPostalAddress"
-                        android:imeOptions="actionSearch" />
+                        android:imeOptions="actionSearch"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -78,7 +88,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:visibility="gone">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilLatitude"

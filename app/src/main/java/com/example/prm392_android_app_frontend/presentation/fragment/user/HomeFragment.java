@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -94,9 +95,9 @@ public class HomeFragment extends Fragment {
         // Setup toggle layout button
         setupToggleLayoutButton();
 
-        // ViewModel (dùng viewLifecycleOwner để observe đúng vòng đời)
+        // SỬA LỖI: Lấy ViewModel từ Activity để đảm bảo sử dụng chung một đối tượng
         productViewModel = new ViewModelProvider(this).get(ProductViewModel.class);
-        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
         // Setup adapter listener để xử lý thêm vào giỏ hàng
         productAdapter.setOnAddToCartClickListener((productId, quantity) -> {
@@ -121,21 +122,20 @@ public class HomeFragment extends Fragment {
             showLoading(false);
         });
 
-        // Lắng nghe kết quả thêm vào giỏ hàng
-        cartViewModel.getCartLiveData().observe(getViewLifecycleOwner(), cartDto -> {
-            if (cartDto != null) {
-                android.widget.Toast.makeText(requireContext(), 
-                    "Đã thêm sản phẩm vào giỏ hàng thành công!", 
-                    android.widget.Toast.LENGTH_SHORT).show();
+        // SỬA LỖI: Lắng nghe sự kiện Toast một lần
+        cartViewModel.getShowToast().observe(getViewLifecycleOwner(), event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
 
         // Lắng nghe lỗi từ CartViewModel
         cartViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             if (error != null && !error.isEmpty()) {
-                android.widget.Toast.makeText(requireContext(), 
+                Toast.makeText(requireContext(), 
                     "Lỗi: " + error, 
-                    android.widget.Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_SHORT).show();
             }
         });
 

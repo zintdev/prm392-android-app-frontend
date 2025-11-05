@@ -15,7 +15,8 @@ public interface NominatimApiService {
     Call<List<NominatimPlace>> search(
             @Query("q") String query,      // Địa chỉ người dùng nhập
             @Query("format") String format, // Luôn là "json"
-            @Query("limit") int limit      // Giới hạn 1 kết quả
+            @Query("limit") int limit,     // Giới hạn 1 kết quả
+            @Query("countrycodes") String countryCodes  // Giới hạn quốc gia (ví dụ: "vn" cho Việt Nam)
     );
 
     /**
@@ -25,7 +26,8 @@ public interface NominatimApiService {
     Call<List<NominatimPlace>> autocomplete(
             @Query("q") String query,
             @Query("format") String format,
-            @Query("limit") int limit      // Thường là 5-10 kết quả
+            @Query("limit") int limit,     // Thường là 5-10 kết quả
+            @Query("countrycodes") String countryCodes  // Giới hạn quốc gia (ví dụ: "vn" cho Việt Nam)
     );
 
     /**

@@ -6,7 +6,5 @@ public class UserDto {
     public String email;
     public String phoneNumber;
     public String role;
-//    public String dob;
-    public String gender;
     public String address;
 }
