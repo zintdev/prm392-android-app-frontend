@@ -220,11 +220,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Toast.makeText(this, "Hãy chọn một cửa hàng trước.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                openDirectionsInGoogleMaps(
-                        selectedStore.latitude,
-                        selectedStore.longitude,
-                        selectedStore.name != null ? selectedStore.name : selectedStore.address
-                );
+        openDirectionsInGoogleMaps(selectedStore);
             });
         }
 
@@ -364,15 +360,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             bottomBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
     }
 
-    private void openDirectionsInGoogleMaps(double lat, double lng, String label) {
-        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + lat + "," + lng +
-                "(" + Uri.encode(label == null ? "" : label) + ")" + "&mode=d");
+    private void openDirectionsInGoogleMaps(StoreNearbyDto store) {
+        if (store == null) return;
+
+        String address = store.address != null ? store.address.trim() : "";
+        String destinationQuery = address.isEmpty()
+                ? store.latitude + "," + store.longitude
+                : address;
+
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + Uri.encode(destinationQuery) + "&mode=d");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         try {
             startActivity(mapIntent);
         } catch (ActivityNotFoundException e) {
-            String url = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lng + "&travelmode=driving";
+            String url = "https://www.google.com/maps/dir/?api=1&destination="
+                    + Uri.encode(destinationQuery) + "&travelmode=driving";
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         }
     }
