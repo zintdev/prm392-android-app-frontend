@@ -22,7 +22,7 @@ public class VNPayPaymentActivity extends AppCompatActivity {
     private WebView webViewVNPay;
     private ProgressBar progressBar;
     private MaterialToolbar toolbar;
-    
+
     private int orderId;
     private int paymentId;
     private double amount;
@@ -39,7 +39,7 @@ public class VNPayPaymentActivity extends AppCompatActivity {
         orderId = getIntent().getIntExtra("order_id", 0);
         paymentId = getIntent().getIntExtra("payment_id", 0);
         amount = getIntent().getDoubleExtra("amount", 0.0);
-        
+
         if (paymentUrl == null || paymentUrl.isEmpty()) {
             Toast.makeText(this, "Lỗi: Không có URL thanh toán", Toast.LENGTH_SHORT).show();
             finish();
@@ -58,7 +58,11 @@ public class VNPayPaymentActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         setSupportActionBar(toolbar);
-        // Không hiển thị nút back
+        toolbar.setNavigationOnClickListener(v -> {
+            // Khi người dùng nhấn nút back trên toolbar, coi như là hủy thanh toán
+            setResult(RESULT_CANCELED);
+            finish();
+        });
     }
 
     private void setupWebView() {
@@ -72,7 +76,7 @@ public class VNPayPaymentActivity extends AppCompatActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 progressBar.setVisibility(View.VISIBLE);
-                
+
                 // Kiểm tra return URL
                 if (url.contains("/api/vnpay/return")) {
                     handlePaymentReturn(url);
@@ -89,7 +93,7 @@ public class VNPayPaymentActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.contains("/api/vnpay/return")) {
                     handlePaymentReturn(url);
-                    return true;
+                    return true; // Ngăn WebView tự điều hướng
                 }
                 return false;
             }
@@ -122,12 +126,15 @@ public class VNPayPaymentActivity extends AppCompatActivity {
         intent.putExtra("return_url", url);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+        
+        // Đóng Activity và trả kết quả về cho OrderCreateActivity
         finish();
     }
 
     @Override
     public void onBackPressed() {
-        // Vô hiệu hóa nút back - người dùng phải hoàn tất thanh toán
-        // Không cho phép thoát ra giữa chừng
+        // Khi người dùng nhấn nút back cứng, coi như là hủy thanh toán
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
     }
 }
