@@ -117,6 +117,14 @@
                     android:id="@+id/rowProfile"
                     layout="@layout/row_menu_item" />
 
+                <include
+                    android:id="@+id/rowStaffManage"
+                    layout="@layout/row_menu_item" />
+
+                <include
+                    android:id="@+id/rowInventoryManage"
+                    layout="@layout/row_menu_item" />
+
                 <!-- Đăng xuất -->
                 <include
                     android:id="@+id/rowLogout"

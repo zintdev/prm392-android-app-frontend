@@ -53,14 +53,21 @@ public class TokenStore {
         String r = getRole(context);
         if (r == null) return false;
         r = r.trim().toUpperCase();
-        return r.equals("ADMIN") || r.equals("ROLE_ADMIN") || r.equals("ADMINISTRATOR");
+        return r.equals("ADMIN");
+    }
+
+    public static boolean isStaff(Context context) {
+        String r = getRole(context);
+        if (r == null) return false;
+        r = r.trim().toUpperCase();
+        return r.equals("STAFF");
     }
 
     public static boolean isUser(Context context) {
         String r = getRole(context);
         if (r == null) return false;
         r = r.trim().toUpperCase();
-        return r.equals("USER") || r.equals("CUSTOMER") || r.equals("ROLE_USER");
+        return r.equals("CUSTOMER");
     }
 
     // ==============================================================
