@@ -98,35 +98,35 @@ public class LoginActivity extends AppCompatActivity {
         viewModel.login(usernameOrEmail, pass);
     }
 
-        private void onLoginSuccess(LoginResponse body) {
-            if (body == null || TextUtils.isEmpty(body.getToken())) {
-                toast("Thiếu token trong phản hồi.");
-                return;
-            }
-            LoginResponse.User user = body.getUser();
-            if (user == null) {
-                toast("Phản hồi không có thông tin người dùng.");
-                return;
-            }
-
-            TokenStore.saveLogin(
-                    this,
-                    body.getToken(),
-                    user.getId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getRole()
-            );
-            Intent i;
-            if(isAdmin(user.getRole())){
-                i = new Intent(this, AdminMainActivity.class);
-                }else{
-                i = new Intent(this, MainActivity.class);
-                }
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(i);
-            finish();
+    private void onLoginSuccess(LoginResponse body) {
+        if (body == null || TextUtils.isEmpty(body.getToken())) {
+            toast("Thiếu token trong phản hồi.");
+            return;
         }
+        LoginResponse.User user = body.getUser();
+        if (user == null) {
+            toast("Phản hồi không có thông tin người dùng.");
+            return;
+        }
+
+        TokenStore.saveLogin(
+                this,
+                body.getToken(),
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole()
+        );
+        Intent i;
+        if(isAdmin(user.getRole())){
+            i = new Intent(this, AdminMainActivity.class);
+        }else{
+            i = new Intent(this, MainActivity.class);
+        }
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
+    }
 
     private boolean isAdmin(String role) {
         if (role == null) return false;

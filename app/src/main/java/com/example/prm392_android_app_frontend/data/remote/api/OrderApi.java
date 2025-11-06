@@ -18,7 +18,7 @@ public interface OrderApi {
 
     @POST("orders")
     Call<OrderDTO> placeOrder(@Body CreateOrderRequestDto body);
-    
+
     @GET("orders/user/{userId}")
     Call<List<OrderDTO>> getOrdersByUserId(
             @Path("userId") int userId,

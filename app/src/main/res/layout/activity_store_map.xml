@@ -11,13 +11,13 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topAppBar"
-            style="@style/Widget.Material3.Toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:title="@string/store_list_title"
-            app:layout_scrollFlags="scroll|enterAlways" />
+<!--        <com.google.android.material.appbar.MaterialToolbar-->
+<!--            android:id="@+id/topAppBar"-->
+<!--            style="@style/Widget.Material3.Toolbar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:title="@string/store_list_title"-->
+<!--            app:layout_scrollFlags="scroll|enterAlways" />-->
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Map: FragmentContainerView -->
@@ -37,7 +37,8 @@
         app:srcCompat="@android:drawable/ic_menu_mylocation"
         app:layout_anchor="@id/map"
         app:layout_anchorGravity="bottom|start"
-        android:layout_margin="16dp" />
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="248dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabRefresh"
@@ -47,7 +48,8 @@
         app:srcCompat="@android:drawable/ic_popup_sync"
         app:layout_anchor="@id/map"
         app:layout_anchorGravity="bottom|end"
-        android:layout_margin="16dp" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="248dp" />
 
     <!-- Loading overlay -->
     <LinearLayout
@@ -75,63 +77,114 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
-    <!-- BottomSheet -->
+    <!-- Top controls overlay -->
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/bottomSheet"
+        android:id="@+id/cardControls"
         style="@style/Widget.Material3.CardView.Filled"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:cardCornerRadius="20dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
         app:cardUseCompatPadding="true"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        app:behavior_peekHeight="160dp"
-    app:behavior_hideable="false"
-    app:behavior_draggable="true">
+        app:cardElevation="8dp"
+        app:layout_anchor="@id/appBar"
+        app:layout_anchorGravity="bottom">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="794dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="12dp">
 
-            <!-- thanh kéo nhỏ cho dễ nắm -->
-            <View
-                android:layout_width="36dp"
-                android:layout_height="4dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="8dp"
-                android:alpha="0.6"
-                android:background="@android:color/darker_gray" />
-
-            <include
-                layout="@layout/include_store_filters"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSearch"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvStores"
-                android:layout_width="match_parent"
-                android:layout_height="320dp"
-                android:nestedScrollingEnabled="true"
-                android:overScrollMode="ifContentScrolls" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabGo"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="Đi tới cửa hàng đã chọn"
-                app:srcCompat="@android:drawable/ic_media_play"
-                app:layout_anchor="@id/map"
-                app:layout_anchorGravity="bottom|center_horizontal"
-                android:layout_margin="16dp"
-                android:layout_marginBottom="88dp"
-                android:visibility="gone" />
+                android:hint="@string/search_store_hint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilRadius"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/hint_radius_km">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtRadius"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="20" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/txtCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/store_list_count_default"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnApply"
+                    style="@style/Widget.Material3.Button.IconButton.Filled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/apply" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnShowAll"
+                    style="@style/Widget.Material3.Button.IconButton.Filled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/show_all" />
+            </LinearLayout>
 
         </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Store carousel -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStores"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_margin="16dp"
+        android:background="@android:color/transparent"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="16dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="16dp"
+        app:layout_anchor="@id/map"
+        app:layout_anchorGravity="bottom" />
 
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
