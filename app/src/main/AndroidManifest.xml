@@ -147,15 +147,15 @@
             android:exported="false"
             android:label="Thêm cửa hàng mới" />
 
-        <!--        <activity-->
-        <!--            android:name=".presentation.activity.CategoryManageActivity"-->
-        <!--            android:exported="false"-->
-        <!--            android:label="Quản lý danh mục" />-->
+        <activity
+            android:name=".presentation.activity.CategoryManageActivity"
+            android:exported="false"
+            android:label="Quản lý danh mục" />
 
-        <!--        <activity-->
-        <!--            android:name=".presentation.activity.PublisherManageActivity"-->
-        <!--            android:exported="false"-->
-        <!--            android:label="Quản lý nhà xuất bản" />-->
+        <activity
+            android:name=".presentation.activity.PublisherManageActivity"
+            android:exported="false"
+            android:label="Quản lý nhà xuất bản" />
 
         <!-- THÊM DÒNG CODE NÀY VÀO -->
         <!--        <activity-->

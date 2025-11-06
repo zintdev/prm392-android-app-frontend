@@ -93,7 +93,9 @@ public class AdminDashboardFragment extends Fragment {
         });
 
         binding.buttonPublisherManagement.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Chuẩn bị gọi API Quản lý Nhà xuất bản", Toast.LENGTH_SHORT).show();
+            if (listener != null) {
+                listener.navigateToPublisherManagement();
+            }
         });
 
         binding.buttonAuthorManagement.setOnClickListener(v -> {
@@ -103,7 +105,9 @@ public class AdminDashboardFragment extends Fragment {
         });
 
         binding.buttonCategoryManagement.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Chuẩn bị gọi API Quản lý Danh mục", Toast.LENGTH_SHORT).show();
+            if (listener != null) {
+                listener.navigateToCategoryManagement();
+            }
         });
     }
 
