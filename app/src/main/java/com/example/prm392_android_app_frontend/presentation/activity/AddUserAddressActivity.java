@@ -116,7 +116,6 @@ public class AddUserAddressActivity extends AppCompatActivity {
                 provinces = data;
                 manualMode = false;
                 bindProvinceAdapter();
-                // Bật lại dropdown và khóa gõ tay
                 useDropdownMode(tilProvince, ddProvince, true);
                 useDropdownMode(tilDistrict, ddDistrict, true);
                 useDropdownMode(tilWard, ddWard, true);
@@ -151,7 +150,6 @@ public class AddUserAddressActivity extends AppCompatActivity {
                         android.R.layout.simple_list_item_1,
                         mapDistrictNames(districts)
                 ));
-                // District có dropdown lại
                 useDropdownMode(tilDistrict, ddDistrict, true);
                 tilDistrict.setPlaceholderText(null);
             }
@@ -252,8 +250,6 @@ public class AddUserAddressActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    // =================== Manual mode helpers ===================
 
     private void enableManualMode(String reason) {
         manualMode = true;

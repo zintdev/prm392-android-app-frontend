@@ -37,13 +37,15 @@
         import com.google.android.material.bottomsheet.BottomSheetDialog;
         import com.google.android.material.chip.Chip;
         import com.google.android.material.chip.ChipGroup;
-        
+
+        import android.widget.TextView;
         import android.widget.Toast;
         
         public class SearchProductActivity extends AppCompatActivity {
         
             // UI Components
             private EditText edtQuery;
+            private TextView emptyView;
             private RecyclerView rvProducts;
             private ProgressBar progress;
             private LinearLayout btnSort, btnFilter;
@@ -88,7 +90,7 @@
                 progress   = findViewById(R.id.progress);
                 btnSort    = findViewById(R.id.btnSort);
                 btnFilter  = findViewById(R.id.btnFilter);
-        
+                emptyView = findViewById(R.id.emptyView);
                 rvProducts.setLayoutManager(new LinearLayoutManager(this));
                 adapter = new ProductAdapter();
                 rvProducts.setAdapter(adapter);
@@ -229,9 +231,15 @@
                             break;
                         case ERROR:
                             progress.setVisibility(View.GONE);
-                            Toast.makeText(this,
-                                    res.getMessage() != null ? res.getMessage() : "Lỗi tải dữ liệu",
-                                    Toast.LENGTH_SHORT).show();
+                            adapter.setProducts(java.util.Collections.emptyList());
+                            if (isNotFound(res.getMessage())) {
+                                showEmpty("Không có sản phẩm phù hợp với bộ lọc hiện tại");
+                            } else {
+                                hideEmpty();
+                                Toast.makeText(this,
+                                        res.getMessage() != null ? res.getMessage() : "Lỗi tải dữ liệu",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                             break;
                     }
                 });
@@ -273,12 +281,12 @@
                                 // Set unique ID for the chip so ChipGroup can track selection
                                 chip.setId(View.generateViewId());
                                 chipGroup.addView(chip);
-                                android.util.Log.d("SearchActivity", "🔍 Created chip: " + c.name + " with ID: " + chip.getId() + " and tag: " + c.id);
+//                                android.util.Log.d("SearchActivity", "🔍 Created chip: " + c.name + " with ID: " + chip.getId() + " and tag: " + c.id);
                                 
                                 // Test click listener để debug
                                 chip.setOnClickListener(v -> {
-                                    android.util.Log.d("SearchActivity", "🔍 Category chip clicked: " + c.name + " ID: " + chip.getId());
-                                    android.util.Log.d("SearchActivity", "🔍 Chip checked: " + chip.isChecked());
+//                                    android.util.Log.d("SearchActivity", "🔍 Category chip clicked: " + c.name + " ID: " + chip.getId());
+//                                    android.util.Log.d("SearchActivity", "🔍 Chip checked: " + chip.isChecked());
                                 });
                             }
                             // Chọn lại nếu đã có filter trước đó
@@ -463,5 +471,24 @@
                 if (tag instanceof Integer) return (Integer) tag;
                 try { return tag != null ? Integer.parseInt(String.valueOf(tag)) : null; }
                 catch (Exception e) { return null; }
+            }
+            private boolean isNotFound(String msg) {
+                if (msg == null) return false;
+                String m = msg.toLowerCase();
+                // tuỳ backend: có thể chứa "404", "not found", "no products", ...
+                return m.contains("404") || m.contains("not found");
+            }
+
+            private void showEmpty(String text) {
+                if (emptyView instanceof android.widget.TextView) {
+                    ((android.widget.TextView) emptyView).setText(text);
+                }
+                emptyView.setVisibility(View.VISIBLE);
+                rvProducts.setVisibility(View.GONE);
+            }
+
+            private void hideEmpty() {
+                emptyView.setVisibility(View.GONE);
+                rvProducts.setVisibility(View.VISIBLE);
             }
         }

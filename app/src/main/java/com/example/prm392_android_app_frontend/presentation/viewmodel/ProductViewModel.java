@@ -302,8 +302,6 @@ public class ProductViewModel extends AndroidViewModel {
 
     public void search(String name, ProductFilter filter) {
     productsState.postValue(Resource.loading());
-
-    // Nếu name rỗng hoặc null → chỉ tìm theo filter
     if (name == null || name.trim().isEmpty()) {
         productRepository.filterProducts(filter, new Callback<List<ProductDto>>() {
             @Override

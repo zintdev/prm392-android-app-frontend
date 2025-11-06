@@ -56,8 +56,17 @@ public class AddressRepository {
             }
         });
     }
-    public void updateAddress(int id, int userId, String fullName, String phoneNumber, String line1, String line2, String cityState,
-                              CallbackResult<AddressDto> cb) {
+    public void updateAddress(
+            int id,
+            int userId,
+            String fullName,
+            String phoneNumber,
+            String line1,
+            String line2,
+            String cityState,
+            boolean isDefault,
+            CallbackResult<AddressDto> cb
+    ) {
         UpdateAddressRequest req = new UpdateAddressRequest();
         req.userId = userId;
         req.fullName = fullName;
@@ -65,17 +74,25 @@ public class AddressRepository {
         req.shippingAddressLine1 = line1;
         req.shippingAddressLine2 = line2;
         req.shippingCityState = cityState;
+        req.isDefault = isDefault;
 
         api.updateAddress(id, req).enqueue(new Callback<AddressDto>() {
-            @Override public void onResponse(@NonNull Call<AddressDto> call, @NonNull Response<AddressDto> res) {
-                if (res.isSuccessful() && res.body()!=null) cb.onSuccess(res.body());
-                else cb.onError("Cập nhật địa chỉ thất bại", res.code());
+            @Override
+            public void onResponse(@NonNull Call<AddressDto> call, @NonNull Response<AddressDto> res) {
+                if (res.isSuccessful() && res.body() != null) {
+                    cb.onSuccess(res.body());
+                } else {
+                    cb.onError("Cập nhật địa chỉ thất bại", res.code());
+                }
             }
-            @Override public void onFailure(@NonNull Call<AddressDto> call, @NonNull Throwable t) {
+
+            @Override
+            public void onFailure(@NonNull Call<AddressDto> call, @NonNull Throwable t) {
                 cb.onError(t.getMessage(), -1);
             }
         });
     }
+
 
     public void deleteAddress(int id, CallbackResult<Boolean> cb) {
         api.deleteAddress(id).enqueue(new Callback<Void>() {

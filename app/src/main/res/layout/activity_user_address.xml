@@ -49,13 +49,13 @@
             android:layout_height="48dp"
             android:text="+ Thêm địa chỉ mới" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSaveChanges"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:text="Lưu thay đổi"
-            app:cornerRadius="12dp" />
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/btnSaveChanges"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:text="Lưu thay đổi"-->
+<!--            app:cornerRadius="12dp" />-->
     </LinearLayout>
 
     <!-- Loading -->

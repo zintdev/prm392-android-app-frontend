@@ -86,19 +86,52 @@ public class EditProfileActivity extends AppCompatActivity {
         String email = textOf(edtEmail);
         String phone = textOf(edtPhone);
 
-        if (TextUtils.isEmpty(name))  { edtFullName.setError("Vui lòng nhập họ tên"); return; }
-        if (TextUtils.isEmpty(email)) { edtEmail.setError("Vui lòng nhập email");   return; }
+        if (TextUtils.isEmpty(name))  {
+            edtFullName.setError("Vui lòng nhập họ tên");
+            edtFullName.requestFocus();
+            return;
+        }
+        if (TextUtils.isEmpty(email)) {
+            edtEmail.setError("Vui lòng nhập email");
+            edtEmail.requestFocus();
+            return;
+        }
+        if (!isValidGmail(email)) {
+            edtEmail.setError("Email phải là địa chỉ Gmail hợp lệ (ví dụ: ten@gmail.com)");
+            edtEmail.requestFocus();
+            return;
+        }
+        if (!TextUtils.isEmpty(phone) && !isValidPhoneVN(phone)) {
+            edtPhone.setError("Số điện thoại không hợp lệ (VD: 0XXXXXXXXX, gồm 10 chữ số)");
+            edtPhone.requestFocus();
+            return;
+        }
 
+        // 4️⃣ Gọi API khi hợp lệ
         UpdateUserRequest req = new UpdateUserRequest();
         req.username = name;
-        req.email = email;
+        req.email = email.trim();
         req.phoneNumber = phone;
         req.role = null;
 
         vm.updateUser(userId, req);
     }
 
+
     private String textOf(TextInputEditText e) {
         return e.getText() == null ? "" : e.getText().toString().trim();
     }
+    private boolean isValidGmail(String email) {
+        if (email == null) return false;
+        String e = email.trim().toLowerCase();
+        if (!e.endsWith("@gmail.com")) return false;
+        return e.matches("^[a-z0-9._%+-]{3,64}@gmail\\.com$");
+    }
+
+    private boolean isValidPhoneVN(String phone) {
+        if (phone == null) return false;
+        String p = phone.trim();
+        return p.matches("^0\\d{9}$");
+    }
+
 }

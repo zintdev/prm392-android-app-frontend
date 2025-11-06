@@ -20,6 +20,7 @@
     import com.example.prm392_android_app_frontend.storage.TokenStore;
     import com.google.android.material.appbar.MaterialToolbar;
     import com.google.android.material.button.MaterialButton;
+    import com.google.android.material.checkbox.MaterialCheckBox;
     import com.google.android.material.dialog.MaterialAlertDialogBuilder;
     import com.google.android.material.textfield.TextInputEditText;
 
@@ -37,7 +38,7 @@
         private MaterialButton btnAddAddress, btnSaveChanges;
         private AddressAdapter adapter;
         private AddressRepository addressRepository;
-
+        private MaterialCheckBox defaultShipping;
         private AddressApi api;
         private int userId;
 
@@ -49,7 +50,7 @@
             rvAddresses = findViewById(R.id.rvAddresses);
             progress = findViewById(R.id.progress);
             btnAddAddress = findViewById(R.id.btnAddAddress);
-            btnSaveChanges = findViewById(R.id.btnSaveChanges);
+//            btnSaveChanges = findViewById(R.id.btnSaveChanges);
 
             MaterialToolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setNavigationOnClickListener(v -> finish());
@@ -69,18 +70,12 @@
                 Intent intent = new Intent(this, AddUserAddressActivity.class);
                 startActivity(intent);
             });
-
-            btnSaveChanges.setOnClickListener(v ->
-                    Toast.makeText(this, "Tính năng lưu thay đổi (nếu có) đang được phát triển", Toast.LENGTH_SHORT).show()
-            );
-
             loadAddresses();
         }
 
         @Override
         protected void onResume() {
             super.onResume();
-            // Khi thêm địa chỉ mới xong quay lại -> refresh
             loadAddresses();
         }
 
@@ -137,15 +132,16 @@
             TextInputEditText edtLine1 = content.findViewById(R.id.edtLine1);
             TextInputEditText edtLine2 = content.findViewById(R.id.edtLine2);
             TextInputEditText edtCityState = content.findViewById(R.id.edtCityState);
+            MaterialCheckBox cbDefaultShipping = content.findViewById(R.id.cbDefaultShipping);
 
             edtFullName.setText(a.fullName);
             edtPhoneNumber.setText(a.phoneNumber);
             edtLine1.setText(a.shippingAddressLine1);
             edtLine2.setText(a.shippingAddressLine2);
             edtCityState.setText(a.shippingCityState);
-
+            cbDefaultShipping.setChecked(a.isDefault);
             new MaterialAlertDialogBuilder(this)
-                    .setTitle("Sửa địa chỉ #" + a.id)
+                    .setTitle("Sửa địa chỉ")
                     .setView(content)
                     .setNegativeButton("Huỷ", null)
                     .setPositiveButton("Lưu", (d, w) -> {
@@ -155,21 +151,28 @@
                         String line1 = textOf(edtLine1);
                         String line2 = textOf(edtLine2);
                         String cs    = textOf(edtCityState);
-
+                        boolean isDefault = cbDefaultShipping.isChecked();
                         if (fullName.isEmpty() || phoneNumber.isEmpty() || line1.isEmpty() || cs.isEmpty()) {
-                            Toast.makeText(this, "Họ tên, số điện thoại, Line1 và Tỉnh/Thành không được trống", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Họ tên, số điện thoại và Tỉnh/Thành không được trống", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (!isValidPhoneVN(phoneNumber)) {
+                            Toast.makeText(this, "Số điện thoại không hợp lệ (VD: 0XXXXXXXXX, gồm 10 chữ số)", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         showLoading(true);
-                        addressRepository.updateAddress(a.id, userId, fullName, phoneNumber, line1, line2, cs,
+                        addressRepository.updateAddress(a.id, userId, fullName, phoneNumber, line1, line2, cs, isDefault,
                                 new AddressRepository.CallbackResult<AddressDto>() {
-                                    @Override public void onSuccess(AddressDto data) {
+                                    @Override
+                                    public void onSuccess(AddressDto data) {
                                         showLoading(false);
                                         Toast.makeText(UserAddressesActivity.this, "Đã cập nhật", Toast.LENGTH_SHORT).show();
                                         loadAddresses();
                                     }
-                                    @Override public void onError(String message, int code) {
+
+                                    @Override
+                                    public void onError(String message, int code) {
                                         showLoading(false);
                                         Toast.makeText(UserAddressesActivity.this, "Cập nhật thất bại: " + message, Toast.LENGTH_SHORT).show();
                                     }
@@ -177,7 +180,15 @@
                     }).show();
         }
 
+
         private String textOf(TextInputEditText e){
             return e.getText()==null? "" : e.getText().toString().trim();
         }
+        private boolean isValidPhoneVN(String phone) {
+            if (phone == null) return false;
+            String p = phone.trim();
+            // Bắt đầu bằng 0, tổng cộng 10 chữ số
+            return p.matches("^0\\d{9}$");
+        }
+
     }

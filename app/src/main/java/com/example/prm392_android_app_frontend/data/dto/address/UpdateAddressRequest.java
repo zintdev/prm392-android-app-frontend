@@ -7,5 +7,5 @@ public class UpdateAddressRequest {
     public String shippingAddressLine1;
     public String shippingAddressLine2;
     public String shippingCityState;
-
+    public boolean isDefault;
 }

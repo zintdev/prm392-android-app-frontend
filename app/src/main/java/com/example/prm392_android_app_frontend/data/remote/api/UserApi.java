@@ -11,10 +11,10 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface UserApi {
-    @GET("/api/users/{id}")
+    @GET("users/{id}")
     Call<UserDto> getUserById(@Path("id") int id);
 
-    @PUT("/api/users/{id}")
+    @PUT("users/{id}")
     Call<UserDto> updateUser(@Path("id") int id, @Body UpdateUserRequest body);
 
     @PUT("users/{id}")

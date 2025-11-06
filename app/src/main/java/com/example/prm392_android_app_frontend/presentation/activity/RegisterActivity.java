@@ -16,6 +16,8 @@ import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
 import com.example.prm392_android_app_frontend.data.remote.api.AuthApi;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONObject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -59,44 +61,74 @@ public class RegisterActivity extends AppCompatActivity {
         String email = safeText(editTextEmail);
         String password = safeText(editTextPassword);
         String phone = safeText(editTextPhone);
-
         if (TextUtils.isEmpty(username)) {
-            toast("Enter username");
+            toast("Vui lòng nhập tên đăng nhập");
             return;
         }
         if (TextUtils.isEmpty(email)) {
-            toast("Enter email");
+            toast("Vui lòng nhập email");
+            return;
+        }
+        if (!email.toLowerCase().contains("@gmail.com")) {
+            toast("Email phải là địa chỉ Gmail hợp lệ (chứa @gmail.com)");
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            toast("Enter password");
+            toast("Vui lòng nhập mật khẩu");
+            return;
+        }
+        if (password.length() < 6 || password.length() > 100) {
+            toast("Mật khẩu phải từ 6 đến 100 ký tự");
             return;
         }
         if (TextUtils.isEmpty(phone)) {
-            toast("Enter phone number");
+            toast("Vui lòng nhập số điện thoại");
             return;
         }
-
         setLoading(true);
-        api.register(new RegisterRequest(username, email, password, phone)).enqueue(new Callback<RegisterResponse>() {
-            @Override
-            public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
-                setLoading(false);
-                if (response.isSuccessful()) {
-                    toast("Register success. Please login.");
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                    finish();
-                } else {
-                    toast("Register failed: " + response.code());
-                }
-            }
+        api.register(new RegisterRequest(username, email, password, phone))
+                .enqueue(new Callback<RegisterResponse>() {
+                    @Override
+                    public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
+                        setLoading(false);
 
-            @Override
-            public void onFailure(Call<RegisterResponse> call, Throwable t) {
-                setLoading(false);
-                toast("Network error: " + t.getMessage());
-            }
-        });
+                        if (response.isSuccessful()) {
+                            toast("Đăng ký thành công. Vui lòng đăng nhập.");
+                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                            finish();
+                        } else {
+                            String responseMessage = "";
+                            try {
+                                if (response.errorBody() != null) {
+                                    String raw = response.errorBody().string();
+                                    JSONObject obj = new JSONObject(raw);
+                                    if (obj.has("message")) {
+                                        responseMessage = obj.getString("message");
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            String messageVi;
+                            if (responseMessage.contains("Username already exists")) {
+                                messageVi = "Tên đăng nhập đã tồn tại";
+                            } else if (responseMessage.contains("Email already exists")) {
+                                messageVi = "Email đã được đăng ký";
+                            } else {
+                                messageVi = "Đăng ký thất bại. Vui lòng thử lại.";
+                            }
+
+                            toast(messageVi);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RegisterResponse> call, Throwable t) {
+                        setLoading(false);
+                        toast("Lỗi kết nối: " + t.getMessage());
+                    }
+                });
     }
 
     private void setLoading(boolean loading) {
@@ -115,5 +147,3 @@ public class RegisterActivity extends AppCompatActivity {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }
-
-
