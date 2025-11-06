@@ -3,7 +3,6 @@ package com.example.prm392_android_app_frontend.presentation.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -22,7 +21,6 @@ import com.example.prm392_android_app_frontend.storage.TokenStore;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String TAG = "LoginActivity";
     private EditText edtEmailOrUsername;
     private EditText edtPassword;
     private Button btnLogin;
@@ -100,51 +98,40 @@ public class LoginActivity extends AppCompatActivity {
         viewModel.login(usernameOrEmail, pass);
     }
 
-        private void onLoginSuccess(LoginResponse body) {
-            if (body == null || TextUtils.isEmpty(body.getToken())) {
-                toast("Thiếu token trong phản hồi.");
-                return;
-            }
-            LoginResponse.User user = body.getUser();
-            if (user == null) {
-                toast("Phản hồi không có thông tin người dùng.");
-                return;
-            }
-
-            Log.d(TAG, "User role from API: '" + user.getRole() + "'");
-
-            TokenStore.saveLogin(
-                    this,
-                    body.getToken(),
-                    user.getId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getRole()
-            );
-            Intent i;
-            if (isAdmin(user.getRole())) {
-                i = new Intent(this, AdminMainActivity.class);
-            } else if (isStaff(user.getRole())) {
-                toast("Đăng nhập với tư cách nhân viên thành công");
-                i = new Intent(this, StaffActivity.class);
-            } else {
-                i = new Intent(this, MainActivity.class);
-            }
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(i);
-            finish();
+    private void onLoginSuccess(LoginResponse body) {
+        if (body == null || TextUtils.isEmpty(body.getToken())) {
+            toast("Thiếu token trong phản hồi.");
+            return;
         }
+        LoginResponse.User user = body.getUser();
+        if (user == null) {
+            toast("Phản hồi không có thông tin người dùng.");
+            return;
+        }
+
+        TokenStore.saveLogin(
+                this,
+                body.getToken(),
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole()
+        );
+        Intent i;
+        if(isAdmin(user.getRole())){
+            i = new Intent(this, AdminMainActivity.class);
+        }else{
+            i = new Intent(this, MainActivity.class);
+        }
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
+    }
 
     private boolean isAdmin(String role) {
         if (role == null) return false;
         String r = role.trim().toUpperCase();
         return r.equals("ADMIN");
-    }
-
-    private boolean isStaff(String role) {
-        if (role == null) return false;
-        String r = role.trim().toUpperCase();
-        return r.equals("STAFF");
     }
 
     private void setLoading(boolean isLoading) {
