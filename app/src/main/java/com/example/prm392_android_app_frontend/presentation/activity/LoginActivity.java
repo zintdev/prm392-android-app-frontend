@@ -3,6 +3,7 @@ package com.example.prm392_android_app_frontend.presentation.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -21,6 +22,7 @@ import com.example.prm392_android_app_frontend.storage.TokenStore;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = "LoginActivity";
     private EditText edtEmailOrUsername;
     private EditText edtPassword;
     private Button btnLogin;
@@ -109,6 +111,8 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
+            Log.d(TAG, "User role from API: '" + user.getRole() + "'");
+
             TokenStore.saveLogin(
                     this,
                     body.getToken(),
@@ -118,11 +122,14 @@ public class LoginActivity extends AppCompatActivity {
                     user.getRole()
             );
             Intent i;
-            if(isAdmin(user.getRole())){
+            if (isAdmin(user.getRole())) {
                 i = new Intent(this, AdminMainActivity.class);
-                }else{
+            } else if (isStaff(user.getRole())) {
+                toast("Đăng nhập với tư cách nhân viên thành công");
+                i = new Intent(this, StaffActivity.class);
+            } else {
                 i = new Intent(this, MainActivity.class);
-                }
+            }
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(i);
             finish();
@@ -132,6 +139,12 @@ public class LoginActivity extends AppCompatActivity {
         if (role == null) return false;
         String r = role.trim().toUpperCase();
         return r.equals("ADMIN");
+    }
+
+    private boolean isStaff(String role) {
+        if (role == null) return false;
+        String r = role.trim().toUpperCase();
+        return r.equals("STAFF");
     }
 
     private void setLoading(boolean isLoading) {
