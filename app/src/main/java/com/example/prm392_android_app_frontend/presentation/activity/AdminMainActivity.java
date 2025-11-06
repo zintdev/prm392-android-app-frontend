@@ -117,8 +117,7 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
 
     @Override
     public void navigateToPublisherManagement() {
-        Intent intent = new Intent(this, PublisherManageActivity.class);
-        startActivity(intent);
+
     }
 
     @Override
@@ -129,8 +128,7 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
 
     @Override
     public void navigateToCategoryManagement() {
-        Intent intent = new Intent(this, CategoryManageActivity.class);
-        startActivity(intent);
+
     }
 
     @Override

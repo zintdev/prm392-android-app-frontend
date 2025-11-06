@@ -43,12 +43,4 @@ public class OrderRepository {
         Call<List<OrderDTO>> call = orderApi.getOrdersByUserId(userId, status);
         call.enqueue(callback);
     }
-
-    /**
-     * Lấy tất cả đơn hàng (dành cho admin)
-     */
-    public void getAllOrders(Callback<List<OrderDTO>> callback) {
-        Call<List<OrderDTO>> call = orderApi.getAllOrders();
-        call.enqueue(callback);
-    }
 }

@@ -109,7 +109,7 @@ public class CartViewModel extends AndroidViewModel {
                     CartDto cart = response.body();
                     cartLiveData.postValue(cart);
                     NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
-                    _showToast.setValue(new Event<>("Đã thêm đĩa vào giỏ hàng."));
+                    _showToast.setValue(new Event<>("Đã thêm sản phẩm vào giỏ hàng thành công!"));
                 } else {
                     errorMessage.postValue("Lỗi thêm vào giỏ hàng. Mã: " + response.code());
                 }

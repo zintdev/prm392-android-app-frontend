@@ -32,7 +32,7 @@
         <!-- Buttons Container -->
 
         <TextView
-            android:id="@+id/category_name"
+            android:id="@+id/publisher_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -63,7 +63,7 @@
 
             <!-- Edit Button -->
             <Button
-                android:id="@+id/button_edit_category"
+                android:id="@+id/button_edit_publisher"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -76,11 +76,11 @@
 
             <!-- Delete Button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_delete_category"
+                android:id="@+id/button_delete_publisher"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:contentDescription="Xóa danh mục"
+                android:contentDescription="Xóa nhà xuất bản"
                 app:icon="@drawable/ic_trash_can"
                 app:iconTint="@android:color/holo_red_dark"
                 app:iconGravity="textStart"
