@@ -13,14 +13,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.prm392_android_app_frontend.R;
-import com.example.prm392_android_app_frontend.presentation.activity.LoginActivity;
 import com.example.prm392_android_app_frontend.presentation.activity.MainActivity;
-import com.example.prm392_android_app_frontend.presentation.activity.ProfileActivity;
+import com.example.prm392_android_app_frontend.presentation.activity.StaffManagementActivity;
+import com.example.prm392_android_app_frontend.presentation.activity.StoreInventoryActivity;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AdminSettingFragment extends Fragment {
-    private View rowProfile, rowLogout;
+    private View rowProfile, rowLogout, rowStaffManage, rowInventoryManage;
     private TextView txtName;
 
     @Nullable
@@ -36,10 +36,22 @@ public class AdminSettingFragment extends Fragment {
         txtName = v.findViewById(R.id.txtName1);
         rowProfile = v.findViewById(R.id.rowProfile);
         rowLogout = v.findViewById(R.id.rowLogout);
+        rowStaffManage = v.findViewById(R.id.rowStaffManage);
+        rowInventoryManage = v.findViewById(R.id.rowInventoryManage);
         String username = TokenStore.getUsername(requireContext());
         txtName.setText(username);
         ((TextView) rowProfile.findViewById(R.id.title)).setText("Hồ sơ cá nhân");
         ((ImageView) rowProfile.findViewById(R.id.icon)).setImageResource(R.drawable.ic_person);
+
+    ((TextView) rowStaffManage.findViewById(R.id.title)).setText("Quản lý nhân viên");
+    ((ImageView) rowStaffManage.findViewById(R.id.icon)).setImageResource(R.drawable.ic_profile);
+    rowStaffManage.setOnClickListener(v12 ->
+        startActivity(new Intent(requireContext(), StaffManagementActivity.class)));
+
+    ((TextView) rowInventoryManage.findViewById(R.id.title)).setText("Quản lý tồn kho");
+    ((ImageView) rowInventoryManage.findViewById(R.id.icon)).setImageResource(R.drawable.ic_store_);
+    rowInventoryManage.setOnClickListener(v13 ->
+        startActivity(new Intent(requireContext(), StoreInventoryActivity.class)));
 
         ((TextView) rowLogout.findViewById(R.id.title)).setText("Đăng xuất");
         ((ImageView) rowLogout.findViewById(R.id.icon)).setImageResource(R.drawable.ic_logout);
