@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prm392_android_app_frontend.R;
+import com.example.prm392_android_app_frontend.presentation.component.LocalNotificationManager;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -180,6 +181,14 @@ public class PaymentProcessingActivity extends AppCompatActivity {
     }
 
     private void navigateToSuccess() {
+        // Gửi thông báo thanh toán thành công (VNPay)
+        try {
+            LocalNotificationManager notifier = new LocalNotificationManager(this);
+            notifier.showPaymentSuccessNotification(orderId);
+        } catch (Exception e) {
+            android.util.Log.e("PaymentProcessing", "Failed to show success notification", e);
+        }
+
         Intent intent = new Intent(this, PaymentSuccessActivity.class);
         intent.putExtra("order_id", orderId);
         intent.putExtra("payment_id", paymentId);
