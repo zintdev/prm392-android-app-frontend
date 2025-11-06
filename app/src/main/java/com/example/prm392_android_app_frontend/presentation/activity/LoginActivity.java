@@ -118,9 +118,11 @@ public class LoginActivity extends AppCompatActivity {
                 user.getRole()
         );
         Intent i;
-        if(isAdmin(user.getRole())){
+        if (TokenStore.isAdmin(this)) {
             i = new Intent(this, AdminMainActivity.class);
-        }else{
+        } else if (TokenStore.isStaff(this)) {
+            i = new Intent(this, StaffMainActivity.class);
+        } else {
             i = new Intent(this, MainActivity.class);
         }
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
