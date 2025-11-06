@@ -11,15 +11,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.store.StoreNearbyDto;
-import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
-import com.example.prm392_android_app_frontend.data.remote.api.StoreApi;
-import com.example.prm392_android_app_frontend.data.repository.StoreRepository;
 import com.example.prm392_android_app_frontend.presentation.adapter.StoreAdapter;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.StoreViewModel;
 import com.google.android.gms.common.ConnectionResult;
@@ -29,11 +29,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.List;
-
-import retrofit2.*;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -41,8 +38,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String TAG = "MapsActivity";
 
     private GoogleMap mMap;
-    private View stateOverlay, bottomSheet;
-    private BottomSheetBehavior<View> bottomBehavior;
+    private View stateOverlay;
 
     private FusedLocationProviderClient fused;
     private Double myLat, myLng;
@@ -53,7 +49,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private StoreViewModel viewModel;
 
-    private final StoreApi storeApi = ApiClient.get().create(StoreApi.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +71,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         fused = LocationServices.getFusedLocationProviderClient(this);
 
         stateOverlay = findViewById(R.id.stateOverlay);
-        bottomSheet = findViewById(R.id.bottomSheet);
-        if (bottomSheet != null) {
-            bottomBehavior = BottomSheetBehavior.from(bottomSheet);
-            bottomBehavior.setPeekHeight((int) (160 * getResources().getDisplayMetrics().density));
-            bottomBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        }
+        TextView txtCount = findViewById(R.id.txtCount);
+        com.google.android.material.textfield.TextInputEditText edtSearch = findViewById(R.id.edtSearch);
+        com.google.android.material.textfield.TextInputEditText edtRadius = findViewById(R.id.edtRadius);
+
+        androidx.recyclerview.widget.RecyclerView rv = findViewById(R.id.rvStores);
+        rv.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false));
+        rv.setItemAnimator(null);
+        storeAdapter = new StoreAdapter(new StoreAdapter.Callbacks() {
+            @Override
+            public void onSelect(StoreNearbyDto item) {
+                selectedStore = item;
+                LatLng target = new LatLng(item.latitude, item.longitude);
+                if (mMap != null) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(target, 16f));
+                }
+            }
+
+            @Override
+            public void onNavigate(StoreNearbyDto item) {
+                selectedStore = item;
+                openDirectionsInGoogleMaps(item);
+            }
+        });
+        rv.setAdapter(storeAdapter);
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -105,50 +118,47 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 showLoading(false, null);
                 List<StoreNearbyDto> list = res.getData();
                 storeAdapter.submit(list);
-                renderMarkers(list);
-                View tv = bottomSheet != null ? bottomSheet.findViewById(R.id.txtCount) : null;
-                if (tv instanceof android.widget.TextView)
-                    ((android.widget.TextView) tv).setText((list != null ? list.size() : 0) + " kết quả");
-                if (bottomBehavior != null)
-                    bottomBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+                refreshMarkersFromAdapter();
+                updateStoreCount(txtCount);
             }
         });
 
-        // Nút Áp dụng trong bottom sheet (nếu có)
-        View btnApply = bottomSheet != null ? bottomSheet.findViewById(R.id.btnApply) : null;
+        if (edtSearch != null) {
+            edtSearch.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    storeAdapter.filter(String.valueOf(s));
+                    updateStoreCount(txtCount);
+                    refreshMarkersFromAdapter();
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) { }
+            });
+        }
+
+        View btnApply = findViewById(R.id.btnApply);
         if (btnApply != null) {
             btnApply.setOnClickListener(v -> {
-                Double radius = 20.0;
-                try {
-                    var rView = bottomSheet.findViewById(R.id.edtRadius);
-                    if (rView instanceof com.google.android.material.textfield.TextInputEditText) {
-                        String r = String.valueOf(((com.google.android.material.textfield.TextInputEditText) rView).getText()).trim();
-                        if (!r.isEmpty()) radius = Double.parseDouble(r);
-                    }
-                } catch (Exception e) {
-                    Log.w(TAG, "Parse radius fail", e);
-                }
-
-                boolean isPickup = false;
-                View btnPickup = bottomSheet.findViewById(R.id.btnPickup);
-                if (btnPickup instanceof com.google.android.material.button.MaterialButton) {
-                    isPickup = ((com.google.android.material.button.MaterialButton) btnPickup).isChecked();
-                }
-
-                Integer productId = null;
-                if (isPickup) {
-                    var pView = bottomSheet.findViewById(R.id.edtProductId);
-                    if (pView instanceof com.google.android.material.textfield.TextInputEditText) {
-                        String p = String.valueOf(((com.google.android.material.textfield.TextInputEditText) pView).getText()).trim();
-                        try {
-                            if (!p.isEmpty()) productId = Integer.parseInt(p);
-                        } catch (Exception ignore) {
-                        }
-                    }
-                }
-
+                Double radius = parseRadius(edtRadius);
                 if (myLat != null && myLng != null) {
-                    triggerLoadNearby(myLat, myLng, radius, 50, productId, isPickup ? Boolean.TRUE : null);
+                    triggerLoadNearby(myLat, myLng, radius, 50, null, null);
+                } else {
+                    Toast.makeText(this, "Chưa có vị trí của bạn. Nhấn icon định vị trước.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        View btnShowAll = findViewById(R.id.btnShowAll);
+        if (btnShowAll != null) {
+            btnShowAll.setOnClickListener(v -> {
+                Double radius = parseRadius(edtRadius);
+                if (edtSearch != null) edtSearch.setText("");
+                if (myLat != null && myLng != null) {
+                    triggerLoadNearby(myLat, myLng, radius, 999, null, null);
                 } else {
                     Toast.makeText(this, "Chưa có vị trí của bạn. Nhấn icon định vị trước.", Toast.LENGTH_SHORT).show();
                 }
@@ -162,74 +172,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (fabRef != null) fabRef.setOnClickListener(v -> {
             if (myLat != null && myLng != null) triggerLoadNearby(myLat, myLng, 20.0, 50, null, null);
         });
-        // ===== BottomSheet Behavior: bật kéo thả & callback log =====
-        bottomBehavior = BottomSheetBehavior.from(bottomSheet);
-        bottomBehavior.setDraggable(true);
-        bottomBehavior.setPeekHeight((int) (160 * getResources().getDisplayMetrics().density));
-        bottomBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        bottomBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bs, int newState) {
-                // Log.d(TAG, "BS state=" + newState);
-            }
-
-            @Override
-            public void onSlide(@NonNull View bs, float offset) {
-            }
-        });
-
-// ===== RecyclerView + Adapter =====
-        androidx.recyclerview.widget.RecyclerView rv = bottomSheet.findViewById(R.id.rvStores);
-        rv.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
-        storeAdapter = new StoreAdapter(item -> {
-            // 1. Lưu cửa hàng được chọn
-            selectedStore = item;
-
-            // 2. Di chuyển camera tới vị trí cửa hàng
-            LatLng p = new LatLng(item.latitude, item.longitude);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(p, 16f));
-
-            // 3. Hiện nút Go
-            View fabGo = findViewById(R.id.fabGo);
-            if (fabGo != null) fabGo.setVisibility(View.VISIBLE);
-
-            // 4. (tuỳ chọn) bật info window của marker tương ứng nếu đã vẽ
-            // sẽ gắn marker.setTag(...) ở bước renderMarkers() bên dưới
-        });
-        rv.setAdapter(storeAdapter);
-
-
-
-// ===== Toggle All/Pickup: ẩn/hiện ProductId =====
-        com.google.android.material.button.MaterialButton btnAll = bottomSheet.findViewById(R.id.btnAll);
-        com.google.android.material.button.MaterialButton btnPickup = bottomSheet.findViewById(R.id.btnPickup);
-        com.google.android.material.textfield.TextInputLayout tilProduct = bottomSheet.findViewById(R.id.tilProduct);
-
-        View.OnClickListener toggleListener = v -> {
-            boolean pickup = btnPickup.isChecked();
-            tilProduct.setVisibility(pickup ? View.VISIBLE : View.GONE);
-        };
-        btnAll.setOnClickListener(toggleListener);
-        btnPickup.setOnClickListener(toggleListener);
-
-        toggleListener.onClick(btnAll);
-
-        View fabGo = findViewById(R.id.fabGo);
-        if (fabGo != null) {
-            fabGo.setOnClickListener(v -> {
-                if (selectedStore == null) {
-                    Toast.makeText(this, "Hãy chọn một cửa hàng trước.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                openDirectionsInGoogleMaps(
-                        selectedStore.latitude,
-                        selectedStore.longitude,
-                        selectedStore.name != null ? selectedStore.name : selectedStore.address
-                );
-            });
-        }
-
-
     }
 
     @Override
@@ -253,8 +195,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Object tag = marker.getTag();
             if (tag instanceof StoreNearbyDto) {
                 selectedStore = (StoreNearbyDto) tag;
-                View fabGo2 = findViewById(R.id.fabGo);
-                if (fabGo2 != null) fabGo2.setVisibility(View.VISIBLE);
             }
             return true; // tự xử lý
         });
@@ -264,7 +204,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Object tag = marker.getTag();
             if (tag instanceof StoreNearbyDto) {
                 selectedStore = (StoreNearbyDto) tag;
-                Toast.makeText(this, "Nhấn GO để mở chỉ đường.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Dùng nút Go trong danh sách để mở chỉ đường.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -319,9 +259,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    private void updateStoreCount(TextView txtCount) {
+        if (txtCount != null && storeAdapter != null) {
+            int filtered = storeAdapter.getFilteredCount();
+            int total = storeAdapter.getTotalCount();
+            String text = filtered == total
+                    ? filtered + " kết quả"
+                    : filtered + "/" + total + " kết quả";
+            txtCount.setText(text);
+        }
+    }
+
+    private double parseRadius(com.google.android.material.textfield.TextInputEditText edtRadius) {
+        double radius = 20.0;
+        if (edtRadius != null) {
+            try {
+                String value = String.valueOf(edtRadius.getText()).trim();
+                if (!value.isEmpty()) {
+                    radius = Double.parseDouble(value);
+                }
+            } catch (NumberFormatException e) {
+                Log.w(TAG, "Parse radius fail", e);
+            }
+        }
+        return radius;
+    }
+
     private void triggerLoadNearby(double lat, double lng, Double radiusKm, Integer limit,
                                    Integer productId, Boolean inStockOnly) {
         viewModel.loadNearby(lat, lng, radiusKm, limit, productId, inStockOnly);
+    }
+
+    private void refreshMarkersFromAdapter() {
+        if (storeAdapter != null) {
+            renderMarkers(storeAdapter.getVisibleItems());
+        }
     }
 
     private void renderMarkers(List<StoreNearbyDto> stores) {
@@ -348,7 +320,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             String snippet = String.format("~%.2f km%s",
                     s.distanceKm,
                     s.quantity != null ? (" • Còn: " + s.quantity) : "");
-            mMap.addMarker(new MarkerOptions().position(p).title(title).snippet(snippet));
+            Marker marker = mMap.addMarker(new MarkerOptions().position(p).title(title).snippet(snippet));
+            if (marker != null) {
+                marker.setTag(s);
+            }
             bounds.include(p);
             hasAny = true;
         }
@@ -360,20 +335,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-        Toast.makeText(this, "Chạm Info của marker để mở chỉ đường.", Toast.LENGTH_LONG).show();
-        if (bottomBehavior != null)
-            bottomBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+    Toast.makeText(this, "Chạm marker hoặc dùng nút Go trên thẻ để mở chỉ đường.", Toast.LENGTH_LONG).show();
     }
 
-    private void openDirectionsInGoogleMaps(double lat, double lng, String label) {
-        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + lat + "," + lng +
-                "(" + Uri.encode(label == null ? "" : label) + ")" + "&mode=d");
+    private void openDirectionsInGoogleMaps(StoreNearbyDto store) {
+        if (store == null) return;
+
+        String address = store.address != null ? store.address.trim() : "";
+        String destinationQuery = address.isEmpty()
+                ? store.latitude + "," + store.longitude
+                : address;
+
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + Uri.encode(destinationQuery) + "&mode=d");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         try {
             startActivity(mapIntent);
         } catch (ActivityNotFoundException e) {
-            String url = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lng + "&travelmode=driving";
+            String url = "https://www.google.com/maps/dir/?api=1&destination="
+                    + Uri.encode(destinationQuery) + "&travelmode=driving";
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         }
     }

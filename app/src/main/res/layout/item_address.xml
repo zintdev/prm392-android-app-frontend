@@ -62,31 +62,6 @@
             android:text=""
             android:layout_marginTop="2dp" />
 
-<!--        &lt;!&ndash; Chip trạng thái mặc định &ndash;&gt;-->
-<!--        <LinearLayout-->
-<!--            android:id="@+id/stateChips"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:layout_marginTop="8dp">-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/chipDefaultBilling"-->
-<!--                style="@style/Widget.Material3.Chip.Assist.Elevated"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Địa chỉ thanh toán mặc định"-->
-<!--                android:visibility="gone"/>-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/chipDefaultShipping"-->
-<!--                style="@style/Widget.Material3.Chip.Assist.Elevated"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="8dp"-->
-<!--                android:text="Địa chỉ giao hàng mặc định"-->
-<!--                android:visibility="gone"/>-->
-<!--        </LinearLayout>-->
 
         <LinearLayout
             android:layout_width="match_parent"

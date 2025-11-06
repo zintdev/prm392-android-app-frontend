@@ -6,4 +6,16 @@ public class ProvinceDto {
     public int code;
     public String name;
     public List<DistrictDto> districts;
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<DistrictDto> getDistricts() {
+        return districts;
+    }
 }
