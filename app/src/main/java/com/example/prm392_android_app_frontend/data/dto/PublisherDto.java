@@ -3,7 +3,7 @@ package com.example.prm392_android_app_frontend.data.dto;
 public class PublisherDto {
     private Integer id;
     private String name;
-    private Integer founderYear;
+    private Integer foundedYear;
 
     public String getName() {
         return name;
@@ -13,12 +13,12 @@ public class PublisherDto {
         this.name = name;
     }
 
-    public Integer getFounderYear() {
-        return founderYear;
+    public Integer getFoundedYear() {
+        return foundedYear;
     }
 
-    public void setFounderYear(Integer founderYear) {
-        this.founderYear = founderYear;
+    public void setFoundedYear(Integer foundedYear) {
+        this.foundedYear = foundedYear;
     }
 
     public Integer getId() {
@@ -27,5 +27,14 @@ public class PublisherDto {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public PublisherDto() {
+    }
+
+    public PublisherDto(Integer id, String name, Integer foundedYear) {
+        this.id = id;
+        this.name = name;
+        this.foundedYear = foundedYear;
     }
 }
