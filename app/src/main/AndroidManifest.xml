@@ -89,6 +89,7 @@
             android:name=".presentation.activity.ArtistManageActivity"
             android:exported="false"
             android:label="Quản lý tác giả" />
+        
         <activity android:name=".presentation.activity.ChangePasswordActivity"
             />
 
@@ -145,6 +146,28 @@
             android:name=".presentation.activity.AddStoreActivity"
             android:exported="false"
             android:label="Thêm cửa hàng mới" />
+
+        <activity
+            android:name=".presentation.activity.CategoryManageActivity"
+            android:exported="false"
+            android:label="Quản lý danh mục" />
+
+        <activity
+            android:name=".presentation.activity.PublisherManageActivity"
+            android:exported="false"
+            android:label="Quản lý nhà xuất bản" />
+
+        <!-- THÊM DÒNG CODE NÀY VÀO -->
+        <!--        <activity-->
+        <!--            android:name=".presentation.activity.AddStoreActivity"-->
+        <!--            android:exported="false"-->
+        <!--            android:label="Thêm cửa hàng mới" />-->
+
+
+<!--        <activity-->
+<!--            android:name=".presentation.activity.LocationPickerActivity"-->
+<!--            android:exported="false"-->
+<!--            android:label="Thêm cửa hàng mới" />-->
 
         <!-- Chat Activity -->
         <activity

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.activity.ProductManageActivity">
+    tools:context=".presentation.activity.CategoryManageActivity">
 
     <!-- AppBar với Back Button -->
     <com.google.android.material.appbar.AppBarLayout
@@ -18,8 +18,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/nogi_main"
-            app:title="Quản lý đĩa CD"
+            android:background="@drawable/header_gradiant"
+            app:title="Quản lý danh mục"
             app:titleTextColor="@color/white"
             app:titleCentered="true"
             app:navigationIcon="@drawable/ic_arrow_back" />
@@ -35,7 +35,7 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_admin_product" />
+        tools:listitem="@layout/item_category" />
 
     <!-- FAB Add Product -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

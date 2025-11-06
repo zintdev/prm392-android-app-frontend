@@ -1,5 +1,6 @@
 package com.example.prm392_android_app_frontend.presentation.activity;
 
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,10 +10,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.data.dto.changePassword.ChangePasswordRequest;
-import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
-import com.example.prm392_android_app_frontend.data.remote.api.UserApi;
+import com.example.prm392_android_app_frontend.storage.TokenStore;
+import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -32,8 +32,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
     private MaterialButton btnChange;
     private ProgressBar progress;
 
-    private UserApi userApi;
-    private int userId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,7 +54,26 @@ public class ChangePasswordActivity extends AppCompatActivity {
         btnChange.setOnClickListener(v -> onChangeClick());
     }
 
-    private void onChangeClick() {
+//    private ApiService buildApiWithAuth() {
+//        String token = TokenStore.getToken(this); "
+//        HttpLoggingInterceptor log = new HttpLoggingInterceptor();
+//        log.setLevel(HttpLoggingInterceptor.Level.BODY);
+//
+//        OkHttpClient client = ApiClient.defaultOkHttpBuilder()
+//                .addInterceptor(chain -> {
+//                    return chain.proceed(
+//                            chain.request().newBuilder()
+//                                    .addHeader("Authorization", "Bearer " + token)
+//                                    .build()
+//                    );
+//                })
+//                .addInterceptor(log)
+//                .build();
+//
+//        return ApiClient.retrofit(client).create(ApiService.class);
+//    }
+
+    private void validate() {
         String oldPw = text(edtOld);
         String newPw = text(edtNew);
         String cfPw  = text(edtConfirm);
@@ -188,7 +205,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         btnChange.setEnabled(!b);
     }
 
-    private static String text(TextInputEditText e) {
+    private String text(TextInputEditText e) {
         return e.getText() == null ? "" : e.getText().toString().trim();
     }
 }
