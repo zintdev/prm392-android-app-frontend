@@ -60,7 +60,6 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Tỉnh/Thành phố (Dropdown - ĐÃ COMMENT LẠI) -->
-    <!--
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_layout_province"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -76,28 +75,26 @@
             android:inputType="none"/>
 
     </com.google.android.material.textfield.TextInputLayout>
-    -->
 
-    <!-- Tỉnh/Thành phố (Nhập tay - TẠM THỜI) -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input_layout_province"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:hint="Tỉnh/Thành phố">
+    <!--    &lt;!&ndash; Tỉnh/Thành phố (Nhập tay - TẠM THỜI) &ndash;&gt;-->
+    <!--    <com.google.android.material.textfield.TextInputLayout-->
+    <!--        android:id="@+id/input_layout_province"-->
+    <!--        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="12dp"-->
+    <!--        android:hint="Tỉnh/Thành phố">-->
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_province"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:maxLines="1" />
+    <!--        <com.google.android.material.textfield.TextInputEditText-->
+    <!--            android:id="@+id/edit_text_province"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:inputType="text"-->
+    <!--            android:maxLines="1" />-->
 
-    </com.google.android.material.textfield.TextInputLayout>
+    <!--    </com.google.android.material.textfield.TextInputLayout>-->
 
     <!-- Quận/Huyện  -->
-    <!--
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_layout_district"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -113,28 +110,26 @@
             android:inputType="none"/>
 
     </com.google.android.material.textfield.TextInputLayout>
-    -->
 
-    <!-- Quận/Huyện (Nhập tay - TẠM THỜI) -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input_layout_district"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:hint="Quận/Huyện">
+    <!--    &lt;!&ndash; Quận/Huyện (Nhập tay - TẠM THỜI) &ndash;&gt;-->
+    <!--    <com.google.android.material.textfield.TextInputLayout-->
+    <!--        android:id="@+id/input_layout_district"-->
+    <!--        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="12dp"-->
+    <!--        android:hint="Quận/Huyện">-->
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_district"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:maxLines="1" />
+    <!--        <com.google.android.material.textfield.TextInputEditText-->
+    <!--            android:id="@+id/edit_text_district"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:inputType="text"-->
+    <!--            android:maxLines="1" />-->
 
-    </com.google.android.material.textfield.TextInputLayout>
+    <!--    </com.google.android.material.textfield.TextInputLayout>-->
 
     <!-- Phường/Xã  -->
-    <!--
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_layout_ward"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -150,25 +145,24 @@
             android:inputType="none"/>
 
     </com.google.android.material.textfield.TextInputLayout>
-    -->
 
-    <!-- Phường/Xã (Nhập tay - TẠM THỜI) -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input_layout_ward"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:hint="Phường/Xã">
+    <!--    &lt;!&ndash; Phường/Xã (Nhập tay - TẠM THỜI) &ndash;&gt;-->
+    <!--    <com.google.android.material.textfield.TextInputLayout-->
+    <!--        android:id="@+id/input_layout_ward"-->
+    <!--        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="12dp"-->
+    <!--        android:hint="Phường/Xã">-->
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_ward"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:maxLines="1" />
+    <!--        <com.google.android.material.textfield.TextInputEditText-->
+    <!--            android:id="@+id/edit_text_ward"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:inputType="text"-->
+    <!--            android:maxLines="1" />-->
 
-    </com.google.android.material.textfield.TextInputLayout>
+    <!--    </com.google.android.material.textfield.TextInputLayout>-->
 
 
     <!-- Địa chỉ nhận hàng -->
