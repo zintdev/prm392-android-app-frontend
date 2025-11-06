@@ -197,34 +197,34 @@
             app:layout_constraintTop_toBottomOf="@id/textViewManagement">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonProductManagement"
+                android:id="@+id/buttonStoreProductManagement"
                 style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Quản lý đĩa CD"
+                android:text="Quản lý nhân viên"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                app:backgroundTint="#8E24AA"
-                app:icon="@drawable/ic_music_cd"
+                app:backgroundTint="#C0C0C0"
+                app:icon="@drawable/ic_user_term"
                 app:iconGravity="textTop"
                 app:iconPadding="4dp"
                 app:iconSize="32dp"
                 app:iconTint="@color/white" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonPublisherManagement"
+                android:id="@+id/buttonStaffManagement"
                 style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:text="Nhà xuất bản"
+                android:text="Danh mục"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                app:backgroundTint="#5C6BC0"
-                app:icon="@drawable/ic_publisher_manage"
+                app:backgroundTint="#8B4513"
+                app:icon="@drawable/ic_store_"
                 app:iconGravity="textTop"
                 app:iconPadding="4dp"
                 app:iconSize="32dp"
@@ -271,6 +271,52 @@
                 android:textSize="12sp"
                 app:backgroundTint="#26A69A"
                 app:icon="@drawable/ic_category_manager"
+                app:iconGravity="textTop"
+                app:iconPadding="4dp"
+                app:iconSize="32dp"
+                app:iconTint="@color/white" />
+        </LinearLayout>
+
+        <!-- Management Buttons Row 3 -->
+        <LinearLayout
+            android:id="@+id/layoutManagement"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutManagement2">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonProductManagement"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="Quản lý đĩa CD"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:backgroundTint="#8E24AA"
+                app:icon="@drawable/ic_music_cd"
+                app:iconGravity="textTop"
+                app:iconPadding="4dp"
+                app:iconSize="32dp"
+                app:iconTint="@color/white" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPublisherManagement"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="Nhà xuất bản"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:backgroundTint="#5C6BC0"
+                app:icon="@drawable/ic_publisher_manage"
                 app:iconGravity="textTop"
                 app:iconPadding="4dp"
                 app:iconSize="32dp"

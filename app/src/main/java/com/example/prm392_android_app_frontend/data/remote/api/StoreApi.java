@@ -1,5 +1,6 @@
 package com.example.prm392_android_app_frontend.data.remote.api;
 
+import com.example.prm392_android_app_frontend.data.dto.chat.SpringPage;
 import com.example.prm392_android_app_frontend.data.dto.store.StoreNearbyDto;
 import com.example.prm392_android_app_frontend.data.dto.store.StoreLocationRequest;
 import com.example.prm392_android_app_frontend.data.dto.store.StoreLocationResponse;
@@ -33,4 +34,8 @@ public interface StoreApi {
      */
     @POST("store-locations")
     Call<StoreLocationResponse> create(@Body StoreLocationRequest req);
+
+    @GET("store-locations")
+    Call<SpringPage<StoreLocationResponse>> list(@Query("page") int page,
+                                                 @Query("size") int size);
 }
