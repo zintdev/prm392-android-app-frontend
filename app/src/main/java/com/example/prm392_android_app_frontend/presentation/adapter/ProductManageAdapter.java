@@ -90,8 +90,8 @@ public class ProductManageAdapter extends RecyclerView.Adapter<ProductManageAdap
 
         void bind(ProductDto product) {
             textViewProductName.setText(product.getName());
-            textViewProductPrice.setText(String.format("$%.2f", product.getPrice()));
-            textViewProductQuantity.setText(String.valueOf(product.getQuantity()));
+            textViewProductPrice.setText(String.format("%.0f VND", product.getPrice()));
+            textViewProductQuantity.setText(String.format("Số lượng:" + product.getQuantity()));
             
             Glide.with(itemView.getContext())
                     .load(product.getImageUrl())

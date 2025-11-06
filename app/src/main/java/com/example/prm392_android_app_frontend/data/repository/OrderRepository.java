@@ -162,4 +162,12 @@ public class OrderRepository {
     private static String safeMessage(Throwable t) {
         return t != null && t.getMessage() != null ? t.getMessage() : "Unexpected error";
     }
+
+    /**
+     * Lấy tất cả đơn hàng (dành cho admin)
+     */
+    public void getAllOrders(Callback<List<OrderDTO>> callback) {
+        Call<List<OrderDTO>> call = orderApi.getAllOrders();
+        call.enqueue(callback);
+    }
 }

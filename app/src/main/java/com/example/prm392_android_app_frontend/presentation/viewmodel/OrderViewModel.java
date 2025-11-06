@@ -93,4 +93,25 @@ public class OrderViewModel extends ViewModel {
             }
         });
     }
+
+    public void getAllOrders() {
+        isLoading.setValue(true);
+        errorMessage.setValue(null);
+
+        orderRepository.getAllOrders(new Callback<List<OrderDTO>>() {
+            @Override
+            public void onResponse(Call<List<OrderDTO>> call, Response<List<OrderDTO>> response) {
+                isLoading.setValue(false);
+                if (response.isSuccessful() && response.body() != null) {
+                    ordersListLiveData.setValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<OrderDTO>> call, Throwable t) {
+                isLoading.setValue(false);
+                errorMessage.setValue("Lỗi kết nối: " + t.getMessage());
+            }
+        });
+    }
 }

@@ -102,11 +102,11 @@ public class NewAddressFragment extends Fragment {
         dropdownDistrict = view.findViewById(R.id.dropdown_district);
         dropdownWard = view.findViewById(R.id.dropdown_ward);
     }
-    
+
     // --- Toàn bộ code logic cho dropdown đã được comment lại ---
     private void setupViewModel() {
         addressViewModel = new ViewModelProvider(this).get(AddressViewModel.class);
-        
+
         // Observe provinces
         addressViewModel.getProvincesLiveData().observe(getViewLifecycleOwner(), provinceList -> {
             if (provinceList != null) {
