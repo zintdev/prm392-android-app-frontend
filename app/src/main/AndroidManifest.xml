@@ -64,10 +64,15 @@
             android:exported="true"
             android:label="Admin" />
 
+        <activity
+            android:name=".presentation.activity.StaffMainActivity"
+            android:exported="false"
+            android:label="@string/staff_toolbar_title" />
+
         <activity android:name=".presentation.activity.MainActivity"
             android:exported="true"
             android:label="User" />
-
+            
         <activity
             android:name=".presentation.activity.ProductDetailActivity"
             android:exported="false" />
@@ -91,10 +96,10 @@
             android:label="Quản lý tác giả" />
         <activity android:name=".presentation.activity.ChangePasswordActivity"
             />
-
+        
         <activity android:name=".presentation.activity.EditProfileActivity"
             android:exported="false"/>
-
+        
         <activity android:name=".presentation.activity.AddUserAddressActivity"
             android:exported="false"/>
 
@@ -157,6 +162,30 @@
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
+        <activity android:name=".presentation.activity.StaffActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".presentation.activity.StaffManagementActivity"
+            android:exported="false"
+            android:label="Quản lý nhân viên" />
+
+        <activity
+            android:name=".presentation.activity.StoreInventoryActivity"
+            android:exported="false"
+            android:label="Kho cửa hàng" />
+
+        <activity
+            android:name=".presentation.activity.StoreInventoryDetailActivity"
+            android:exported="false"
+            android:label="Tồn kho cửa hàng" />
+            
+        <activity
+            android:name=".presentation.activity.OrderDetailActivity"
+            android:exported="false"
+            android:label="Order Details"
+            android:parentActivityName=".presentation.activity.StaffMainActivity" />
+            
         <!-- KHÔNG khai báo fragment ở đây -->
     </application>
 </manifest>
