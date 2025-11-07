@@ -99,47 +99,47 @@
                         android:showDividers="middle"
                         android:weightSum="2">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical"
-                            android:paddingVertical="6dp">
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:gravity="center_vertical"-->
+<!--                            android:paddingVertical="6dp">-->
 
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_dashboard_logo" />
+<!--                            <ImageView-->
+<!--                                android:layout_width="20dp"-->
+<!--                                android:layout_height="20dp"-->
+<!--                                android:src="@drawable/ic_dashboard_logo" />-->
 
-                            <TextView
-                                android:id="@+id/txtFPoint"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingStart="6dp"
-                                android:text="Để đây vì nghĩ nó có ích"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+<!--                            <TextView-->
+<!--                                android:id="@+id/txtFPoint"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:paddingStart="6dp"-->
+<!--                                android:text="Để đây vì nghĩ nó có ích"-->
+<!--                                android:textStyle="bold" />-->
+<!--                        </LinearLayout>-->
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical"
-                            android:paddingVertical="6dp">
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:gravity="center_vertical"-->
+<!--                            android:paddingVertical="6dp">-->
 
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_dashboard_logo" />
+<!--                            <ImageView-->
+<!--                                android:layout_width="20dp"-->
+<!--                                android:layout_height="20dp"-->
+<!--                                android:src="@drawable/ic_dashboard_logo" />-->
 
-                            <TextView
-                                android:id="@+id/txtFreeship"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingStart="6dp"
-                                android:text="Giống cái bên trái"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+<!--                            <TextView-->
+<!--                                android:id="@+id/txtFreeship"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:paddingStart="6dp"-->
+<!--                                android:text="Giống cái bên trái"-->
+<!--                                android:textStyle="bold" />-->
+<!--                        </LinearLayout>-->
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

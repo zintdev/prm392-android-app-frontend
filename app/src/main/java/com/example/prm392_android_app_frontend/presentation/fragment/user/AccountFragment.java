@@ -54,8 +54,8 @@
             super.onViewCreated(v, savedInstanceState);
 
             txtName = v.findViewById(R.id.txtName);
-            txtFPoint = v.findViewById(R.id.txtFPoint);
-            txtFreeship = v.findViewById(R.id.txtFreeship);
+//            txtFPoint = v.findViewById(R.id.txtFPoint);
+//            txtFreeship = v.findViewById(R.id.txtFreeship);
             rowLogout = v.findViewById(R.id.rowLogout);
             rowProfile = v.findViewById(R.id.rowProfile);
 
