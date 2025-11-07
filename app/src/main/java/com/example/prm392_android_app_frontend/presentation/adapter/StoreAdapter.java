@@ -15,8 +15,8 @@ import java.util.Locale;
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.VH> {
 
     public interface Callbacks {
-        void onSelect(StoreNearbyDto item);
-        void onNavigate(StoreNearbyDto item);
+        void onPreview(StoreNearbyDto item);
+        void onConfirm(StoreNearbyDto item);
     }
 
     private final List<StoreNearbyDto> items = new ArrayList<>();
@@ -50,6 +50,15 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.VH> {
         return new ArrayList<>(items);
     }
 
+    public boolean containsStore(int storeId) {
+        for (StoreNearbyDto dto : items) {
+            if (dto.storeId == storeId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void applyFilter(String query) {
         currentQuery = query.trim().toLowerCase(Locale.getDefault());
         items.clear();
@@ -74,47 +83,40 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.VH> {
 
     @Override public void onBindViewHolder(@NonNull VH h, int position) {
         StoreNearbyDto it = items.get(position);
-        // Chuẩn hoá và trim các trường trước khi so sánh
+        View itemView = h.itemView;
         String name = it.name != null ? it.name.trim() : "";
         String address = it.address != null ? it.address.trim() : "";
 
-        // Nếu name rỗng thì dùng fallback; nếu name trùng chính xác với address thì cũng fallback
-        String displayName;
-        if (name.isEmpty()) {
-            displayName = "Cửa hàng " + it.storeId;
-        } else if (!address.isEmpty() && name.equals(address)) {
-            // Trường hợp backend trả name trùng với address -> tránh lặp
-            displayName = "Cửa hàng " + it.storeId;
-        } else {
-            displayName = name;
-        }
+        boolean duplicateName = !name.isEmpty() && !address.isEmpty() && name.equals(address);
+        String displayName = (!name.isEmpty() && !duplicateName)
+                ? name
+                : itemView.getContext().getString(R.string.pickup_store_fallback_name, it.storeId);
 
         h.txtName.setText(displayName);
-        // Luôn hiển thị địa chỉ thật (có thể rỗng)
         h.txtAddress.setText(address);
-        h.txtDistance.setText(String.format(Locale.getDefault(), "%.2f km", it.distanceKm));
+        h.txtDistance.setText(itemView.getContext().getString(R.string.pickup_store_distance_format, it.distanceKm));
         if (it.quantity != null) {
             h.txtQuantity.setVisibility(View.VISIBLE);
-            h.txtQuantity.setText("Còn: " + it.quantity);
+            h.txtQuantity.setText(itemView.getContext().getString(R.string.store_card_quantity_format, it.quantity));
         } else {
             h.txtQuantity.setVisibility(View.GONE);
         }
-        h.itemView.setOnClickListener(v -> callbacks.onSelect(it));
-        h.btnGo.setOnClickListener(v -> callbacks.onNavigate(it));
+        h.itemView.setOnClickListener(v -> callbacks.onPreview(it));
+        h.btnSelect.setOnClickListener(v -> callbacks.onConfirm(it));
     }
 
     @Override public int getItemCount() { return items.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
         TextView txtName, txtAddress, txtDistance, txtQuantity;
-        com.google.android.material.button.MaterialButton btnGo;
+        com.google.android.material.button.MaterialButton btnSelect;
         VH(@NonNull View v) {
             super(v);
             txtName = v.findViewById(R.id.txtName);
             txtAddress = v.findViewById(R.id.txtAddress);
             txtDistance = v.findViewById(R.id.txtDistance);
             txtQuantity = v.findViewById(R.id.txtQuantity);
-            btnGo = v.findViewById(R.id.btnGo);
+            btnSelect = v.findViewById(R.id.btnSelectStore);
         }
     }
 }

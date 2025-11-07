@@ -15,17 +15,14 @@
         <!-- Header Title -->
         <TextView
             android:id="@+id/textViewTitle"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bảng số liệu"
+            android:text="Admin Dashboard"
             android:textColor="#1A237E"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintHorizontal_bias="0.5" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Revenue Summary Card -->
         <com.google.android.material.card.MaterialCardView
@@ -49,7 +46,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tổng doanh thu"
+                    android:text="Tổng doanh thu tháng này"
                     android:textColor="#FFFFFF"
                     android:textSize="14sp" />
 
@@ -58,10 +55,38 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="125.5M VND"
+                    android:text="125.5M VNĐ"
                     android:textColor="#FFFFFF"
                     android:textSize="32sp"
                     android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#4CAF50"
+                        android:paddingStart="8dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="4dp"
+                        android:text="↑ 12.5%"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="so với tháng trước"
+                        android:textColor="#B3E5FC"
+                        android:textSize="12sp" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -172,11 +197,11 @@
             app:layout_constraintTop_toBottomOf="@id/textViewManagement">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonStoreProductManagement"
+                android:id="@+id/buttonStaffManagement"
                 style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:text="Quản lý nhân viên"
                 android:textColor="@color/white"
@@ -189,13 +214,13 @@
                 app:iconTint="@color/white" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonStaffManagement"
+                android:id="@+id/buttonStoreProductManagement"
                 style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Danh mục"
+                android:text="Sản phẩm cửa hàng"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 app:backgroundTint="#8B4513"
@@ -204,6 +229,7 @@
                 app:iconPadding="4dp"
                 app:iconSize="32dp"
                 app:iconTint="@color/white" />
+
         </LinearLayout>
 
         <!-- Management Buttons Row 2 -->

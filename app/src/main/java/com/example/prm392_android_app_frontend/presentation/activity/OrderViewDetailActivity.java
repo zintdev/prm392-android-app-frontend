@@ -1,5 +1,6 @@
 package com.example.prm392_android_app_frontend.presentation.activity;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +39,11 @@ public class OrderViewDetailActivity extends AppCompatActivity {
     private TextView textViewShippingPhone;
     private TextView textViewShippingAddress;
     private TextView textViewShipmentMethod;
+    private View pickupStoreDivider;
+    private View pickupStoreSection;
+    private TextView textViewPickupStoreName;
+    private TextView textViewPickupStoreAddress;
+    private MaterialButton btnPickupStoreDirections;
     private TextView textViewSubtotal;
     private TextView textViewShippingFee;
     private TextView textViewTotal;
@@ -79,6 +85,11 @@ public class OrderViewDetailActivity extends AppCompatActivity {
         textViewShippingPhone = findViewById(R.id.text_view_shipping_phone);
         textViewShippingAddress = findViewById(R.id.text_view_shipping_address);
         textViewShipmentMethod = findViewById(R.id.text_view_shipment_method);
+    pickupStoreDivider = findViewById(R.id.divider_pickup_store);
+    pickupStoreSection = findViewById(R.id.layout_pickup_store);
+    textViewPickupStoreName = findViewById(R.id.text_view_pickup_store_name);
+    textViewPickupStoreAddress = findViewById(R.id.text_view_pickup_store_address);
+    btnPickupStoreDirections = findViewById(R.id.btn_pickup_store_directions);
         textViewSubtotal = findViewById(R.id.text_view_subtotal);
         textViewShippingFee = findViewById(R.id.text_view_shipping_fee);
         textViewTotal = findViewById(R.id.text_view_total);
@@ -216,7 +227,7 @@ public class OrderViewDetailActivity extends AppCompatActivity {
         textViewShippingAddress.setText(fullAddress);
 
         // Phương thức vận chuyển
-        textViewShipmentMethod.setText(order.getShipmentMethod() != null ? order.getShipmentMethod() : "Giao hàng tiêu chuẩn");
+    textViewShipmentMethod.setText(mapShipmentMethod(order.getShipmentMethod()));
 
         // Format tiền tệ
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
@@ -230,6 +241,8 @@ public class OrderViewDetailActivity extends AppCompatActivity {
         if (order.getItems() != null && !order.getItems().isEmpty()) {
             itemAdapter.setItems(order.getItems());
         }
+
+        updatePickupStoreSection(order);
     }
 
     private String getStatusText(String status) {
@@ -251,6 +264,21 @@ public class OrderViewDetailActivity extends AppCompatActivity {
                 return "Đã hủy";
             default:
                 return status;
+        }
+    }
+
+    private String mapShipmentMethod(String shipmentMethod) {
+        if (shipmentMethod == null) {
+            return getString(R.string.order_detail_shipment_delivery);
+        }
+
+        switch (shipmentMethod.toUpperCase(Locale.ROOT)) {
+            case "PICKUP":
+                return getString(R.string.order_detail_shipment_pickup);
+            case "DELIVERY":
+                return getString(R.string.order_detail_shipment_delivery);
+            default:
+                return shipmentMethod;
         }
     }
 
@@ -326,6 +354,89 @@ public class OrderViewDetailActivity extends AppCompatActivity {
             startActivity(intent);
         } catch (Exception e) {
             Toast.makeText(this, "Không thể mở trang thanh toán", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updatePickupStoreSection(OrderDTO order) {
+        if (pickupStoreSection == null) {
+            return;
+        }
+
+        boolean isPickup = order.getShipmentMethod() != null
+                && "PICKUP".equalsIgnoreCase(order.getShipmentMethod());
+
+        if (!isPickup) {
+            pickupStoreSection.setVisibility(View.GONE);
+            if (pickupStoreDivider != null) {
+                pickupStoreDivider.setVisibility(View.GONE);
+            }
+            if (btnPickupStoreDirections != null) {
+                btnPickupStoreDirections.setVisibility(View.GONE);
+                btnPickupStoreDirections.setOnClickListener(null);
+            }
+            return;
+        }
+
+        String storeName = order.getStoreName();
+        if (storeName == null || storeName.trim().isEmpty()) {
+            if (order.getStoreLocationId() != null) {
+                storeName = getString(R.string.pickup_store_fallback_name, order.getStoreLocationId());
+            } else {
+                storeName = getString(R.string.pickup_store_title);
+            }
+        }
+
+        String storeAddress = order.getStoreAddress();
+        if (storeAddress == null || storeAddress.trim().isEmpty()) {
+            storeAddress = textViewShippingAddress != null ? textViewShippingAddress.getText().toString() : "";
+        }
+
+        if (textViewPickupStoreName != null) {
+            textViewPickupStoreName.setText(storeName);
+        }
+        if (textViewPickupStoreAddress != null) {
+            textViewPickupStoreAddress.setText(storeAddress);
+        }
+
+        pickupStoreSection.setVisibility(View.VISIBLE);
+        if (pickupStoreDivider != null) {
+            pickupStoreDivider.setVisibility(View.VISIBLE);
+        }
+
+    boolean hasCoordinates = order.getStoreLatitude() != null && order.getStoreLongitude() != null;
+    boolean hasAddress = storeAddress != null && !storeAddress.trim().isEmpty();
+        boolean hasDestination = hasCoordinates || hasAddress;
+
+        if (btnPickupStoreDirections != null) {
+            btnPickupStoreDirections.setVisibility(hasDestination ? View.VISIBLE : View.GONE);
+            btnPickupStoreDirections.setOnClickListener(v -> openStoreDirections(order));
+        }
+    }
+
+    private void openStoreDirections(OrderDTO order) {
+        String destination = null;
+        if (order.getStoreLatitude() != null && order.getStoreLongitude() != null) {
+            destination = order.getStoreLatitude() + "," + order.getStoreLongitude();
+        } else if (order.getStoreAddress() != null && !order.getStoreAddress().trim().isEmpty()) {
+            destination = order.getStoreAddress();
+        } else if (order.getShippingAddressLine1() != null) {
+            destination = order.getShippingAddressLine1();
+        }
+
+        if (destination == null) {
+            Toast.makeText(this, R.string.pickup_store_missing_location, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + Uri.encode(destination) + "&mode=d");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        try {
+            startActivity(mapIntent);
+        } catch (ActivityNotFoundException e) {
+            String fallback = "https://www.google.com/maps/dir/?api=1&destination="
+                    + Uri.encode(destination) + "&travelmode=driving";
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(fallback)));
         }
     }
 }

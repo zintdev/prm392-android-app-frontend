@@ -443,7 +443,7 @@
                 }
                 
                 // Fallback error message
-                return "Lỗi API (HTTP " + response.code() + ")";
+                return "Lỗi API. Vui lòng thử lại.";
             }
         
             /**

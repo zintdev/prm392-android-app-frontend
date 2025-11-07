@@ -63,6 +63,10 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
         if (toolbar != null) {
             toolbar.setTitle("Admin");
             toolbar.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.action_open_map) {
+                    startActivity(new Intent(this, MapsActivity.class));
+                    return true;
+                }
                 // Nếu cần thêm action trên toolbar sau này
                 return false;
             });
@@ -117,8 +121,7 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
 
     @Override
     public void navigateToPublisherManagement() {
-        Intent intent = new Intent(this, PublisherManageActivity.class);
-        startActivity(intent);
+
     }
 
     @Override
@@ -129,8 +132,7 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
 
     @Override
     public void navigateToCategoryManagement() {
-        Intent intent = new Intent(this, CategoryManageActivity.class);
-        startActivity(intent);
+
     }
 
     @Override

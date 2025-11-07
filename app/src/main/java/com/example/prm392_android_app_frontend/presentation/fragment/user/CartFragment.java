@@ -178,7 +178,7 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartItemActi
         cartViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             showLoading(false);
             if (error != null && !error.isEmpty()) {
-                Toast.makeText(getContext(), "Lỗi: " + error, Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
                 textViewEmptyCart.setVisibility(View.VISIBLE);
                 bottomBar.setVisibility(View.GONE);
                 recyclerViewCart.setVisibility(View.GONE);

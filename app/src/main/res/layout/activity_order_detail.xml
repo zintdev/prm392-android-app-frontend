@@ -12,6 +12,8 @@
         android:layout_height="wrap_content"
         android:background="@color/primaryColor"
         android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@android:color/white"
         app:titleTextColor="@android:color/white" />
 
     <androidx.core.widget.NestedScrollView

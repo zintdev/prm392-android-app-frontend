@@ -5,7 +5,6 @@ import com.example.prm392_android_app_frontend.data.remote.api.PublisherApi;
 
 import java.util.List;
 import retrofit2.Callback;
-import retrofit2.Call;
 
 public class PublisherRepository {
     private final PublisherApi publisherApi;
@@ -16,19 +15,5 @@ public class PublisherRepository {
 
     public void getAll(Callback<List<PublisherDto>> callback) {
         publisherApi.getPublishers().enqueue(callback);
-    }
-
-    public void create(PublisherDto dto, Callback<PublisherDto> cb) {
-        Call<PublisherDto> call = publisherApi.createPublisher(dto);
-        call.enqueue(cb);
-    }
-
-    public void update(Integer id, PublisherDto dto, Callback<PublisherDto> cb) {
-        Call<PublisherDto> call = publisherApi.updatePublisher(id, dto);
-        call.enqueue(cb);
-    }
-
-    public void delete(Integer id, Callback<Void> callback) {
-        publisherApi.deletePublisher(id).enqueue(callback);
     }
 }

@@ -9,10 +9,6 @@
         android:title="@string/staff_nav_inventory"
         android:icon="@drawable/ic_store_" />
     <item
-        android:id="@+id/nav_staff_chat"
-        android:title="@string/staff_nav_chat"
-        android:icon="@drawable/ic_chat" />
-    <item
         android:id="@+id/nav_staff_profile"
         android:title="@string/staff_nav_profile"
         android:icon="@drawable/ic_nav_user" />

@@ -360,7 +360,7 @@ public class ProductViewModel extends AndroidViewModel {
             case 404: return "Không tìm thấy dữ liệu";
             case 500: return "Lỗi máy chủ";
             case 503: return "Dịch vụ tạm thời không khả dụng";
-            default: return "Lỗi tải dữ liệu (HTTP " + statusCode + ")";
+            default: return "Lỗi tải dữ liệu. Vui lòng thử lại.";
         }
     }
 

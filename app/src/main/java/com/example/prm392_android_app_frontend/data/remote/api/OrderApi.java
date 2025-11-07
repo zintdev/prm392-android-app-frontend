@@ -5,7 +5,6 @@ import com.example.prm392_android_app_frontend.data.dto.CreateOrderRequestDto;
 import com.example.prm392_android_app_frontend.data.dto.OrderDTO;
 import com.example.prm392_android_app_frontend.data.dto.order.OrderDto;
 import com.example.prm392_android_app_frontend.data.dto.order.UpdateOrderStatusRequest;
-import com.example.prm392_android_app_frontend.data.dto.ProductDto;
 
 import java.util.List;
 
@@ -27,9 +26,9 @@ public interface OrderApi {
             @Path("userId") int userId,
             @Query("status") String status
     );
-
     @GET("orders")
-    Call<List<OrderDto>> getAllOrders(@Query("orderStatus") String orderStatus);
+    Call<List<OrderDto>> getAllOrders(@Query("orderStatus") String orderStatus,
+                                      @Query("storeId") Integer storeId);
 
     @GET("orders/{orderId}")
     Call<OrderDto> getOrderById(@Path("orderId") int orderId);
@@ -39,7 +38,4 @@ public interface OrderApi {
 
     @GET("orders/user/{userId}")
     Call<List<OrderDto>> getOrdersByUserId(@Path("userId") int userId);
-
-    @GET("orders")
-    Call<List<OrderDTO>> getAllOrders();
 }

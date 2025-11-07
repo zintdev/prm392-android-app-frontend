@@ -25,24 +25,38 @@ import com.example.prm392_android_app_frontend.presentation.activity.OrderDetail
 import com.example.prm392_android_app_frontend.presentation.adapter.StaffOrderAdapter;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.OrderManagementViewModel;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.Locale;
 
 public class AdminOrdersFragment extends Fragment implements StaffOrderAdapter.Listener {
 
     private static final String[] MANAGEABLE_STATUSES = new String[]{
-            "PENDING",
-            "KEEPING",
-            "PROCESSING",
-            "SHIPPED",
-            "COMPLETED",
-            "CANCELLED"
+        "PENDING",
+        "PAID",
+        "KEEPING",
+        "PROCESSING",
+        "SHIPPED",
+        "COMPLETED",
+        "CANCELLED"
+    };
+
+    private static final String[] FILTER_STATUSES = new String[]{
+        "ALL",
+        "PENDING",
+        "PAID",
+        "KEEPING",
+        "PROCESSING",
+        "SHIPPED",
+        "COMPLETED",
+        "CANCELLED"
     };
 
     private OrderManagementViewModel orderViewModel;
     private RecyclerView ordersRecyclerView;
     private StaffOrderAdapter orderAdapter;
     private ProgressBar progressBar;
+    private TabLayout tabOrderStatus;
 
     @Nullable
     @Override
@@ -57,12 +71,14 @@ public class AdminOrdersFragment extends Fragment implements StaffOrderAdapter.L
         super.onViewCreated(view, savedInstanceState);
         setupViewModel();
         setupRecyclerView();
+        setupStatusTabs();
         observeViewModel();
     }
 
     private void initViews(View view) {
         ordersRecyclerView = view.findViewById(R.id.ordersRecyclerView);
         progressBar = view.findViewById(R.id.progressBar);
+        tabOrderStatus = view.findViewById(R.id.tabOrderStatus);
     }
 
     private void setupViewModel() {
@@ -73,6 +89,48 @@ public class AdminOrdersFragment extends Fragment implements StaffOrderAdapter.L
     orderAdapter = new StaffOrderAdapter(this);
         ordersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         ordersRecyclerView.setAdapter(orderAdapter);
+    }
+
+    private void setupStatusTabs() {
+        if (tabOrderStatus == null) {
+            return;
+        }
+        tabOrderStatus.removeAllTabs();
+        for (String statusKey : FILTER_STATUSES) {
+            TabLayout.Tab tab = tabOrderStatus.newTab();
+            tab.setTag(statusKey);
+            tab.setText(mapTabLabel(statusKey));
+            tabOrderStatus.addTab(tab);
+        }
+
+        tabOrderStatus.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(@NonNull TabLayout.Tab tab) {
+                Object tag = tab.getTag();
+                if (tag instanceof String) {
+                    orderViewModel.setFilterStatus((String) tag);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(@NonNull TabLayout.Tab tab) { }
+
+            @Override
+            public void onTabReselected(@NonNull TabLayout.Tab tab) {
+                Object tag = tab.getTag();
+                if (tag instanceof String) {
+                    orderViewModel.setFilterStatus((String) tag);
+                }
+            }
+        });
+
+        TabLayout.Tab first = tabOrderStatus.getTabAt(0);
+        if (first != null) {
+            first.select();
+        } else {
+            orderViewModel.refreshOrders();
+        }
+        orderViewModel.setFilterStatus(FILTER_STATUSES[0]);
     }
 
     private void observeViewModel() {
@@ -177,6 +235,8 @@ public class AdminOrdersFragment extends Fragment implements StaffOrderAdapter.L
                 return getString(R.string.staff_order_status_keeping);
             case "PENDING":
                 return getString(R.string.staff_order_status_pending);
+            case "PAID":
+                return getString(R.string.staff_order_status_paid);
             case "PROCESSING":
                 return getString(R.string.staff_order_status_processing);
             case "SHIPPED":
@@ -188,5 +248,12 @@ public class AdminOrdersFragment extends Fragment implements StaffOrderAdapter.L
             default:
                 return status;
         }
+    }
+
+    private String mapTabLabel(@NonNull String status) {
+        if ("ALL".equalsIgnoreCase(status)) {
+            return getString(R.string.all);
+        }
+        return mapStatusLabel(status);
     }
 }

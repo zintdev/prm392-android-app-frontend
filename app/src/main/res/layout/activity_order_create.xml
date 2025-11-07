@@ -82,6 +82,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <!-- Cửa hàng nhận hàng (khi chọn pickup) -->
+            <include
+                layout="@layout/item_order_pickup_store"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <!-- Phương thức thanh toán -->
             <include
                 layout="@layout/item_order_payment_method"

@@ -152,6 +152,62 @@
 
                     </LinearLayout>
 
+                    <View
+                        android:id="@+id/divider_pickup_store"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="@color/divider_light"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:id="@+id/layout_pickup_store"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pickup_store_title"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary_light" />
+
+                        <TextView
+                            android:id="@+id/text_view_pickup_store_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary_light"
+                            tools:text="Cửa hàng FPT HCM" />
+
+                        <TextView
+                            android:id="@+id/text_view_pickup_store_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary_light"
+                            tools:text="Đường D6, Khu công nghệ cao" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_pickup_store_directions"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="@string/pickup_store_directions_button"
+                            android:textAllCaps="false"
+                            app:icon="@drawable/ic_map"
+                            app:iconPadding="8dp"
+                            app:iconTint="@color/nogi_purple_900"
+                            app:rippleColor="@color/nogi_purple_100" />
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>

@@ -66,7 +66,7 @@ public class CartViewModel extends AndroidViewModel {
                         NotificationHelper.showCartNotification(getApplication(), 0);
                     }
                 } else {
-                    errorMessage.postValue("Lỗi tải giỏ hàng: " + response.code());
+                    errorMessage.postValue("Không thể tải giỏ hàng. Vui lòng thử lại sau.");
                 }
                 isLoading.postValue(false);
             }
@@ -88,7 +88,7 @@ public class CartViewModel extends AndroidViewModel {
                     // Sau khi xóa thành công, gọi fetchCart() để lấy dữ liệu mới nhất
                     fetchCart();
                 } else {
-                    errorMessage.postValue("Lỗi xóa sản phẩm. Mã: " + response.code());
+                    errorMessage.postValue("Không thể xóa sản phẩm khỏi giỏ hàng. Vui lòng thử lại.");
                     isLoading.postValue(false);
                 }
             }
@@ -109,9 +109,9 @@ public class CartViewModel extends AndroidViewModel {
                     CartDto cart = response.body();
                     cartLiveData.postValue(cart);
                     NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
-                    _showToast.setValue(new Event<>("Đã thêm đĩa vào giỏ hàng."));
+                    _showToast.setValue(new Event<>("Đã thêm sản phẩm vào giỏ hàng thành công!"));
                 } else {
-                    errorMessage.postValue("Lỗi thêm vào giỏ hàng. Mã: " + response.code());
+                    errorMessage.postValue("Không thể thêm sản phẩm vào giỏ hàng. Vui lòng thử lại.");
                 }
                 isLoading.postValue(false);
             }
@@ -154,7 +154,7 @@ public class CartViewModel extends AndroidViewModel {
                     cartLiveData.postValue(cart); // Cập nhật lại giỏ hàng
                     NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
                 } else {
-                    errorMessage.postValue("Lỗi cập nhật số lượng. Mã: " + response.code());
+                    errorMessage.postValue("Không thể cập nhật số lượng sản phẩm. Vui lòng thử lại.");
                 }
                 isLoading.postValue(false);
             }
@@ -177,7 +177,7 @@ public class CartViewModel extends AndroidViewModel {
                     cartLiveData.postValue(cart); // Cập nhật lại giỏ hàng
                     NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
                 } else {
-                    errorMessage.postValue("Lỗi cập nhật trạng thái chọn. Mã: " + response.code());
+                    errorMessage.postValue("Không thể cập nhật trạng thái sản phẩm. Vui lòng thử lại.");
                 }
                 isLoading.postValue(false);
             }
@@ -207,7 +207,7 @@ public class CartViewModel extends AndroidViewModel {
                     cartLiveData.postValue(emptyCart);
                     NotificationHelper.showCartNotification(getApplication(), 0);
                 } else {
-                    errorMessage.postValue("Lỗi xóa giỏ hàng. Mã: " + response.code());
+                    errorMessage.postValue("Không thể xóa giỏ hàng. Vui lòng thử lại.");
                 }
                 isLoading.postValue(false);
             }
@@ -230,7 +230,7 @@ public class CartViewModel extends AndroidViewModel {
                     cartLiveData.postValue(cart);
                     NotificationHelper.showCartNotification(getApplication(), cart.getItems().size());
                 } else {
-                    errorMessage.postValue("Lỗi khi chọn tất cả sản phẩm. Mã: " + response.code());
+                    errorMessage.postValue("Không thể cập nhật lựa chọn sản phẩm. Vui lòng thử lại.");
                 }
                 isLoading.postValue(false);
             }
