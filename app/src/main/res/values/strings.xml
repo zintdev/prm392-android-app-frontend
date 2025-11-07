@@ -60,7 +60,7 @@
     <string name="staff_order_store_unknown">Không rõ</string>
     <string name="staff_order_total_format">Tổng: %1$s</string>
     <string name="staff_order_unknown_field">Không xác định</string>
-    <string name="staff_order_status_keeping">Đang giữ hàng</string>
+    <string name="staff_order_status_keeping">Chờ nhận hàng</string>
     <string name="staff_order_status_pending">Chờ xử lý</string>
     <string name="staff_order_status_paid">Đã thanh toán</string>
     <string name="staff_order_status_processing">Đang chuẩn bị</string>
@@ -89,6 +89,8 @@
     <string name="order_detail_quantity_format">Số lượng: %1$d</string>
     <string name="order_detail_unit_price_format">Đơn giá: %1$s</string>
     <string name="order_detail_total_line_format">Thành tiền: %1$s</string>
+    <string name="order_detail_shipment_pickup">Nhận tại cửa hàng</string>
+    <string name="order_detail_shipment_delivery">Giao hàng tận nơi</string>
 
     <!-- pickup store selection -->
     <string name="pickup_store_title">Cửa hàng nhận hàng</string>

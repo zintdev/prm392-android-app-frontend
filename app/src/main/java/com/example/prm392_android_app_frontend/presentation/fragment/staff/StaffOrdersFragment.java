@@ -417,18 +417,21 @@ public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.L
         switch (normalized) {
             case "PENDING":
                 if ("PICKUP".equalsIgnoreCase(order.getShipmentMethod())) {
-                    return new String[]{"KEEPING", "PROCESSING", "CANCELLED"};
+                    return new String[]{"PAID", "CANCELLED"};
                 }
                 return new String[]{"PROCESSING", "CANCELLED"};
             case "PAID":
+                if ("PICKUP".equalsIgnoreCase(order.getShipmentMethod())) {
+                    return new String[]{"KEEPING", "CANCELLED"};
+                }
                 return new String[]{"PROCESSING", "CANCELLED"};
             case "KEEPING":
-                return new String[]{"PROCESSING", "COMPLETED", "CANCELLED"};
+                return new String[]{"COMPLETED", "CANCELLED"};
             case "PROCESSING":
                 if ("DELIVERY".equalsIgnoreCase(order.getShipmentMethod())) {
                     return new String[]{"SHIPPED", "CANCELLED"};
                 }
-                return new String[]{"COMPLETED", "CANCELLED"};
+                return new String[]{"CANCELLED"};
             case "SHIPPED":
                 return new String[]{"COMPLETED", "CANCELLED"};
             default:

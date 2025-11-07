@@ -227,7 +227,7 @@ public class OrderViewDetailActivity extends AppCompatActivity {
         textViewShippingAddress.setText(fullAddress);
 
         // Phương thức vận chuyển
-        textViewShipmentMethod.setText(order.getShipmentMethod() != null ? order.getShipmentMethod() : "Giao hàng tiêu chuẩn");
+    textViewShipmentMethod.setText(mapShipmentMethod(order.getShipmentMethod()));
 
         // Format tiền tệ
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
@@ -264,6 +264,21 @@ public class OrderViewDetailActivity extends AppCompatActivity {
                 return "Đã hủy";
             default:
                 return status;
+        }
+    }
+
+    private String mapShipmentMethod(String shipmentMethod) {
+        if (shipmentMethod == null) {
+            return getString(R.string.order_detail_shipment_delivery);
+        }
+
+        switch (shipmentMethod.toUpperCase(Locale.ROOT)) {
+            case "PICKUP":
+                return getString(R.string.order_detail_shipment_pickup);
+            case "DELIVERY":
+                return getString(R.string.order_detail_shipment_delivery);
+            default:
+                return shipmentMethod;
         }
     }
 
