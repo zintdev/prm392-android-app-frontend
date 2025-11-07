@@ -126,7 +126,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         Log.e("ChangePw", "Can't read error body", e);
                     }
-                    Toast.makeText(ChangePasswordActivity.this, "Lỗi máy chủ (HTTP " + res.code() + ")", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChangePasswordActivity.this, "Máy chủ đang bận. Vui lòng thử lại sau.", Toast.LENGTH_SHORT).show();
                 }
             }
 

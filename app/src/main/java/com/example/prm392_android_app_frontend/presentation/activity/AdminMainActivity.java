@@ -63,6 +63,10 @@ public class AdminMainActivity extends AppCompatActivity implements AdminDashboa
         if (toolbar != null) {
             toolbar.setTitle("Admin");
             toolbar.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.action_open_map) {
+                    startActivity(new Intent(this, MapsActivity.class));
+                    return true;
+                }
                 // Nếu cần thêm action trên toolbar sau này
                 return false;
             });

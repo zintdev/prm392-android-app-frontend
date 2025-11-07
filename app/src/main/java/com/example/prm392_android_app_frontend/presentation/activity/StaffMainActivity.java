@@ -44,6 +44,13 @@ public class StaffMainActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.toolbarStaff);
         if (toolbar != null) {
             toolbar.setTitle(R.string.staff_toolbar_title);
+            toolbar.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.action_open_map) {
+                    startActivity(new Intent(this, MapsActivity.class));
+                    return true;
+                }
+                return false;
+            });
         }
 
         bottomNav = findViewById(R.id.bottomNavStaff);

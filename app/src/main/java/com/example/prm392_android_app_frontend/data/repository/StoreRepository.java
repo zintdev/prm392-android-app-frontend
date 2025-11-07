@@ -20,8 +20,11 @@ public class StoreRepository {
                 .enqueue(new Callback<List<StoreNearbyDto>>() {
                     @Override public void onResponse(Call<List<StoreNearbyDto>> call,
                                                      Response<List<StoreNearbyDto>> resp) {
-                        if (resp.isSuccessful() && resp.body()!=null) cb.onSuccess(resp.body());
-                        else cb.onError("HTTP " + resp.code());
+                        if (resp.isSuccessful() && resp.body()!=null) {
+                            cb.onSuccess(resp.body());
+                        } else {
+                            cb.onError("Không thể tải danh sách cửa hàng. Vui lòng thử lại.");
+                        }
                     }
                     @Override public void onFailure(Call<List<StoreNearbyDto>> call, Throwable t) {
                         cb.onError(t.getMessage());

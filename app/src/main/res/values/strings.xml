@@ -29,14 +29,14 @@
 
     <string name="store_list_title">Danh sách cửa hàng</string>
     <string name="store_list_count_default">0 kết quả</string>
-    <string name="search_store_hint">Tìm cửa hàng trong bán kính</string>
+    <string name="pickup_store_search_hint">Tìm cửa hàng khác</string>
     <string name="hint_radius_km">Bán kính (km)</string>
     <string name="hint_product_id_pickup">Product ID (Pickup)</string>
     <string name="apply">Áp dụng</string>
     <string name="all">Tất cả</string>
     <string name="pickup">Pickup</string>
     <string name="show_all">Hiện tất cả</string>
-    <string name="go_button">Tìm đến cửa hàng</string>
+    <string name="pickup_store_directions_button">Chỉ đường</string>
     <string name="go_to_my_location">Về vị trí của tôi</string>
     <string name="refresh_stores">Tải lại cửa hàng</string>
     <string name="loading">Đang tải...</string>
@@ -87,6 +87,24 @@
     <string name="order_detail_quantity_format">Số lượng: %1$d</string>
     <string name="order_detail_unit_price_format">Đơn giá: %1$s</string>
     <string name="order_detail_total_line_format">Thành tiền: %1$s</string>
+
+    <!-- pickup store selection -->
+    <string name="pickup_store_title">Cửa hàng nhận hàng</string>
+    <string name="pickup_store_placeholder">Chưa chọn cửa hàng</string>
+    <string name="pickup_store_address_placeholder">Chưa có địa chỉ cửa hàng</string>
+    <string name="pickup_store_hint">Vui lòng chọn cửa hàng đủ hàng để nhận trong vòng 2 ngày.</string>
+    <string name="pickup_store_select_button">Chọn cửa hàng</string>
+    <string name="pickup_store_change_button">Đổi cửa hàng</string>
+    <string name="pickup_store_fallback_name">Cửa hàng #%1$d</string>
+    <string name="pickup_store_distance_format">~%1$.2f km</string>
+    <string name="pickup_store_select_required">Vui lòng chọn cửa hàng để nhận hàng.</string>
+    <string name="pickup_store_cancelled_message">Bạn chưa chọn cửa hàng. Đang chuyển về giao tận nơi.</string>
+    <string name="pickup_store_no_items">Không có sản phẩm nào để chọn cửa hàng.</string>
+    <string name="pickup_store_confirm_button">Chọn cửa hàng này</string>
+    <string name="pickup_store_select_prompt">Hãy chọn một cửa hàng trước khi xác nhận.</string>
+    <string name="pickup_store_missing_location">Không tìm thấy vị trí cửa hàng để chỉ đường.</string>
+    <string name="store_nearby_generic_error">Không tải được danh sách cửa hàng.</string>
+    <string name="store_card_quantity_format">Còn: %1$d</string>
 
     <!-- staff chat -->
     <string name="staff_chat_description">Trao đổi nhanh với quản trị viên khi cần hỗ trợ.</string>

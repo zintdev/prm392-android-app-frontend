@@ -45,6 +45,15 @@ public class OrderDto {
     @SerializedName("storeName")
     private String storeName;
 
+    @SerializedName("storeAddress")
+    private String storeAddress;
+
+    @SerializedName("storeLatitude")
+    private Double storeLatitude;
+
+    @SerializedName("storeLongitude")
+    private Double storeLongitude;
+
     @SerializedName("keepingExpiresAt")
     private String keepingExpiresAt;
 
@@ -113,6 +122,18 @@ public class OrderDto {
 
     public String getStoreName() {
         return storeName;
+    }
+
+    public String getStoreAddress() {
+        return storeAddress;
+    }
+
+    public Double getStoreLatitude() {
+        return storeLatitude;
+    }
+
+    public Double getStoreLongitude() {
+        return storeLongitude;
     }
 
     public String getKeepingExpiresAt() {
