@@ -27,6 +27,7 @@ public class OrderManagementViewModel extends AndroidViewModel {
     private final MediatorLiveData<Resource<List<OrderDto>>> orders = new MediatorLiveData<>();
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
     private final MutableLiveData<String> filterStatus = new MutableLiveData<>("ALL");
+    private final MutableLiveData<Integer> storeFilter = new MutableLiveData<>(null);
 
     private final MediatorLiveData<Resource<List<OrderDto>>> userOrders = new MediatorLiveData<>();
     private final MediatorLiveData<Resource<OrderDto>> orderDetail = new MediatorLiveData<>();
@@ -36,8 +37,9 @@ public class OrderManagementViewModel extends AndroidViewModel {
         super(application);
         orderRepository = new OrderRepository(application.getApplicationContext());
 
-        orders.addSource(searchQuery, query -> applyFilters());
-        orders.addSource(filterStatus, status -> fetchOrdersByStatus(status));
+    orders.addSource(searchQuery, query -> applyFilters());
+    orders.addSource(filterStatus, status -> fetchOrders());
+    orders.addSource(storeFilter, storeId -> fetchOrders());
     }
 
     public LiveData<Resource<List<OrderDto>>> getOrders() {
@@ -64,14 +66,20 @@ public class OrderManagementViewModel extends AndroidViewModel {
         this.filterStatus.setValue(status);
     }
 
-    public void refreshOrders() {
-        fetchOrdersByStatus(filterStatus.getValue());
+    public void setStoreFilter(Integer storeId) {
+        this.storeFilter.setValue(storeId);
     }
 
-    private void fetchOrdersByStatus(String status) {
+    public void refreshOrders() {
+        fetchOrders();
+    }
+
+    private void fetchOrders() {
+        String status = filterStatus.getValue();
         String apiStatus = "ALL".equals(status) ? null : status;
+        Integer storeId = storeFilter.getValue();
         orders.setValue(Resource.loading(null));
-        final LiveData<Resource<List<OrderDto>>> source = orderRepository.getAllOrders(apiStatus);
+        final LiveData<Resource<List<OrderDto>>> source = orderRepository.getAllOrders(apiStatus, storeId);
         orders.addSource(source, resource -> {
             if (resource.getStatus() != Resource.Status.LOADING) {
                 orders.removeSource(source);

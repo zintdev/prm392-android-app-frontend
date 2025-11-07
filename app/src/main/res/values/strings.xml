@@ -62,10 +62,12 @@
     <string name="staff_order_unknown_field">Không xác định</string>
     <string name="staff_order_status_keeping">Đang giữ hàng</string>
     <string name="staff_order_status_pending">Chờ xử lý</string>
+    <string name="staff_order_status_paid">Đã thanh toán</string>
     <string name="staff_order_status_processing">Đang chuẩn bị</string>
     <string name="staff_order_status_shipped">Đã gửi đi</string>
     <string name="staff_order_status_completed">Hoàn thành</string>
     <string name="staff_order_status_cancelled">Đã hủy</string>
+    <string name="staff_orders_status_update_unavailable">Trạng thái đơn hiện tại không thể cập nhật thêm.</string>
     <string name="staff_order_view_detail">Chi tiết</string>
     <string name="staff_order_update_status">Cập nhật trạng thái</string>
     <string name="staff_order_update_success">Cập nhật trạng thái đơn hàng thành công.</string>

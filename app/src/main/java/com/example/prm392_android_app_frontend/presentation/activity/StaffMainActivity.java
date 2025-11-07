@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.prm392_android_app_frontend.R;
-import com.example.prm392_android_app_frontend.presentation.fragment.staff.StaffChatFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.staff.StaffInventoryFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.staff.StaffOrdersFragment;
 import com.example.prm392_android_app_frontend.presentation.fragment.staff.StaffProfileFragment;
@@ -70,10 +69,6 @@ public class StaffMainActivity extends AppCompatActivity {
             }
             if (id == R.id.nav_staff_inventory) {
                 switchFragment(new StaffInventoryFragment());
-                return true;
-            }
-            if (id == R.id.nav_staff_chat) {
-                switchFragment(new StaffChatFragment());
                 return true;
             }
             if (id == R.id.nav_staff_profile) {

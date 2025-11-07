@@ -52,10 +52,10 @@ public class OrderRepository {
         orderApi.getOrdersByUserId(userId, status).enqueue(callback);
     }
 
-    public LiveData<Resource<List<OrderDto>>> getAllOrders(String orderStatus) {
+    public LiveData<Resource<List<OrderDto>>> getAllOrders(String orderStatus, Integer storeId) {
         MutableLiveData<Resource<List<OrderDto>>> liveData = new MutableLiveData<>();
         liveData.setValue(Resource.loading(null));
-        orderApi.getAllOrders(orderStatus).enqueue(new Callback<List<OrderDto>>() {
+        orderApi.getAllOrders(orderStatus, storeId).enqueue(new Callback<List<OrderDto>>() {
             @Override
             public void onResponse(Call<List<OrderDto>> call, Response<List<OrderDto>> response) {
                 if (response.isSuccessful()) {

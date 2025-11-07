@@ -27,7 +27,8 @@ public interface OrderApi {
             @Query("status") String status
     );
     @GET("orders")
-    Call<List<OrderDto>> getAllOrders(@Query("orderStatus") String orderStatus);
+    Call<List<OrderDto>> getAllOrders(@Query("orderStatus") String orderStatus,
+                                      @Query("storeId") Integer storeId);
 
     @GET("orders/{orderId}")
     Call<OrderDto> getOrderById(@Path("orderId") int orderId);

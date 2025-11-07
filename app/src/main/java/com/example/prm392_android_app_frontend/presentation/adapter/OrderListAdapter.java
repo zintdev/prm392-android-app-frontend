@@ -134,6 +134,8 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
                     return "Chờ thanh toán";
                 case "PAID":
                     return "Đã thanh toán";
+                case "KEEPING":
+                    return "Chờ nhận hàng";
                 case "PROCESSING":
                     return "Đang xử lý";
                 case "SHIPPED":
@@ -154,6 +156,8 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
                     return R.color.warning_light;
                 case "PAID":
                     return R.color.success_light;
+                case "KEEPING":
+                    return R.color.info_light;
                 case "PROCESSING":
                     return R.color.info_light;
                 case "SHIPPED":

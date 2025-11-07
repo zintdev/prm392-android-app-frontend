@@ -30,6 +30,7 @@ import com.example.prm392_android_app_frontend.presentation.adapter.StaffOrderAd
 import com.example.prm392_android_app_frontend.presentation.viewmodel.OrderManagementViewModel;
 import com.example.prm392_android_app_frontend.presentation.viewmodel.StaffSharedViewModel;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,16 +44,20 @@ import java.util.Objects;
  */
 public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.Listener {
 
-    private static final String[] MANAGEABLE_STATUSES = new String[]{
+    private static final String[] FILTER_STATUSES = new String[]{
+        "ALL",
         "PENDING",
+        "PAID",
         "KEEPING",
         "PROCESSING",
+        "SHIPPED",
         "COMPLETED",
         "CANCELLED"
     };
 
     private TextView txtStoreInfo;
     private TextView txtStoreHint;
+    private TabLayout tabOrderStatus;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerOrders;
     private ProgressBar progressBar;
@@ -78,6 +83,7 @@ public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.L
         setupRecyclerView();
         setupSwipeRefresh();
         setupViewModels();
+        setupStatusTabs();
         observeStaffInfo();
         observeOrders();
         observeUpdateResult();
@@ -87,6 +93,7 @@ public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.L
     private void initViews(@NonNull View view) {
         txtStoreInfo = view.findViewById(R.id.txtStoreInfo);
         txtStoreHint = view.findViewById(R.id.txtStoreHint);
+        tabOrderStatus = view.findViewById(R.id.tabOrderStatus);
         swipeRefreshLayout = view.findViewById(R.id.swipeOrders);
         recyclerOrders = view.findViewById(R.id.recyclerOrders);
         progressBar = view.findViewById(R.id.progressOrders);
@@ -115,6 +122,48 @@ public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.L
         if (staffSharedViewModel.getStaffInfo().getValue() == null) {
             staffSharedViewModel.loadCurrentStaff();
         }
+    }
+
+    private void setupStatusTabs() {
+        if (tabOrderStatus == null) {
+            return;
+        }
+        tabOrderStatus.removeAllTabs();
+        for (String statusKey : FILTER_STATUSES) {
+            TabLayout.Tab tab = tabOrderStatus.newTab();
+            tab.setTag(statusKey);
+            tab.setText(mapTabLabel(statusKey));
+            tabOrderStatus.addTab(tab);
+        }
+
+        tabOrderStatus.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(@NonNull TabLayout.Tab tab) {
+                Object tag = tab.getTag();
+                if (tag instanceof String) {
+                    orderViewModel.setFilterStatus((String) tag);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(@NonNull TabLayout.Tab tab) { }
+
+            @Override
+            public void onTabReselected(@NonNull TabLayout.Tab tab) {
+                Object tag = tab.getTag();
+                if (tag instanceof String) {
+                    orderViewModel.setFilterStatus((String) tag);
+                }
+            }
+        });
+
+        TabLayout.Tab first = tabOrderStatus.getTabAt(0);
+        if (first != null) {
+            first.select();
+        } else {
+            orderViewModel.refreshOrders();
+        }
+        orderViewModel.setFilterStatus(FILTER_STATUSES[0]);
     }
 
     private void observeStaffInfo() {
@@ -206,6 +255,7 @@ public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.L
         }
 
         if (currentStoreId == null) {
+            orderViewModel.setStoreFilter(null);
             txtStoreHint.setVisibility(View.GONE);
             adapter.submit(Collections.emptyList());
             setEmptyState(getString(R.string.staff_orders_no_store));
@@ -220,7 +270,11 @@ public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.L
         if (storeChanged || adapter.getItemCount() == 0) {
             setLoading(true);
         }
-        orderViewModel.refreshOrders();
+        if (storeChanged) {
+            orderViewModel.setStoreFilter(currentStoreId);
+        } else {
+            orderViewModel.refreshOrders();
+        }
     }
 
     private List<OrderDto> filterOrdersForStore(@Nullable List<OrderDto> data) {
@@ -299,24 +353,25 @@ public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.L
 
         dialogOrderIdTextView.setText(getString(R.string.staff_order_id_format, order.getId()));
 
-        String[] displayValues = new String[MANAGEABLE_STATUSES.length];
-        for (int i = 0; i < MANAGEABLE_STATUSES.length; i++) {
-            displayValues[i] = mapStatusLabel(MANAGEABLE_STATUSES[i]);
+        String[] availableStatuses = getTransitionTargets(order);
+        if (availableStatuses.length == 0) {
+            showToast(getString(R.string.staff_orders_status_update_unavailable));
+            return;
+        }
+
+        String[] displayValues = new String[availableStatuses.length];
+        for (int i = 0; i < availableStatuses.length; i++) {
+            displayValues[i] = mapStatusLabel(availableStatuses[i]);
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, displayValues);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statusSpinner.setAdapter(adapter);
 
-        int currentIndex = indexOfStatus(order.getOrderStatus());
-        if (currentIndex >= 0) {
-            statusSpinner.setSelection(currentIndex);
-        }
-
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.staff_order_update_status)
                 .setView(dialogView)
                 .setPositiveButton(R.string.staff_order_update_status, (dialog, which) -> {
-                    String selectedStatus = MANAGEABLE_STATUSES[statusSpinner.getSelectedItemPosition()];
+                    String selectedStatus = availableStatuses[statusSpinner.getSelectedItemPosition()];
                     int rawUserId = TokenStore.getUserId(requireContext());
                     Integer actorId = rawUserId > 0 ? rawUserId : null;
                     orderViewModel.updateOrderStatus(order.getId(), selectedStatus, actorId);
@@ -325,25 +380,14 @@ public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.L
                 .show();
     }
 
-    private int indexOfStatus(@Nullable String status) {
-        if (status == null) {
-            return -1;
-        }
-        String normalized = status.toUpperCase(Locale.ROOT);
-        for (int i = 0; i < MANAGEABLE_STATUSES.length; i++) {
-            if (MANAGEABLE_STATUSES[i].equalsIgnoreCase(normalized)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     private String mapStatusLabel(@NonNull String status) {
         switch (status.toUpperCase(Locale.ROOT)) {
             case "KEEPING":
                 return getString(R.string.staff_order_status_keeping);
             case "PENDING":
                 return getString(R.string.staff_order_status_pending);
+            case "PAID":
+                return getString(R.string.staff_order_status_paid);
             case "PROCESSING":
                 return getString(R.string.staff_order_status_processing);
             case "SHIPPED":
@@ -354,6 +398,41 @@ public class StaffOrdersFragment extends Fragment implements StaffOrderAdapter.L
                 return getString(R.string.staff_order_status_cancelled);
             default:
                 return status;
+        }
+    }
+
+    private String mapTabLabel(@NonNull String status) {
+        if ("ALL".equalsIgnoreCase(status)) {
+            return getString(R.string.all);
+        }
+        return mapStatusLabel(status);
+    }
+
+    private String[] getTransitionTargets(@NonNull OrderDto order) {
+        String currentStatus = order.getOrderStatus();
+        if (currentStatus == null) {
+            return new String[0];
+        }
+        String normalized = currentStatus.toUpperCase(Locale.ROOT);
+        switch (normalized) {
+            case "PENDING":
+                if ("PICKUP".equalsIgnoreCase(order.getShipmentMethod())) {
+                    return new String[]{"KEEPING", "PROCESSING", "CANCELLED"};
+                }
+                return new String[]{"PROCESSING", "CANCELLED"};
+            case "PAID":
+                return new String[]{"PROCESSING", "CANCELLED"};
+            case "KEEPING":
+                return new String[]{"PROCESSING", "COMPLETED", "CANCELLED"};
+            case "PROCESSING":
+                if ("DELIVERY".equalsIgnoreCase(order.getShipmentMethod())) {
+                    return new String[]{"SHIPPED", "CANCELLED"};
+                }
+                return new String[]{"COMPLETED", "CANCELLED"};
+            case "SHIPPED":
+                return new String[]{"COMPLETED", "CANCELLED"};
+            default:
+                return new String[0];
         }
     }
 }

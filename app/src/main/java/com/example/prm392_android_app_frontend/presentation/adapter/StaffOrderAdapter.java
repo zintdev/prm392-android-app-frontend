@@ -144,6 +144,8 @@ public class StaffOrderAdapter extends RecyclerView.Adapter<StaffOrderAdapter.St
                     return itemView.getContext().getString(R.string.staff_order_status_keeping);
                 case "PENDING":
                     return itemView.getContext().getString(R.string.staff_order_status_pending);
+                case "PAID":
+                    return itemView.getContext().getString(R.string.staff_order_status_paid);
                 case "PROCESSING":
                     return itemView.getContext().getString(R.string.staff_order_status_processing);
                 case "SHIPPED":

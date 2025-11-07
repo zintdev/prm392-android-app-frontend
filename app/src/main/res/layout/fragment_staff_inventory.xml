@@ -19,41 +19,6 @@
         android:orientation="vertical"
         android:paddingTop="56dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/txtInventoryStoreName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/staff_inventory_store_unknown"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                android:textColor="@color/text_primary_light"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/txtInventoryStoreAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/staff_inventory_address_unknown"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                android:textColor="@color/text_secondary_light" />
-
-            <TextView
-                android:id="@+id/txtInventoryHint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/staff_inventory_hint"
-                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:textColor="@color/error_light"
-                android:visibility="gone" />
-        </LinearLayout>
-
         <FrameLayout
             android:id="@+id/inventoryContent"
             android:layout_width="match_parent"
@@ -103,5 +68,45 @@
             android:text="@string/staff_inventory_save_all" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_anchor="@+id/toolbarInventory"
+        app:layout_anchorGravity="bottom|center">
+
+        <TextView
+            android:id="@+id/txtInventoryStoreAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/staff_inventory_address_unknown"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="@color/text_secondary_light" />
+
+        <TextView
+            android:id="@+id/txtInventoryHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/staff_inventory_hint"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="@color/error_light"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtInventoryStoreName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/staff_inventory_store_unknown"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        android:textColor="@color/text_primary_light"
+        android:textStyle="bold"
+        app:layout_anchor="@+id/linearLayout"
+        app:layout_anchorGravity="top|center" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

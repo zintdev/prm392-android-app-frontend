@@ -197,11 +197,11 @@
             app:layout_constraintTop_toBottomOf="@id/textViewManagement">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonStoreProductManagement"
+                android:id="@+id/buttonStaffManagement"
                 style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:text="Quản lý nhân viên"
                 android:textColor="@color/white"
@@ -214,13 +214,13 @@
                 app:iconTint="@color/white" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonStaffManagement"
+                android:id="@+id/buttonStoreProductManagement"
                 style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Danh mục"
+                android:text="Sản phẩm cửa hàng"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 app:backgroundTint="#8B4513"
@@ -229,6 +229,7 @@
                 app:iconPadding="4dp"
                 app:iconSize="32dp"
                 app:iconTint="@color/white" />
+
         </LinearLayout>
 
         <!-- Management Buttons Row 2 -->

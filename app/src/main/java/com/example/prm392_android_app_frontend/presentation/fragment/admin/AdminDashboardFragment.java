@@ -1,6 +1,7 @@
 package com.example.prm392_android_app_frontend.presentation.fragment.admin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,8 @@ import androidx.fragment.app.Fragment;
 
 import com.example.prm392_android_app_frontend.R;
 import com.example.prm392_android_app_frontend.databinding.FragmentAdminDashboardBinding;
+import com.example.prm392_android_app_frontend.presentation.activity.StaffManagementActivity;
+import com.example.prm392_android_app_frontend.presentation.activity.StoreInventoryActivity;
 
 public class AdminDashboardFragment extends Fragment {
 
@@ -49,6 +52,14 @@ public class AdminDashboardFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        binding.buttonStoreProductManagement.setOnClickListener(v ->
+            startActivity(new Intent(requireContext(), StoreInventoryActivity.class))
+        );
+
+        binding.buttonStaffManagement.setOnClickListener(v ->
+            startActivity(new Intent(requireContext(), StaffManagementActivity.class))
+        );
 
         binding.buttonProductManagement.setOnClickListener(v -> {
             // 3. Gọi phương thức của listener
