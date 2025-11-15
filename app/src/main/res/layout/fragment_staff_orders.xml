@@ -24,12 +24,23 @@
         android:textSize="14sp"
         android:text="@string/staff_orders_instruction" />
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabOrderStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@color/surface_light"
+        app:tabIndicatorColor="?attr/colorPrimary"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="?attr/colorPrimary"
+        app:tabTextColor="@color/text_secondary_light" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeOrders"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="12dp">
+        android:layout_marginTop="8dp"
+        android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerOrders"

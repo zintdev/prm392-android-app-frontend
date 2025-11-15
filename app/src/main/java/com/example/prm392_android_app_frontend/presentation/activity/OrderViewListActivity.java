@@ -168,9 +168,11 @@ public class OrderViewListActivity extends AppCompatActivity implements OrderLis
                 return "PROCESSING";
             case 4: // Đang giao
                 return "SHIPPED";
-            case 5: // Hoàn thành
+            case 5: // Chờ nhận hàng
+                return "KEEPING";
+            case 6: // Hoàn thành
                 return "COMPLETED";
-            case 6: // Đã hủy
+            case 7: // Đã hủy
                 return "CANCELLED";
             default:
                 return null;

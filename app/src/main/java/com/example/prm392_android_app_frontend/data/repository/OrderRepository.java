@@ -52,10 +52,10 @@ public class OrderRepository {
         orderApi.getOrdersByUserId(userId, status).enqueue(callback);
     }
 
-    public LiveData<Resource<List<OrderDto>>> getAllOrders(String orderStatus) {
+    public LiveData<Resource<List<OrderDto>>> getAllOrders(String orderStatus, Integer storeId) {
         MutableLiveData<Resource<List<OrderDto>>> liveData = new MutableLiveData<>();
         liveData.setValue(Resource.loading(null));
-        orderApi.getAllOrders(orderStatus).enqueue(new Callback<List<OrderDto>>() {
+        orderApi.getAllOrders(orderStatus, storeId).enqueue(new Callback<List<OrderDto>>() {
             @Override
             public void onResponse(Call<List<OrderDto>> call, Response<List<OrderDto>> response) {
                 if (response.isSuccessful()) {
@@ -161,13 +161,5 @@ public class OrderRepository {
 
     private static String safeMessage(Throwable t) {
         return t != null && t.getMessage() != null ? t.getMessage() : "Unexpected error";
-    }
-
-    /**
-     * Lấy tất cả đơn hàng (dành cho admin)
-     */
-    public void getAllOrders(Callback<List<OrderDTO>> callback) {
-        Call<List<OrderDTO>> call = orderApi.getAllOrders();
-        call.enqueue(callback);
     }
 }

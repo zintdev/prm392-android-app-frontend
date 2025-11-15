@@ -29,13 +29,15 @@ import com.example.prm392_android_app_frontend.presentation.viewmodel.PaymentVie
 import com.example.prm392_android_app_frontend.storage.TokenStore;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
-public class OrderCreateActivity extends AppCompatActivity {
+public class    OrderCreateActivity extends AppCompatActivity {
 
     private MaterialToolbar toolbar;
     private RecyclerView recyclerViewOrderItems;
@@ -49,17 +51,32 @@ public class OrderCreateActivity extends AppCompatActivity {
     private AddressPagerAdapter addressPagerAdapter;
     private RadioGroup radioGroupShipment;
     private RadioGroup radioGroupPayment;
+    private MaterialCardView pickupStoreCard;
+    private TextView textSelectedStoreName;
+    private TextView textSelectedStoreAddress;
+    private TextView textSelectedStoreDistance;
+    private MaterialButton buttonSelectStore;
 
     private OrderViewModel orderViewModel;
     private PaymentViewModel paymentViewModel;
     private LocalNotificationManager localNotificationManager;
     private List<CartItemDto> selectedItems;
     private double totalAmount;
+    private Integer selectedStoreId;
+    private String selectedStoreName;
+    private String selectedStoreAddress;
+    private Double selectedStoreDistance;
 
     private int currentOrderId;
     private int currentPaymentId;
 
     private static final int VNPAY_REQUEST_CODE = 1001;
+    private static final int STORE_PICKER_REQUEST_CODE = 2002;
+    private static final String STATE_HAS_STORE = "state_has_store";
+    private static final String STATE_STORE_ID = "state_store_id";
+    private static final String STATE_STORE_NAME = "state_store_name";
+    private static final String STATE_STORE_ADDRESS = "state_store_address";
+    private static final String STATE_STORE_DISTANCE = "state_store_distance";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +90,15 @@ public class OrderCreateActivity extends AppCompatActivity {
             Toast.makeText(this, "Không có sản phẩm nào được chọn", Toast.LENGTH_SHORT).show();
             finish();
             return;
+        }
+
+        if (savedInstanceState != null && savedInstanceState.getBoolean(STATE_HAS_STORE, false)) {
+            selectedStoreId = savedInstanceState.getInt(STATE_STORE_ID);
+            selectedStoreName = savedInstanceState.getString(STATE_STORE_NAME);
+            selectedStoreAddress = savedInstanceState.getString(STATE_STORE_ADDRESS);
+            if (savedInstanceState.containsKey(STATE_STORE_DISTANCE)) {
+                selectedStoreDistance = savedInstanceState.getDouble(STATE_STORE_DISTANCE);
+            }
         }
 
         initViews();
@@ -94,6 +120,30 @@ public class OrderCreateActivity extends AppCompatActivity {
         viewPagerAddress = findViewById(R.id.view_pager_address);
         radioGroupShipment = findViewById(R.id.radio_group_shipment);
         radioGroupPayment = findViewById(R.id.radio_group_payment);
+        pickupStoreCard = findViewById(R.id.pickup_store_card);
+        textSelectedStoreName = findViewById(R.id.text_selected_store_name);
+        textSelectedStoreAddress = findViewById(R.id.text_selected_store_address);
+        textSelectedStoreDistance = findViewById(R.id.text_selected_store_distance);
+        buttonSelectStore = findViewById(R.id.button_select_store);
+
+        if (buttonSelectStore != null) {
+            buttonSelectStore.setOnClickListener(v -> openStorePicker());
+        }
+
+        boolean initialPickup = radioGroupShipment != null
+                && radioGroupShipment.getCheckedRadioButtonId() == R.id.radio_pickup;
+        togglePickupStoreSection(initialPickup);
+        updateSelectedStoreViews();
+
+        if (radioGroupShipment != null) {
+            radioGroupShipment.setOnCheckedChangeListener((group, checkedId) -> {
+                boolean isPickup = checkedId == R.id.radio_pickup;
+                togglePickupStoreSection(isPickup);
+                if (isPickup && selectedStoreId == null) {
+                    Toast.makeText(this, R.string.pickup_store_select_prompt, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         localNotificationManager = new LocalNotificationManager(this);
 
@@ -131,6 +181,70 @@ public class OrderCreateActivity extends AppCompatActivity {
                 }
             }
         ).attach();
+    }
+
+    private void togglePickupStoreSection(boolean show) {
+        if (pickupStoreCard != null) {
+            pickupStoreCard.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void updateSelectedStoreViews() {
+        if (textSelectedStoreName == null || textSelectedStoreAddress == null) {
+            return;
+        }
+
+        if (selectedStoreId != null) {
+            String displayName;
+            if (selectedStoreName != null && !selectedStoreName.trim().isEmpty()) {
+                displayName = selectedStoreName;
+            } else {
+                displayName = getString(R.string.pickup_store_fallback_name, selectedStoreId);
+            }
+            textSelectedStoreName.setText(displayName);
+
+            if (selectedStoreAddress != null && !selectedStoreAddress.trim().isEmpty()) {
+                textSelectedStoreAddress.setText(selectedStoreAddress);
+            } else {
+                textSelectedStoreAddress.setText(R.string.pickup_store_address_placeholder);
+            }
+
+            if (textSelectedStoreDistance != null) {
+                if (selectedStoreDistance != null) {
+                    textSelectedStoreDistance.setVisibility(View.VISIBLE);
+                    textSelectedStoreDistance.setText(getString(R.string.pickup_store_distance_format, selectedStoreDistance));
+                } else {
+                    textSelectedStoreDistance.setVisibility(View.GONE);
+                }
+            }
+
+            if (buttonSelectStore != null) {
+                buttonSelectStore.setText(R.string.pickup_store_change_button);
+            }
+        } else {
+            textSelectedStoreName.setText(R.string.pickup_store_placeholder);
+            textSelectedStoreAddress.setText(R.string.pickup_store_address_placeholder);
+            if (textSelectedStoreDistance != null) {
+                textSelectedStoreDistance.setVisibility(View.GONE);
+            }
+            if (buttonSelectStore != null) {
+                buttonSelectStore.setText(R.string.pickup_store_select_button);
+            }
+        }
+    }
+
+    private void openStorePicker() {
+        if (selectedItems == null || selectedItems.isEmpty()) {
+            Toast.makeText(this, R.string.pickup_store_no_items, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(this, MapsActivity.class);
+        intent.putParcelableArrayListExtra(MapsActivity.EXTRA_CART_ITEMS, new ArrayList<>(selectedItems));
+        if (selectedStoreId != null) {
+            intent.putExtra(MapsActivity.EXTRA_SELECTED_STORE_ID, selectedStoreId);
+        }
+        startActivityForResult(intent, STORE_PICKER_REQUEST_CODE);
     }
 
     private void setupViewModel() {
@@ -211,6 +325,37 @@ public class OrderCreateActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Thanh toán chưa hoàn tất. Vui lòng kiểm tra đơn hàng của bạn.", Toast.LENGTH_LONG).show();
             }
+        } else if (requestCode == STORE_PICKER_REQUEST_CODE) {
+            if (resultCode == RESULT_OK && data != null) {
+                int storeId = data.getIntExtra(MapsActivity.RESULT_STORE_ID, -1);
+                if (storeId != -1) {
+                    selectedStoreId = storeId;
+                    selectedStoreName = data.getStringExtra(MapsActivity.RESULT_STORE_NAME);
+                    selectedStoreAddress = data.getStringExtra(MapsActivity.RESULT_STORE_ADDRESS);
+                    Double distance = null;
+                    if (data.hasExtra(MapsActivity.RESULT_STORE_DISTANCE)) {
+                        double raw = data.getDoubleExtra(MapsActivity.RESULT_STORE_DISTANCE, Double.NaN);
+                        if (!Double.isNaN(raw) && raw >= 0) {
+                            distance = raw;
+                        }
+                    }
+                    selectedStoreDistance = distance;
+                    updateSelectedStoreViews();
+                    if (radioGroupShipment != null && radioGroupShipment.getCheckedRadioButtonId() == R.id.radio_pickup) {
+                        togglePickupStoreSection(true);
+                    }
+                    return;
+                }
+            }
+
+            if (selectedStoreId == null) {
+                if (radioGroupShipment != null) {
+                    radioGroupShipment.check(R.id.radio_delivery);
+                }
+                Toast.makeText(this, R.string.pickup_store_cancelled_message, Toast.LENGTH_SHORT).show();
+            } else {
+                updateSelectedStoreViews();
+            }
         }
     }
 
@@ -230,14 +375,22 @@ public class OrderCreateActivity extends AppCompatActivity {
             return;
         }
 
-        showLoading();
-
         int userId = TokenStore.getUserId(this);
         if (userId == -1) {
             Toast.makeText(this, "Không thể xác định người dùng. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
+
+        String shipmentMethod = getShipmentMethod();
+        String paymentMethod = getSelectedPaymentMethod();
+        boolean isPickup = "PICKUP".equals(shipmentMethod);
+        if (isPickup && selectedStoreId == null) {
+            Toast.makeText(this, R.string.pickup_store_select_required, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        showLoading();
 
         String fullName = "";
         String phone = "";
@@ -266,15 +419,17 @@ public class OrderCreateActivity extends AppCompatActivity {
             }
         }
 
-        CreateOrderRequestDto request = new CreateOrderRequestDto(
-                userId, 
-                getShipmentMethod(), 
-                fullName, 
-                phone,
-                addressLine1, 
-                addressLine2, 
-                cityState
-        );
+    CreateOrderRequestDto request = new CreateOrderRequestDto(
+        userId,
+        shipmentMethod,
+        paymentMethod,
+        fullName,
+        phone,
+        addressLine1,
+        addressLine2,
+        cityState,
+        isPickup ? selectedStoreId : null
+    );
 
         orderViewModel.placeOrder(request);
     }
@@ -322,6 +477,25 @@ public class OrderCreateActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        boolean hasStore = selectedStoreId != null;
+        outState.putBoolean(STATE_HAS_STORE, hasStore);
+        if (hasStore) {
+            outState.putInt(STATE_STORE_ID, selectedStoreId);
+            if (selectedStoreName != null) {
+                outState.putString(STATE_STORE_NAME, selectedStoreName);
+            }
+            if (selectedStoreAddress != null) {
+                outState.putString(STATE_STORE_ADDRESS, selectedStoreAddress);
+            }
+            if (selectedStoreDistance != null) {
+                outState.putDouble(STATE_STORE_DISTANCE, selectedStoreDistance);
+            }
+        }
     }
 
     private void updateTotalPrice() {

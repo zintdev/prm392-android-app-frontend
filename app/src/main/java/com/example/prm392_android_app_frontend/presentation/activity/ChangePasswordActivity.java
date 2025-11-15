@@ -126,7 +126,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         Log.e("ChangePw", "Can't read error body", e);
                     }
-                    Toast.makeText(ChangePasswordActivity.this, "Lỗi máy chủ (HTTP " + res.code() + ")", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChangePasswordActivity.this, "Máy chủ đang bận. Vui lòng thử lại sau.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -142,7 +142,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         Log.d("ChangePw", "enqueue() completed");
     }
-    //    private void doChangePassword(String oldPw, String newPw) {
+//    private void doChangePassword(String oldPw, String newPw) {
 //        Log.d("ChangePw", "Bắt đầu đổi mật khẩu - userId=" + userId);
 //        showLoading(true);
 //        retrofit2.Retrofit retrofit = ApiClient.getAuthClient(this);

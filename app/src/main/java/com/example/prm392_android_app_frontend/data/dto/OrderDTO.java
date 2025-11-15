@@ -23,6 +23,21 @@ public class OrderDTO {
     private String shippingAddressLine2;
     private String shippingCityState;
     
+    @SerializedName("storeLocationId")
+    private Integer storeLocationId;
+
+    @SerializedName("storeName")
+    private String storeName;
+
+    @SerializedName("storeAddress")
+    private String storeAddress;
+
+    @SerializedName("storeLatitude")
+    private Double storeLatitude;
+
+    @SerializedName("storeLongitude")
+    private Double storeLongitude;
+
     private double subtotal;
     private double taxTotal;
     private double shippingFee;
@@ -66,6 +81,21 @@ public class OrderDTO {
     public String getShippingCityState() { return shippingCityState; }
     public void setShippingCityState(String shippingCityState) { this.shippingCityState = shippingCityState; }
     
+    public Integer getStoreLocationId() { return storeLocationId; }
+    public void setStoreLocationId(Integer storeLocationId) { this.storeLocationId = storeLocationId; }
+
+    public String getStoreName() { return storeName; }
+    public void setStoreName(String storeName) { this.storeName = storeName; }
+
+    public String getStoreAddress() { return storeAddress; }
+    public void setStoreAddress(String storeAddress) { this.storeAddress = storeAddress; }
+
+    public Double getStoreLatitude() { return storeLatitude; }
+    public void setStoreLatitude(Double storeLatitude) { this.storeLatitude = storeLatitude; }
+
+    public Double getStoreLongitude() { return storeLongitude; }
+    public void setStoreLongitude(Double storeLongitude) { this.storeLongitude = storeLongitude; }
+
     public double getSubtotal() { return subtotal; }
     public void setSubtotal(double subtotal) { this.subtotal = subtotal; }
     
