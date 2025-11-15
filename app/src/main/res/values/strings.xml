@@ -23,7 +23,7 @@
     <string name="action_login">Đăng nhập</string>
     <string name="no_account_sign_up">Không có tài khoản? Đăng kí ngay</string>
     <string name="avatar_description">avatar</string>
-    <string name="register">Đăng kí</string>
+    <string name="register">Đăng ký</string>
     <string name="backToHome">Quay lại trang chủ</string>
     <string name="backToLogin">Quay lại đăng nhập"</string>
 

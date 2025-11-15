@@ -108,6 +108,24 @@
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- 🔹 Dòng nhập lại mật khẩu mới thêm -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutConfirmPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Nhập lại mật khẩu"
+            app:endIconMode="password_toggle">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/auth_bg_input"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <Button
             android:id="@+id/buttonRegister"
             android:layout_width="match_parent"
@@ -127,6 +145,7 @@
             android:textAllCaps="false"
             android:backgroundTint="@color/nogi_purple_900"
             android:foreground="?attr/selectableItemBackground" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
