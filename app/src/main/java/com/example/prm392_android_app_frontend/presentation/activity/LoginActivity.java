@@ -4,32 +4,27 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.prm392_android_app_frontend.R;
-import com.example.prm392_android_app_frontend.data.remote.api.ApiClient;
-import com.example.prm392_android_app_frontend.data.remote.api.AuthApi;
-import com.example.prm392_android_app_frontend.data.remote.ErrorUtils;
-import com.example.prm392_android_app_frontend.data.dto.ApiError;
-import com.example.prm392_android_app_frontend.data.dto.login.LoginRequest;
 import com.example.prm392_android_app_frontend.data.dto.login.LoginResponse;
+import com.example.prm392_android_app_frontend.presentation.viewmodel.AuthViewModel;
 import com.example.prm392_android_app_frontend.storage.TokenStore;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText edtEmailOrUsername;
     private EditText edtPassword;
     private Button btnLogin;
+    private ImageButton btnBackToMain;
     private ProgressBar progress;
 
     private AuthViewModel viewModel;
@@ -42,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         edtEmailOrUsername = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        btnBackToMain = findViewById(R.id.btnBackToMain);
         progress = findViewById(R.id.progress);
 
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
@@ -67,6 +63,15 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         btnLogin.setOnClickListener(v -> doLogin());
+
+        findViewById(R.id.tvSignUp).setOnClickListener(v ->
+                startActivity(new Intent(this, RegisterActivity.class))
+        );
+
+        btnBackToMain.setOnClickListener(v -> {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
     }
 
     private void doLogin() {
@@ -77,13 +82,17 @@ public class LoginActivity extends AppCompatActivity {
 
         if (TextUtils.isEmpty(usernameOrEmail)) {
             edtEmailOrUsername.setError("Nhập username/email");
+            edtEmailOrUsername.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(pass)) {
             edtPassword.setError("Nhập mật khẩu");
+            edtPassword.requestFocus();
             return;
         }
 
+        hideKeyboard();
+        isSubmitting = true;
         setLoading(true);
 
         viewModel.login(usernameOrEmail, pass);
@@ -128,56 +137,21 @@ public class LoginActivity extends AppCompatActivity {
         return r.equals("ADMIN");
     }
 
-                handleHttpError(resp);
-            }
-
-            @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-                setLoading(false); // 👈 tắt loading khi lỗi mạng
-                toast("Không thể kết nối máy chủ: " + t.getMessage());
-            }
-        });
-    }
-
-    private void handleHttpError(Response<?> resp) {
-        int code = resp.code();
-        ApiError apiError = ErrorUtils.parseError(retrofitNoAuth, resp);
-        String apiMsg = (apiError != null && !TextUtils.isEmpty(apiError.getMessage()))
-                ? apiError.getMessage() : null;
-
-        String message;
-        switch (code) {
-            case 400: message = orElse(apiMsg, "Yêu cầu không hợp lệ (400)."); break;
-            case 401: message = orElse(apiMsg, "Sai tài khoản hoặc mật khẩu (401)."); break;
-            case 403: message = orElse(apiMsg, "Bạn không có quyền truy cập."); break;
-            case 404: message = orElse(apiMsg, "Mất kết nối. Vui lòng thử lại sau"); break;
-            case 500: message = orElse(apiMsg, "Lỗi máy chủ (500)."); break;
-            default:  message = orElse(apiMsg, "Lỗi không xác định (HTTP " + code + ").");
-        }
-        toast(message);
-    }
-
-    // ✅ Hàm tiện ích bật/tắt loading + khóa nút
     private void setLoading(boolean isLoading) {
-        if (progress != null) {
-            progress.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        }
-        if (btnLogin != null) {
-            btnLogin.setEnabled(!isLoading);
-        }
-        if (edtEmailOrUsername != null) {
-            edtEmailOrUsername.setEnabled(!isLoading);
-        }
-        if (edtPassword != null) {
-            edtPassword.setEnabled(!isLoading);
+        if (progress != null) progress.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        if (btnLogin != null) btnLogin.setEnabled(!isLoading);
+        if (edtEmailOrUsername != null) edtEmailOrUsername.setEnabled(!isLoading);
+        if (edtPassword != null) edtPassword.setEnabled(!isLoading);
+    }
+
+    private void hideKeyboard() {
+        View view = getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 
-    private void toast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
-
-    private String orElse(String v, String fallback) {
-        return TextUtils.isEmpty(v) ? fallback : v;
-    }
+    private void toast(String msg) { Toast.makeText(this, msg, Toast.LENGTH_SHORT).show(); }
+    private String orElse(String v, String fallback) { return TextUtils.isEmpty(v) ? fallback : v; }
 }

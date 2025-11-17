@@ -22,7 +22,7 @@ public class ProfileActivity extends AppCompatActivity {
         edtEmail = findViewById(R.id.edtEmail);
         edtPhone = findViewById(R.id.edtPhone);
 
-        // Preload từ TokenStore
+
         edtName.setText(TokenStore.getUsername(this));
         edtEmail.setText(TokenStore.getEmail(this));
 
@@ -30,7 +30,6 @@ public class ProfileActivity extends AppCompatActivity {
             String newUsername = edtName.getText().toString().trim();
             String newEmail    = edtEmail.getText().toString().trim();
 
-            // Lấy các giá trị còn lại từ TokenStore để không bị mất
             String token = TokenStore.getToken(this);
             int userId   = TokenStore.getUserId(this);
             String role  = TokenStore.getRole(this);
