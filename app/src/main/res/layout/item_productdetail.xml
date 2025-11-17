@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".presentation.activity.ProductDetailActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_detail"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:navigationIconTint="@color/nogi_main"
+            app:title="Chi tiết sản phẩm"
+            app:titleTextColor="@color/nogi_main" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Product Image Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp">
+
+                <ImageView
+                    android:id="@+id/detail_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:scaleType="centerCrop"
+                    tools:src="@tools:sample/backgrounds/scenic" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Product Information Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical">
+
+                <!-- Product Name -->
+                <TextView
+                    android:id="@+id/detail_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@android:color/black"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    tools:text="Weathering With You OST" />
+
+                <!-- Artist -->
+                <TextView
+                    android:id="@+id/detail_artist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:drawableStart="@android:drawable/ic_media_play"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/nogi_purple_600"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center_vertical"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="16sp"
+                    tools:text="RADWIMPS" />
+
+                <!-- Price Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:cardBackgroundColor="@color/nogi_purple_50"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <TextView
+                        android:id="@+id/detail_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/nogi_main"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        tools:text="350.000đ" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Product Details Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/nogi_purple_200"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="Thông tin sản phẩm"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <!-- Quantity -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="sans-serif"
+                                android:text="Số lượng trong kho:"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/detail_quantity"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-medium"
+                                android:textColor="@android:color/black"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                tools:text="100" />
+
+                        </LinearLayout>
+
+                        <!-- Publisher -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="sans-serif"
+                                android:text="Nhà phát hành:"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/detail_publisher"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-medium"
+                                android:textColor="@android:color/black"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                tools:text="Sony Music Japan" />
+
+                        </LinearLayout>
+
+                        <!-- Category -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="sans-serif"
+                                android:text="Danh mục:"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/detail_category"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="12sp"
+                                app:chipBackgroundColor="@color/nogi_purple_100"
+                                app:chipCornerRadius="16dp"
+                                app:chipStrokeWidth="0dp"
+                                android:textColor="@color/nogi_main"
+                                tools:text="Xuân" />
+
+                        </LinearLayout>
+
+                        <!-- Release Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="sans-serif"
+                                android:text="Ngày phát hành:"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/detail_release_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-medium"
+                                android:textColor="@android:color/black"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                tools:text="2019-07-19" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Description Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="80dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/nogi_purple_200"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="Mô tả sản phẩm"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/detail_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:lineSpacingExtra="4dp"
+                            android:textColor="@android:color/darker_gray"
+                            android:textSize="15sp"
+                            tools:text="Album nhạc phim &quot;Tenki no Ko&quot; do RADWIMPS sáng tác và trình bày, mang âm hưởng indie-rock đặc trưng." />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/detail_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <!-- Enhanced Bottom Bar -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <!-- Cart Icon Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_cart_icon"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="Giỏ hàng"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="16dp"
+                app:icon="@android:drawable/ic_menu_save"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="@color/nogi_main"
+                app:strokeColor="@color/nogi_purple_200"
+                app:strokeWidth="1dp" />
+
+            <!-- Add to Cart Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_add_to_cart"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:text="Thêm vào giỏ hàng"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:backgroundTint="@color/nogi_main"
+                app:cornerRadius="16dp"
+                app:icon="@android:drawable/ic_input_add"
+                app:iconGravity="textStart"
+                app:iconSize="20dp"
+                app:iconTint="@android:color/white" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

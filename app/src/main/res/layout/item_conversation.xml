@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_customer_avatar"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:src="@drawable/ic_profile" app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_customer_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@android:color/black"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/tv_last_message_time"
+        app:layout_constraintStart_toEndOf="@id/iv_customer_avatar"
+        app:layout_constraintTop_toTopOf="@id/iv_customer_avatar"
+        app:layout_constraintBottom_toTopOf="@id/tv_last_message"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Emma Watson" />
+
+    <TextView
+        android:id="@+id/tv_last_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#8E8E93"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_customer_avatar"
+        app:layout_constraintEnd_toStartOf="@+id/unread_badge_container"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/iv_customer_avatar"
+        app:layout_constraintTop_toBottomOf="@id/tv_customer_name"
+        tools:text="I'll never forget you" />
+
+    <TextView
+        android:id="@+id/tv_last_message_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="#8E8E93" android:textSize="15sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_customer_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="9:41" />
+
+    <FrameLayout
+        android:id="@+id/unread_badge_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_last_message"
+        app:layout_constraintBottom_toBottomOf="@id/tv_last_message">
+
+        <TextView
+            android:id="@+id/tv_unread_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="20dp"
+            android:minHeight="20dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_unread_badge"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="9+"
+            tools:visibility="visible" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

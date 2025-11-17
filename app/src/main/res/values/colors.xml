@@ -4,10 +4,11 @@
     <color name="text_tertiary">#757575</color>
     <color name="icon_border">#CCCCCC</color>
     <color name="gray">#808080</color>
-    
+    <color name="red">#FF0000</color>
     <!-- Light Theme Colors -->
     <color name="background_light">#FAFAFA</color>
     <color name="surface_light">#FFFFFF</color>
+    <color name="surface_variant_light">#F5F5F5</color>
     <color name="text_primary_light">#212121</color>
     <color name="text_secondary_light">#757575</color>
     <color name="divider_light">#E0E0E0</color>
@@ -23,5 +24,23 @@
     <color name="accent_blue">#2196F3</color>
     <color name="accent_orange">#FF9800</color>
     
+    <!-- Status Colors -->
+    <color name="success_color">#4CAF50</color>
+    <color name="success_light">#C8E6C9</color>
+    <color name="error_color">#F44336</color>
+    <color name="error_light">#FFCDD2</color>
+    <color name="warning_light">#FFF9C4</color>
+    <color name="info_light">#B3E5FC</color>
+    <color name="info_background">#E3F2FD</color>
+    
     <!-- Add other colors as needed -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="nogi_purple_900">#3A0CA3</color>
+    <color name="nogi_purple_700">#560BAD</color>
+    <color name="nogi_purple_600">#6F2DBD</color>
+    <color name="nogi_purple_200">#CDB4DB</color>
+    <color name="nogi_purple_100">#EADAF6</color>
+    <color name="nogi_purple_50">#F6F0FF</color>
+    <color name="nogi_main">#53278a</color>
 </resources>

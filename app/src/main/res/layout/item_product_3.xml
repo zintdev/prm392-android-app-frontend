@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:elevation="2dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/divider_light"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Product Image Container -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp">
+
+            <ImageView
+                android:id="@+id/imageView_product"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="Product image" />
+
+            <!-- Favorite Button -->
+            <ImageButton
+                android:id="@+id/button_favorite"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="top|start"
+                android:layout_margin="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Add to favorites"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_star" />
+
+        </FrameLayout>
+
+        <!-- Product Info Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <!-- Product Name -->
+            <TextView
+                android:id="@+id/textView_productName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:minLines="2"
+                android:text="CD Tiêu Đề"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                android:textSize="12sp" />
+
+            <!-- Artist Name -->
+            <TextView
+                android:id="@+id/textView_artistName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Nghệ sĩ"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="10sp"
+                android:textStyle="italic" />
+
+            <!-- Price -->
+            <TextView
+                android:id="@+id/textView_productPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="159.000đ"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textColor="?attr/colorPrimary"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <!-- Add to Cart Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_addToCart"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="6dp"
+                android:text="Thêm"
+                android:textAllCaps="false"
+                android:textSize="11sp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                app:cornerRadius="6dp"
+                app:icon="@drawable/ic_nav_cart"
+                app:iconSize="14dp"
+                app:iconGravity="textStart"
+                app:iconPadding="2dp" />
+
+            <!-- View Details Button (Hidden, triggered by card click) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_view_details"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

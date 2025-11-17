@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- AppBar chuẩn -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_map"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primaryColor"
+            android:title="@string/store_list_title"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@android:color/white"
+            app:titleTextColor="@android:color/white" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Map: FragmentContainerView -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <!-- FABs -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabMyLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/go_to_my_location"
+        app:srcCompat="@android:drawable/ic_menu_mylocation"
+        app:backgroundTint="@color/nogi_purple_700"
+        app:tint="@android:color/white"
+        app:layout_anchor="@id/map"
+        app:layout_anchorGravity="bottom|start"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="248dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabRefresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/refresh_stores"
+        app:srcCompat="@android:drawable/ic_popup_sync"
+        app:backgroundTint="@color/nogi_purple_700"
+        app:tint="@android:color/white"
+        app:layout_anchor="@id/map"
+        app:layout_anchorGravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="248dp" />
+
+    <!-- Loading overlay -->
+    <LinearLayout
+        android:id="@+id/stateOverlay"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp"
+        android:visibility="gone"
+        android:background="#66000000"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/white"
+            android:text="@string/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <!-- Top controls overlay -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardControls"
+        style="@style/Widget.Material3.CardView.Filled"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="10dp"
+        app:cardBackgroundColor="@color/nogi_purple_50"
+        app:strokeColor="@color/nogi_purple_100"
+        app:strokeWidth="1dp"
+        app:layout_anchor="@id/appBar"
+        app:layout_anchorGravity="bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:paddingBottom="24dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/pickup_store_search_hint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilRadius"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_radius_km">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtRadius"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="20" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/txtCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="end"
+                    android:text="@string/store_list_count_default"
+                    android:textColor="@color/nogi_purple_700"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnApply"
+                    style="@style/Widget.Material3.Button.IconButton.Filled"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/apply"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@color/nogi_purple_700" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnShowAll"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:text="@string/show_all"
+                    android:textAllCaps="false"
+                    app:backgroundTint="@color/nogi_purple_200"
+                    app:iconTint="@color/nogi_purple_900"
+                    app:rippleColor="@color/nogi_purple_100" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Store carousel -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStores"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/transparent"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingStart="12dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="16dp"
+        app:layout_anchor="@id/map"
+        app:layout_anchorGravity="bottom" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

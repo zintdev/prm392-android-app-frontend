@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_staff_orders"
+        android:title="@string/staff_nav_orders"
+        android:icon="@drawable/ic_receipt" />
+    <item
+        android:id="@+id/nav_staff_inventory"
+        android:title="@string/staff_nav_inventory"
+        android:icon="@drawable/ic_store_" />
+    <item
+        android:id="@+id/nav_staff_profile"
+        android:title="@string/staff_nav_profile"
+        android:icon="@drawable/ic_nav_user" />
+</menu>

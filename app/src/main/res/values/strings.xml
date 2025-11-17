@@ -8,19 +8,132 @@
 
     <!-- Navbar Labels -->
     <string name="nav_home">Home</string>
-    <string name="nav_blogs">Blogs</string>
-    <string name="nav_search">Search</string>
+    <string name="nav_blogs">Blog</string>
+    <string name="nav_search">Tìm kiếm</string>
     <string name="nav_stats">Stats</string>
-    <string name="nav_profile">Profile</string>
+    <string name="nav_profile">Tài khoản</string>
 
     <!-- login -->
     <string name="app_name">乃木坂４６</string>
-    <string name="Login">Login</string>
+    <string name="Login">Đăng nhập</string>
     <string name="cd_logo_desc">Nogizaka46 logo</string>
-    <string name="hint_email">Username or Email</string>
-    <string name="hint_password">Password</string>
-    <string name="forgot_password">Forgot password?</string>
-    <string name="action_login">Login</string>
-    <string name="no_account_sign_up">Don’t have an account? Sign up</string>
+    <string name="hint_email">Tên tài khoản hoặc Email</string>
+    <string name="hint_password">Mật khẩu</string>
+    <string name="forgot_password">Quên Mật Khẩu?</string>
+    <string name="action_login">Đăng nhập</string>
+    <string name="no_account_sign_up">Không có tài khoản? Đăng kí ngay</string>
     <string name="avatar_description">avatar</string>
+    <string name="register">Đăng ký</string>
+    <string name="backToHome">Quay lại trang chủ</string>
+    <string name="backToLogin">Quay lại đăng nhập"</string>
+
+    <string name="store_list_title">Danh sách cửa hàng</string>
+    <string name="store_list_count_default">0 kết quả</string>
+    <string name="pickup_store_search_hint">Tìm cửa hàng khác</string>
+    <string name="hint_radius_km">Bán kính (km)</string>
+    <string name="hint_product_id_pickup">Product ID (Pickup)</string>
+    <string name="apply">Áp dụng</string>
+    <string name="all">Tất cả</string>
+    <string name="pickup">Pickup</string>
+    <string name="show_all">Hiện tất cả</string>
+    <string name="pickup_store_directions_button">Chỉ đường</string>
+    <string name="go_to_my_location">Về vị trí của tôi</string>
+    <string name="refresh_stores">Tải lại cửa hàng</string>
+    <string name="loading">Đang tải...</string>
+
+    <string name="inventory_current_quantity">Số lượng hiện tại: %1$d</string>
+    <string name="inventory_limit_suffix">&#x0a;(Tối đa: %1$d)</string>
+    <string name="inventory_not_enough">Sản phẩm trong kho không đủ để cập nhật thêm (tối đa: %1$d)</string>
+    <string name="inventory_limit_cap">Đây đã là số lượng có thể (tối đa: %1$d)</string>
+
+    <!-- staff orders -->
+    <string name="staff_toolbar_title">Quản lý cửa hàng</string>
+    <string name="staff_orders_store_placeholder">Cửa hàng: Đang tải...</string>
+    <string name="staff_orders_instruction">Kéo xuống để làm mới danh sách đơn hàng.</string>
+    <string name="staff_orders_empty">Không có đơn hàng nào cho cửa hàng này.</string>
+    <string name="staff_orders_no_store">Bạn chưa được gán vào cửa hàng nào.</string>
+    <string name="staff_orders_load_error">Không thể tải danh sách đơn hàng: %1$s</string>
+    <string name="staff_order_id_format">Đơn hàng #%1$d</string>
+    <string name="staff_order_date_format">Ngày đặt: %1$s</string>
+    <string name="staff_order_customer_format">Khách: %1$s</string>
+    <string name="staff_order_store_format">Cửa hàng: %1$s</string>
+    <string name="staff_order_store_unknown">Không rõ</string>
+    <string name="staff_order_total_format">Tổng: %1$s</string>
+    <string name="staff_order_unknown_field">Không xác định</string>
+    <string name="staff_order_status_keeping">Chờ nhận hàng</string>
+    <string name="staff_order_status_pending">Chờ xử lý</string>
+    <string name="staff_order_status_paid">Đã thanh toán</string>
+    <string name="staff_order_status_processing">Đang chuẩn bị</string>
+    <string name="staff_order_status_shipped">Đã gửi đi</string>
+    <string name="staff_order_status_completed">Hoàn thành</string>
+    <string name="staff_order_status_cancelled">Đã hủy</string>
+    <string name="staff_orders_status_update_unavailable">Trạng thái đơn hiện tại không thể cập nhật thêm.</string>
+    <string name="staff_order_view_detail">Chi tiết</string>
+    <string name="staff_order_update_status">Cập nhật trạng thái</string>
+    <string name="staff_order_update_success">Cập nhật trạng thái đơn hàng thành công.</string>
+    <string name="staff_order_update_failed">Không thể cập nhật trạng thái đơn hàng: %1$s</string>
+
+    <string name="staff_nav_orders">Đơn hàng</string>
+    <string name="staff_nav_inventory">Sản phẩm</string>
+    <string name="staff_nav_chat">Nhắn tin</string>
+    <string name="staff_nav_profile">Hồ sơ</string>
+
+    <!-- order detail -->
+    <string name="order_detail_invalid_id">ID đơn hàng không hợp lệ</string>
+    <string name="order_detail_title_format">Đơn hàng #%1$d</string>
+    <string name="order_detail_customer_prefix">Khách hàng: %1$s</string>
+    <string name="order_detail_phone_prefix">Số điện thoại: %1$s</string>
+    <string name="order_detail_address_prefix">Địa chỉ: %1$s</string>
+    <string name="order_detail_total_prefix">Tổng cộng: %1$s</string>
+    <string name="order_detail_items_label">Sản phẩm trong đơn</string>
+    <string name="order_detail_quantity_format">Số lượng: %1$d</string>
+    <string name="order_detail_unit_price_format">Đơn giá: %1$s</string>
+    <string name="order_detail_total_line_format">Thành tiền: %1$s</string>
+    <string name="order_detail_shipment_pickup">Nhận tại cửa hàng</string>
+    <string name="order_detail_shipment_delivery">Giao hàng tận nơi</string>
+
+    <!-- pickup store selection -->
+    <string name="pickup_store_title">Cửa hàng nhận hàng</string>
+    <string name="pickup_store_placeholder">Chưa chọn cửa hàng</string>
+    <string name="pickup_store_address_placeholder">Chưa có địa chỉ cửa hàng</string>
+    <string name="pickup_store_hint">Vui lòng chọn cửa hàng đủ hàng để nhận trong vòng 2 ngày.</string>
+    <string name="pickup_store_select_button">Chọn cửa hàng</string>
+    <string name="pickup_store_change_button">Đổi cửa hàng</string>
+    <string name="pickup_store_fallback_name">Cửa hàng #%1$d</string>
+    <string name="pickup_store_distance_format">~%1$.2f km</string>
+    <string name="pickup_store_select_required">Vui lòng chọn cửa hàng để nhận hàng.</string>
+    <string name="pickup_store_cancelled_message">Bạn chưa chọn cửa hàng. Đang chuyển về giao tận nơi.</string>
+    <string name="pickup_store_no_items">Không có sản phẩm nào để chọn cửa hàng.</string>
+    <string name="pickup_store_confirm_button">Chọn cửa hàng này</string>
+    <string name="pickup_store_select_prompt">Hãy chọn một cửa hàng trước khi xác nhận.</string>
+    <string name="pickup_store_missing_location">Không tìm thấy vị trí cửa hàng để chỉ đường.</string>
+    <string name="store_nearby_generic_error">Không tải được danh sách cửa hàng.</string>
+    <string name="store_card_quantity_format">Còn: %1$d</string>
+
+    <!-- staff chat -->
+    <string name="staff_chat_description">Trao đổi nhanh với quản trị viên khi cần hỗ trợ.</string>
+    <string name="staff_chat_open_button">Mở trò chuyện</string>
+
+    <!-- staff inventory -->
+    <string name="staff_inventory_title">Kho cửa hàng của bạn</string>
+    <string name="staff_inventory_store_unknown">Chưa gán cửa hàng</string>
+    <string name="staff_inventory_address_unknown">Địa chỉ chưa cập nhật</string>
+    <string name="staff_inventory_hint">Liên hệ quản trị viên để được gán vào cửa hàng.</string>
+    <string name="staff_inventory_no_store">Bạn chưa được gán cửa hàng nào.</string>
+    <string name="staff_inventory_empty">Kho chưa có sản phẩm để cập nhật.</string>
+    <string name="staff_inventory_save_all">Lưu tất cả thay đổi</string>
+
+    <string name="inventory_no_changes">Không có thay đổi để lưu</string>
+    <string name="inventory_actor_missing">Không tìm thấy tài khoản để cập nhật tồn kho</string>
+
+    <!-- staff profile -->
+    <string name="staff_profile_title">Thông tin nhân viên</string>
+    <string name="staff_profile_name_label">Họ và tên</string>
+    <string name="staff_profile_name_placeholder">Chưa cập nhật</string>
+    <string name="staff_profile_email_label">Email</string>
+    <string name="staff_profile_email_placeholder">Không có email</string>
+    <string name="staff_profile_phone_label">Số điện thoại</string>
+    <string name="staff_profile_phone_placeholder">Không có số điện thoại</string>
+    <string name="staff_profile_store_label">Cửa hàng phụ trách</string>
+    <string name="staff_profile_logout">Đăng xuất</string>
 </resources>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtProfileTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/staff_profile_title"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textColor="@color/text_primary_light"
+            android:textStyle="bold" />
+
+        <ProgressBar
+            android:id="@+id/profileProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txtProfileNameLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/staff_profile_name_label"
+            android:textColor="@color/text_secondary_light" />
+
+        <TextView
+            android:id="@+id/txtProfileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/staff_profile_name_placeholder"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textColor="@color/text_primary_light" />
+
+        <TextView
+            android:id="@+id/txtProfileEmailLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/staff_profile_email_label"
+            android:textColor="@color/text_secondary_light" />
+
+        <TextView
+            android:id="@+id/txtProfileEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/staff_profile_email_placeholder"
+            android:textColor="@color/text_primary_light" />
+
+        <TextView
+            android:id="@+id/txtProfilePhoneLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/staff_profile_phone_label"
+            android:textColor="@color/text_secondary_light" />
+
+        <TextView
+            android:id="@+id/txtProfilePhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/staff_profile_phone_placeholder"
+            android:textColor="@color/text_primary_light" />
+
+        <TextView
+            android:id="@+id/txtProfileStoreLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/staff_profile_store_label"
+            android:textColor="@color/text_secondary_light" />
+
+        <TextView
+            android:id="@+id/txtProfileStore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/staff_inventory_store_unknown"
+            android:textColor="@color/text_primary_light" />
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/staff_profile_logout" />
+
+    </LinearLayout>
+</ScrollView>

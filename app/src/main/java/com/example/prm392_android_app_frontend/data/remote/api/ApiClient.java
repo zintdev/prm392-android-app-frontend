@@ -15,51 +15,87 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class ApiClient {
-    public static String BASE_URL = "http://10.0.2.2:8080/";
+    public static String BASE_URL = "https://plowable-nonlevel-sharie.ngrok-free.dev/api/";
+    // public static String BASE_URL= "http://172.20.10.5:8080/api/";
+    // public static String BASE_URL= "http://10.0.2.2:8080/api/";
 
-    private static Retrofit retrofit;
+    private static volatile Retrofit retrofit;
+    private static volatile Retrofit retrofitAuth;
+    private static volatile OkHttpClient baseClient;
+
+    private ApiClient() {
+    }
+
+    private static OkHttpClient base() {
+        if (baseClient == null) {
+            synchronized (ApiClient.class) {
+                if (baseClient == null) {
+                    HttpLoggingInterceptor log = new HttpLoggingInterceptor();
+                    log.setLevel(HttpLoggingInterceptor.Level.BODY);
+                    baseClient = new OkHttpClient.Builder()
+                            .addInterceptor(log)
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .build();
+                }
+            }
+        }
+        return baseClient;
+    }
 
     public static Retrofit get() {
-        HttpLoggingInterceptor log = new HttpLoggingInterceptor();
-        log.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient ok = new OkHttpClient.Builder()
-                .addInterceptor(log)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build();
-
-        return new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(ok)
-                .build();
+        if (retrofit == null) {
+            synchronized (ApiClient.class) {
+                if (retrofit == null) {
+                    Gson gson = new GsonBuilder()
+                            .setLenient()
+                            .create();
+                    retrofit = new Retrofit.Builder()
+                            .baseUrl(BASE_URL)
+                            .addConverterFactory(GsonConverterFactory.create(gson))
+                            .client(base())
+                            .build();
+                }
+            }
+        }
+        return retrofit;
     }
+
     // Nếu cần client có Bearer token cho các API khác
     public static Retrofit getAuthClient(Context ctx) {
-        HttpLoggingInterceptor log = new HttpLoggingInterceptor();
-        log.setLevel(HttpLoggingInterceptor.Level.BODY);
+        if (retrofitAuth == null) {
+            synchronized (ApiClient.class) {
+                if (retrofitAuth == null) {
+                    HttpLoggingInterceptor log = new HttpLoggingInterceptor();
+                    log.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        Interceptor auth = chain -> {
-            String token = TokenStore.getToken(ctx);
-            Request req = chain.request();
-            if (token != null && !token.isEmpty()) {
-                req = req.newBuilder()
-                        .addHeader("Authorization", "Bearer " + token)
-                        .build();
+                    Interceptor auth = chain -> {
+                        String token = com.example.prm392_android_app_frontend.storage.TokenStore.getToken(ctx);
+                        Request req = chain.request();
+                        if (token != null && !token.isEmpty()) {
+                            req = req.newBuilder()
+                                    .addHeader("Authorization", "Bearer " + token)
+                                    .build();
+                        }
+                        return chain.proceed(req);
+                    };
+
+                    OkHttpClient ok = base().newBuilder()
+                            .addInterceptor(auth)
+                            .build();
+
+                    Gson gson = new GsonBuilder()
+                            .setLenient()
+                            .create();
+
+                    retrofitAuth = new Retrofit.Builder()
+                            .baseUrl(BASE_URL)
+                            .addConverterFactory(GsonConverterFactory.create(gson))
+                            .client(ok)
+                            .build();
+                }
             }
-            return chain.proceed(req);
-        };
-
-        OkHttpClient ok = new OkHttpClient.Builder()
-                .addInterceptor(auth)
-                .addInterceptor(log)
-                .build();
-
-        return new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(ok)
-                .build();
+        }
+        return retrofitAuth;
     }
 }

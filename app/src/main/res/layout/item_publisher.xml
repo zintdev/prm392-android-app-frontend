@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeColor="#E0E0E0"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Publisher Icon -->
+        <ImageView
+            android:id="@+id/publisher_icon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_publisher_manage"
+            android:contentDescription="Publisher icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#5C6BC0" />
+
+        <!-- Publisher Name -->
+        <TextView
+            android:id="@+id/publisher_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="#1A237E"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_constraintEnd_toStartOf="@id/button_actions_container"
+            app:layout_constraintStart_toEndOf="@id/publisher_icon"
+            app:layout_constraintTop_toTopOf="@id/publisher_icon"
+            tools:text="Sony Music Entertainment Japan" />
+
+        <!-- Founded Year -->
+        <TextView
+            android:id="@+id/publisher_founded_year"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            android:textColor="#666666"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@id/button_actions_container"
+            app:layout_constraintStart_toEndOf="@id/publisher_icon"
+            app:layout_constraintTop_toBottomOf="@id/publisher_name"
+            tools:text="Năm thành lập: 1991" />
+
+
+
+        <!-- Buttons Container -->
+        <LinearLayout
+            android:id="@+id/button_actions_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <!-- Edit Button -->
+            <Button
+                android:id="@+id/button_edit_publisher"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sửa"
+                android:textColor="#42A5F5"
+                android:textSize="12sp"
+                android:minWidth="0dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
+
+            <!-- Delete Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_delete_publisher"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Xóa nhà xuất bản"
+                app:icon="@drawable/ic_trash_can"
+                app:iconTint="@android:color/holo_red_dark"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

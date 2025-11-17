@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar_payment_success"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primaryColor"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Thanh toán thành công"
+        app:titleTextColor="@android:color/white" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_payment_success">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp">
+
+            <!-- Success Icon -->
+            <ImageView
+                android:id="@+id/icon_success"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="40dp"
+                android:src="@drawable/ic_check_circle"
+                android:tint="#4CAF50"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="UseAppTint" />
+
+            <!-- Success Title -->
+            <TextView
+                android:id="@+id/text_success_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Thanh toán thành công!"
+                android:textColor="#4CAF50"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/icon_success" />
+
+            <!-- Success Message -->
+            <TextView
+                android:id="@+id/text_success_message"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="Đơn hàng của bạn đã được thanh toán thành công.\nCảm ơn bạn đã mua hàng tại CD Shop!"
+                android:textColor="@color/text_secondary_light"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_success_title" />
+
+            <!-- Order Details Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_order_details"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_success_message">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chi tiết thanh toán"
+                        android:textColor="@color/text_primary_light"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="12dp"
+                        android:background="@color/divider_light" />
+
+                    <!-- Order ID -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Mã đơn hàng:"
+                            android:textColor="@color/text_secondary_light"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/text_order_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary_light"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            tools:text="#12345" />
+                    </LinearLayout>
+
+                    <!-- Payment ID -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Mã giao dịch:"
+                            android:textColor="@color/text_secondary_light"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/text_payment_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary_light"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            tools:text="PAY67890" />
+                    </LinearLayout>
+
+                    <!-- Amount -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Số tiền:"
+                            android:textColor="@color/text_secondary_light"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/text_amount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/primaryColor"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="500.000đ" />
+                    </LinearLayout>
+
+                    <!-- Payment Method -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Phương thức:"
+                            android:textColor="@color/text_secondary_light"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/text_payment_method"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary_light"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            tools:text="VNPay" />
+                    </LinearLayout>
+
+                    <!-- Payment Time -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Thời gian:"
+                            android:textColor="@color/text_secondary_light"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/text_payment_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary_light"
+                            android:textSize="15sp"
+                            tools:text="29/10/2025 14:30" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_order_details">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_view_order"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:backgroundTint="@color/primaryColor"
+                    android:text="Xem đơn hàng"
+                    android:textSize="16sp"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_receipt" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_back_home"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="12dp"
+                    android:backgroundTint="@android:color/transparent"
+                    android:text="Quay lại giỏ hàng"
+                    android:textColor="@color/primaryColor"
+                    android:textSize="16sp"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/primaryColor"
+                    app:strokeWidth="2dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
